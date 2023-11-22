@@ -33,7 +33,7 @@ namespace gView.Framework.OGC.DB
         async public Task<IEnvelope> Envelope()
         {
             IEnvelope env = null;
-            foreach (IDatasetElement element in await this.Elements())
+            foreach (IDatasetElement element in (await this.Elements()).OrEmpty())
             {
                 if (element != null && element.Class is IFeatureClass)
                 {
@@ -146,6 +146,9 @@ namespace gView.Framework.OGC.DB
         virtual public Task<bool> Open()
         {
             _state = DatasetState.opened;
+
+            this.LastErrorMessage = null;
+
             return Task.FromResult(true);
         }
 

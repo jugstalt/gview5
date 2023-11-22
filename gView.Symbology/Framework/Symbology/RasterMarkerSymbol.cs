@@ -80,8 +80,8 @@ namespace gView.Framework.Symbology
 
                 if (display.IsLegendItemSymbol())
                 {
-                    sizeX = Math.Min(_sizeY, display.iWidth);
-                    sizeY = Math.Min(_sizeY, display.iHeight);
+                    sizeX = Math.Min(_sizeY, display.ImageWidth);
+                    sizeY = Math.Min(_sizeY, display.ImageHeight);
                 }
                 float x = _xOffset - sizeX / 2;
                 float y = _yOffset - sizeY / 2;

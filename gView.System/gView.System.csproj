@@ -1,7 +1,8 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
+	  <LangVersion>8</LangVersion>
   </PropertyGroup>
 
   <ItemGroup>
@@ -12,6 +13,10 @@
     <ProjectReference Include="..\gView.Core\gView.Core.csproj" />
     <ProjectReference Include="..\gView.GraphicsEngine.GdiPlus\gView.GraphicsEngine.GdiPlus.csproj" />
     <ProjectReference Include="..\gView.GraphicsEngine.Skia\gView.GraphicsEngine.Skia.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Framework\System\Extensions\" />
   </ItemGroup>
 
 </Project>

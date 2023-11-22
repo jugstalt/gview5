@@ -1,0 +1,243 @@
+@using gView.Carto.Core.Abstractions
+@inherits BaseHandler
+@implements IAsyncDisposable
+
+@inject LeafletService Leaflet
+@inject MapRenderService MapRenderer
+@inject GeoTransformerService GeoTransformer
+@inject IApplicationScope AppScope
+@inject CartoEventBusService EventBus
+
+@if (MapControl != null)
+{
+    <LeafletMap Map="MapControl" />
+}
+
+@code{
+    private LMap? MapControl { get; set; }
+    private ImageLayer? ImageLayer = null;
+
+    private ISpatialReference _mapControlSRef = new SpatialReference("epsg:3857");
+
+    protected override Task OnInitializedAsync() => HandleAsync(async () =>
+    {
+        await base.OnInitializedAsync();
+
+        EventBus.OnCartoDocumentLoadedAsync += OnCartoDocumentLoadedAsync;
+        EventBus.OnRefreshMapAsync += OnRefreshMapAsync;
+        EventBus.OnMapSettingsChangedAsync += OnMapSettingsChanged;
+        EventBus.OnMapZoomToAsync += OnMapZoomToAsync;
+        MapRenderer.OnRefreshMapImage += OnRefreshMapImage;
+
+        await OnCartoDocumentLoadedAsync(((ICartoApplicationScopeService)AppScope).Document);
+    });
+
+    private Task OnCartoDocumentLoadedAsync(ICartoDocument document) => HandleAsync(async () =>
+    {
+        bool reused = await CreateMapControl();
+
+        if (document.Map is Map map)
+        {
+            // project map sref to current leaflet map transformation
+            var mapBounds = GeoTransformer.Transform(map.Envelope, map.SpatialReference, _mapControlSRef).Envelope;
+            //map.SpatialReference = _mapSRef;
+            //map.Envelope = mapBounds;
+
+            MapRenderer.InitMap(map, _mapControlSRef);
+
+            if (reused && MapControl is not null)
+            {
+                var boundsWgs84 = GeoTransformer.ToWGS84(new Envelope(mapBounds), _mapControlSRef).Envelope;
+
+                await MapControl.FitBounds(new LatLng(boundsWgs84.LowerLeft.Y, boundsWgs84.LowerLeft.X),
+                                           new LatLng(boundsWgs84.UpperRight.Y, boundsWgs84.UpperRight.X));
+            }
+        }
+    });
+
+    private Task OnRefreshMapAsync(int delay) => HandleAsync(() =>
+        MapRenderer.Rerender(delay));
+
+    private Task OnMapSettingsChanged() => HandleAsync(() =>
+        MapRenderer.Rerender(300));
+
+
+    private Task OnMapZoomToAsync(IEnvelope zoomTo) => HandleAsync(async () =>
+    {
+        if(MapControl is not null) 
+        {
+            var zoomToWgs84 = GeoTransformer.ToWGS84(zoomTo, _mapControlSRef).Envelope;
+
+            await MapControl.FitBounds(
+                new LatLng(zoomToWgs84.LowerLeft.Y, zoomToWgs84.LowerLeft.X),
+                new LatLng(zoomToWgs84.UpperRight.Y, zoomToWgs84.UpperRight.X));
+        }
+    });
+
+    async private Task OnRefreshMapImage(byte[]? data)
+    {
+        if (ImageLayer is null || MapControl is null)
+        {
+            return;
+        }
+
+        await MapControl.UpdateImageLayer(ImageLayer, $"data:image/png;base64, {Convert.ToBase64String(data ?? Array.Empty<byte>())}", null, null);
+    }
+
+    async private Task OnMapViewRest(object sender, Event e)
+    {
+        if (MapControl == null)
+        {
+            return;
+        }
+
+        using (var mutex = await FuzzyMutexAsync.LockAsync(MapControl.Id))
+        {
+            if (mutex.WasBlocked == false)
+            {
+                await Task.Delay(300);
+
+                var bounds = await MapControl.GetBounds();
+                var size = await MapControl.GetImageSize();
+
+                if (ImageLayer == null)
+                {
+                    ImageLayer = new ImageLayer("", bounds.SouthWest, bounds.NorthEast) { Opacity = 0.8f };
+                    await MapControl.AddLayer(ImageLayer);
+                }
+                else
+                {
+                    await MapControl.UpdateImageLayer(ImageLayer, "", bounds.SouthWest, bounds.NorthEast);
+                }
+
+                await OnRefreshMapImage(null);
+
+                var mapBounds = GeoTransformer.FromWGS84(new Envelope(bounds.SouthWest.Lng, bounds.SouthWest.Lat, bounds.NorthEast.Lng, bounds.NorthEast.Lat), _mapControlSRef).Envelope;
+                MapRenderer.SetBoundsAndSize(mapBounds, size.Width, size.Height);
+                MapRenderer.BeginRender();
+            }
+        }
+    }
+
+    #region Create/Intialize Map
+
+    public Task<bool> CreateMapControl()
+    {
+        bool reused = true;
+
+        if (MapControl == null)
+        {
+            MapControl = Leaflet.CreateMap(MapControl?.Id);
+            MapControl.OnIntialized += OnMapControlInitialized;
+
+            //LeafletMap.OnViewReset += OnMapViewRest;
+            MapControl.OnZoomEnd += OnMapViewRest;
+            MapControl.OnMoveEnd += OnMapViewRest;
+
+            reused = false;
+        }
+
+        //ImageLayer = null;
+
+        return Task.FromResult(reused);
+    }
+
+    private Task OnMapControlInitialized() => HandleAsync(async () =>
+    {
+        await MapControl!.AddLayer(new gView.Razor.Leaflet.Models.Layers.TileLayer()
+        {
+            UrlTemplate = "https://tile.openstreetmap.org/{z}/{x}/{y}.png",
+            Attribution = "&copy; <a href='https://www.openstreetmap.org/copyright'>OpenStreetMap</a> contributors",
+            Opacity = 0.2
+        });
+
+        await MapControl.FitBounds(new LatLng(-80,-180),
+                                   new LatLng( 80, 180));
+
+        // IEnvelope? dataEnvelope = null;
+        // ISpatialReference? dataSRef = null;
+
+        // var exObject = FrameworkElement?.GetExplorerObject();
+        // if (exObject != null)
+        // {
+        //     var instance = await exObject.GetInstanceAsync();
+
+        //     dataEnvelope = instance switch
+        //     {
+        //         IFeatureClass fc => fc.Envelope,
+        //         IRasterClass rc => rc.Polygon?.Envelope,
+        //         IWebServiceClass wc => wc.Envelope,
+        //         IFeatureDataset ds => await ds.Envelope(),
+        //         _ => null
+        //     };
+
+        //     dataSRef = instance switch
+        //     {
+        //         IFeatureClass fc => fc.SpatialReference,
+        //         IRasterClass rc => rc.SpatialReference,
+        //         IWebServiceClass wc => wc.SpatialReference,
+        //         IFeatureDataset ds => await ds.GetSpatialReference(),
+        //         _ => null
+        //     };
+        // }
+        // await MapControl!.AddLayer(new gView.Razor.Leaflet.Models.Layers.TileLayer()
+        //     {
+        //         UrlTemplate = "https://tile.openstreetmap.org/{z}/{x}/{y}.png",
+        //         Attribution = "&copy; <a href='https://www.openstreetmap.org/copyright'>OpenStreetMap</a> contributors",
+        //         Opacity = 0.5
+        //     });
+
+        // IEnvelope? lMapBounds = null;
+        // if (dataSRef != null && dataEnvelope != null)
+        // {
+        //     lMapBounds = GeoTransformer.ToWGS84(new Envelope(dataEnvelope), dataSRef).Envelope;
+        // }
+
+        // if (lMapBounds != null)
+        // {
+        //     if (MapRenderer.BoundsIntialized())
+        //     {
+        //         var rendererBounds = GeoTransformer.ToWGS84(new Envelope(MapRenderer.Bounds), MapRenderer.SpatialReference).Envelope;
+        //         if (lMapBounds.Contains(rendererBounds)) // stay in same Extent/Zoom
+        //         {
+        //             lMapBounds = rendererBounds;
+        //         }
+        //     }
+
+        //     MapControl.FitBounds(new LatLng(lMapBounds.LowerLeft.Y, lMapBounds.LowerLeft.X),
+        //                      new LatLng(lMapBounds.UpperRight.Y, lMapBounds.UpperRight.X));
+        // }
+    });
+
+    #endregion
+
+    #region Dispose / Destroy
+
+    async public ValueTask DisposeAsync()
+    {
+        EventBus.OnCartoDocumentLoadedAsync -= OnCartoDocumentLoadedAsync;
+        EventBus.OnRefreshMapAsync -= OnRefreshMapAsync;
+        EventBus.OnMapSettingsChangedAsync -= OnMapSettingsChanged;
+        EventBus.OnMapZoomToAsync -= OnMapZoomToAsync;
+        MapRenderer.OnRefreshMapImage -= OnRefreshMapImage;
+
+        await DestroyMapControl();
+    }
+
+    async public ValueTask DestroyMapControl()
+    {
+        if (MapControl != null)
+        {
+            MapControl.OnIntialized -= OnMapControlInitialized;
+
+            //LeafletMap.OnViewReset -= OnMapViewRest;
+            MapControl.OnZoomEnd -= OnMapViewRest;
+            MapControl.OnMoveEnd -= OnMapViewRest;
+
+            await MapControl.Destroy();
+            ImageLayer = null;
+        }
+    }
+
+    #endregion
+}

@@ -192,7 +192,7 @@ namespace gView.Win.Plugin.Tools.Plugins.MapTools.Dialogs
 
         #region Helper
 
-        private string TocElementFullname(ITOCElement tocElement)
+        private string TocElementFullname(ITocElement tocElement)
         {
             string name = tocElement.Name;
 
@@ -247,13 +247,13 @@ namespace gView.Win.Plugin.Tools.Plugins.MapTools.Dialogs
 
         private class TocElementListViewitem : ListViewItem
         {
-            public TocElementListViewitem(ITOCElement tocElement, string[] subItems)
+            public TocElementListViewitem(ITocElement tocElement, string[] subItems)
                 : base(subItems)
             {
                 this.TOCElement = tocElement;
             }
 
-            public ITOCElement TOCElement { get; private set; }
+            public ITocElement TOCElement { get; private set; }
 
             public bool IsHidden
             {

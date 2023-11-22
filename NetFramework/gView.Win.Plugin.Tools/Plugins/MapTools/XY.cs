@@ -65,7 +65,7 @@ namespace gView.Plugins.MapTools
 
                 _doc.FocusMap.Display.ZoomTo(
                     new Envelope(p.X - 1, p.Y - 1, p.X + 1, p.Y + 1));
-                _doc.FocusMap.Display.mapScale = 1000;
+                _doc.FocusMap.Display.MapScale = 1000;
 
                 if (_doc.Application is IMapApplication)
                 {

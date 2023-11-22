@@ -205,22 +205,22 @@ namespace gView.DataSources.TileCache.UI
         {
             if ((int)numScale.Value > 0.0)
             {
-                TileServiceMetadata.DoubleScales scales = new TileServiceMetadata.DoubleScales();
+                TileServiceMetadata.DoubleScales scales = new TileServiceMetadata.DoubleScales(new List<double>());
                 foreach (double s in lstScales.Items)
                 {
-                    scales.Add(s);
+                    scales.InnerList.Add(s);
                 }
                 if (scales.Contains((double)numScale.Value))
                 {
                     return;
                 }
 
-                scales.Add((double)numScale.Value);
+                scales.InnerList.Add((double)numScale.Value);
 
                 scales.Order();
 
                 lstScales.Items.Clear();
-                foreach (double s in scales)
+                foreach (double s in scales.InnerList)
                 {
                     lstScales.Items.Add(s);
                 }

@@ -13,7 +13,7 @@ namespace gView.Plugins.MapTools
         public OpenRendererFilter()
             : base("Map Feature Layer")
         {
-            ObjectTypes.Add(typeof(ITOCElement));
+            ObjectTypes.Add(typeof(ITocElement));
         }
         public OpenRendererFilter(GeometryType geomType)
             : this()
@@ -33,9 +33,9 @@ namespace gView.Plugins.MapTools
 
             var instance = await exObject?.GetInstanceAsync();
 
-            if (match && instance is ITOCElement && _geomType != GeometryType.Unknown)
+            if (match && instance is ITocElement && _geomType != GeometryType.Unknown)
             {
-                ITOCElement tocElement = instance as ITOCElement;
+                ITocElement tocElement = instance as ITocElement;
                 if (tocElement.Layers != null)
                 {
                     foreach (ILayer layer in tocElement.Layers)

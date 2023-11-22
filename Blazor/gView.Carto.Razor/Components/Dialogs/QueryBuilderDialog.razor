@@ -1,0 +1,14 @@
+@inherits ModalDialogFormBase<QueryBuilderModel>
+
+<ModalDialogFormBase T="QueryBuilderModel"
+                     OnDialogClose="base.OnDialogClose"
+                     Model="base.Model">
+    <DialogBody>
+        <QueryBuilderControl TableClass="Model.TableClass"
+                             QueryString="@Model.QueryString"
+                             QueryStringChanged="(queryString) => Model.QueryString = queryString"/>
+    </DialogBody>
+</ModalDialogFormBase>
+
+@code {
+}

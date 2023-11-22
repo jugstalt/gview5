@@ -47,7 +47,7 @@ namespace gView.Server.AppCode
             serviceMap._mapUnits = original.MapUnits;
             serviceMap._displayUnits = original.DisplayUnits;
             serviceMap._backgroundColor = original.BackgroundColor;
-            serviceMap.refScale = original.refScale;
+            serviceMap.ReferenceScale = original.ReferenceScale;
 
             serviceMap.SpatialReference = original.Display.SpatialReference;
             serviceMap.LayerDefaultSpatialReference = original.LayerDefaultSpatialReference != null ? original.LayerDefaultSpatialReference.Clone() as ISpatialReference : null;
@@ -194,7 +194,7 @@ namespace gView.Server.AppCode
         }
         async public Task<IBitmap> Legend()
         {
-            ITOC toc = _toc.Clone(this) as ITOC;
+            IToc toc = _toc.Clone(this) as IToc;
 
             #region WebServiceLayer
             List<IWebServiceLayer> webServices;
@@ -242,7 +242,7 @@ namespace gView.Server.AppCode
                     // Besser layer als layer.Class verwendenden, weil Class von mehrerenen Layern
                     // verwendet werden kann zB bei gesplitteten Layern...
                     //ITOCElement tocElement = toc.GetTOCElement(element.Class);
-                    ITOCElement tocElement = toc.GetTOCElement(element);
+                    ITocElement tocElement = toc.GetTOCElement(element);
                     tocElement.RemoveLayer(element);
                     tocElement.AddLayer(wsLayer);
 
@@ -305,12 +305,12 @@ namespace gView.Server.AppCode
                     }
 
                     ILayer layer = (ILayer)element;
-                    if (layer.MinimumScale > 1 && layer.MinimumScale > this.mapScale)
+                    if (layer.MinimumScale > 1 && layer.MinimumScale > this.MapScale)
                     {
                         continue;
                     }
 
-                    if (layer.MaximumScale > 1 && layer.MaximumScale < this.mapScale)
+                    if (layer.MaximumScale > 1 && layer.MaximumScale < this.MapScale)
                     {
                         continue;
                     }
@@ -324,7 +324,7 @@ namespace gView.Server.AppCode
                         // Besser layer als layer.Class verwendenden, weil Class von mehrerenen Layern
                         // verwendet werden kann zB bei gesplitteten Layern...
                         //ITOCElement tocElement = toc.GetTOCElement(layer.Class);
-                        ITOCElement tocElement = toc.GetTOCElement(layer);
+                        ITocElement tocElement = toc.GetTOCElement(layer);
                         tocElement.RemoveLayer(element as ILayer);
                         tocElement.AddLayer(newLayer);
                     }
@@ -359,7 +359,7 @@ namespace gView.Server.AppCode
 
                 if (_bitmap == null)
                 {
-                    _bitmap = Current.Engine.CreateBitmap(iWidth, iHeight, PixelFormat.Rgba32);
+                    _bitmap = Current.Engine.CreateBitmap(ImageWidth, ImageHeight, PixelFormat.Rgba32);
                 }
 
                 _canvas = _bitmap.CreateCanvas();
@@ -519,12 +519,12 @@ namespace gView.Server.AppCode
                             }
 
                             ILayer layer = (ILayer)element;
-                            if (layer.MinimumScale > 1 && layer.MinimumScale > this.mapScale)
+                            if (layer.MinimumScale > 1 && layer.MinimumScale > this.MapScale)
                             {
                                 continue;
                             }
 
-                            if (layer.MaximumScale > 1 && layer.MaximumScale < this.mapScale)
+                            if (layer.MaximumScale > 1 && layer.MaximumScale < this.MapScale)
                             {
                                 continue;
                             }
@@ -674,8 +674,8 @@ namespace gView.Server.AppCode
                     }
                     if (_drawScaleBar)
                     {
-                        m_imageMerger.mapScale = this.mapScale;
-                        m_imageMerger.dpi = this.dpi;
+                        m_imageMerger.mapScale = this.MapScale;
+                        m_imageMerger.dpi = this.Dpi;
                     }
 #if (DEBUG)
                     //Logger.LogDebug("Merge Images");

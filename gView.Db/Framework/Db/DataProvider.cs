@@ -50,6 +50,11 @@ namespace gView.Framework.Db
                 string type = connectionString.Substring(0, pos);
                 string connStr = connectionString.Substring(pos + 1, connectionString.Length - pos - 1);
 
+                if(type.Contains("@"))
+                {
+                    type = type.Split('@')[0]; // mssql@create
+                }
+
                 switch (type.ToLower())
                 {
                     case "oracleclient":
@@ -63,6 +68,7 @@ namespace gView.Framework.Db
                         break;
                     case "sqlclient":
                     case "sql":
+                    case "mssql":
                         sqlConnection = new SqlConnection(connStr);
                         if (testIt)
                         {
@@ -70,6 +76,8 @@ namespace gView.Framework.Db
                             sqlConnection.Close();
                         }
                         break;
+                    case "postgre":
+                    case "postgis":
                     case "npgsql":
                         try
                         {

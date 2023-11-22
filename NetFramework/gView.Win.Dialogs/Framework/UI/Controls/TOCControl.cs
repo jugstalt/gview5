@@ -181,7 +181,7 @@ namespace gView.Framework.UI.Controls
             GroupLayer gLayer = new GroupLayer();
             gLayer.Title = "New Group";
 
-            ITOCElement parent = null;
+            ITocElement parent = null;
             if (_contextItem != null)
             {
                 if (_contextItem is GroupItem)
@@ -214,7 +214,7 @@ namespace gView.Framework.UI.Controls
                 return;
             }
 
-            ITOCElement Group = ((GroupMenuItem)sender).TOCElement;
+            ITocElement Group = ((GroupMenuItem)sender).TOCElement;
 
             foreach (object item in list.SelectedItems)
             {
@@ -588,9 +588,9 @@ namespace gView.Framework.UI.Controls
                             continue;
                         }
 
-                        ITOC toc = map.TOC;
+                        IToc toc = map.TOC;
                         toc.Reset();
-                        ITOCElement elem;
+                        ITocElement elem;
                         while ((elem = toc.NextVisibleElement) != null)
                         {
                             if (elem.LayerLocked)
@@ -600,7 +600,7 @@ namespace gView.Framework.UI.Controls
 
                             switch (elem.ElementType)
                             {
-                                case TOCElementType.Layer:
+                                case TocElementType.Layer:
                                     LayerItem layerItem = new LayerItem(elem);
                                     list.Items.Add(layerItem);
 
@@ -610,11 +610,11 @@ namespace gView.Framework.UI.Controls
                                     }
 
                                     break;
-                                case TOCElementType.OpenedGroup:
-                                case TOCElementType.ClosedGroup:
+                                case TocElementType.OpenedGroup:
+                                case TocElementType.ClosedGroup:
                                     list.Items.Add(new GroupItem(elem));
                                     break;
-                                case TOCElementType.Legend:
+                                case TocElementType.Legend:
                                     break;
                             }
                         }
@@ -674,7 +674,7 @@ namespace gView.Framework.UI.Controls
                 return;
             }
 
-            if (groupItem.TOCElement.ElementType == TOCElementType.ClosedGroup)
+            if (groupItem.TOCElement.ElementType == TocElementType.ClosedGroup)
             {
                 while (list.Items.Count > index + 1)
                 {
@@ -687,20 +687,20 @@ namespace gView.Framework.UI.Controls
                     list.Items.RemoveAt(index + 1);
                 }
             }
-            else if (groupItem.TOCElement.ElementType == TOCElementType.OpenedGroup)
+            else if (groupItem.TOCElement.ElementType == TocElementType.OpenedGroup)
             {
                 if (_iMapDocument == null || _iMapDocument.FocusMap == null || _iMapDocument.FocusMap.TOC == null)
                 {
                     return;
                 }
 
-                ITOC toc = _iMapDocument.FocusMap.TOC;
+                IToc toc = _iMapDocument.FocusMap.TOC;
 
-                foreach (ITOCElement tocElement in toc.GroupedElements(groupItem.TOCElement))
+                foreach (ITocElement tocElement in toc.GroupedElements(groupItem.TOCElement))
                 {
                     switch (tocElement.ElementType)
                     {
-                        case TOCElementType.Layer:
+                        case TocElementType.Layer:
                             LayerItem layerItem = new LayerItem(tocElement);
                             list.Items.Insert(++index, layerItem);
 
@@ -710,8 +710,8 @@ namespace gView.Framework.UI.Controls
                             }
 
                             break;
-                        case TOCElementType.OpenedGroup:
-                        case TOCElementType.ClosedGroup:
+                        case TocElementType.OpenedGroup:
+                        case TocElementType.ClosedGroup:
                             list.Items.Insert(++index, new GroupItem(tocElement));
                             break;
                     }
@@ -1118,7 +1118,7 @@ namespace gView.Framework.UI.Controls
                 }
                 if (item is LayerItem)
                 {
-                    ITOCElement tocElement = ((LayerItem)item).TOCElement;
+                    ITocElement tocElement = ((LayerItem)item).TOCElement;
                     if (tocElement != null && tocElement.Layers != null)
                     {
                         foreach (ILayer layer in tocElement.Layers)
@@ -1338,7 +1338,7 @@ namespace gView.Framework.UI.Controls
                 _mouseOverItem != _mouseDownItem)
             {
                 list.SelectedIndex = -1;
-                ITOCElement elem = null, insertBefore = null;
+                ITocElement elem = null, insertBefore = null;
 
                 if (_mouseOverItem is LayerItem)
                 {
@@ -1413,7 +1413,7 @@ namespace gView.Framework.UI.Controls
                     toolStripMenuUnlock.DropDownItems.Clear();
                     if (_iMapDocument != null && _iMapDocument.FocusMap != null && _iMapDocument.FocusMap.TOC != null && _iMapDocument.FocusMap.TOC.Elements != null)
                     {
-                        foreach (ITOCElement element in _iMapDocument.FocusMap.TOC.Elements)
+                        foreach (ITocElement element in _iMapDocument.FocusMap.TOC.Elements)
                         {
                             if (!element.LayerLocked)
                             {
@@ -1507,7 +1507,7 @@ namespace gView.Framework.UI.Controls
                         menuStripFeatureLayer.Items.Remove(_menuItemMoveToGroup);
                         _menuItemMoveToGroup.DropDownItems.Clear();
 
-                        foreach (ITOCElement Group in _iMapDocument.FocusMap.TOC.GroupElements)
+                        foreach (ITocElement Group in _iMapDocument.FocusMap.TOC.GroupElements)
                         {
                             _menuItemMoveToGroup.DropDownItems.Add(
                                 new GroupMenuItem(Group, new System.EventHandler(this.clickMoveToGroup))
@@ -1523,7 +1523,7 @@ namespace gView.Framework.UI.Controls
                     }
                     if (item is LayerItem || (item is GroupItem && ((GroupItem)item).TOCElement.Layers.Count > 0))
                     {
-                        ITOCElement tocelement = (item is LayerItem) ? ((LayerItem)item).TOCElement : ((GroupItem)item).TOCElement;
+                        ITocElement tocelement = (item is LayerItem) ? ((LayerItem)item).TOCElement : ((GroupItem)item).TOCElement;
 
                         if (tocelement.Layers.Count > 1)
                         {
@@ -1688,7 +1688,7 @@ namespace gView.Framework.UI.Controls
                 else if (X >= l + 20 && X <= l + 38)
                 {
                     ((GroupItem)item).TOCElement.OpenCloseGroup(
-                        ((GroupItem)item).TOCElement.ElementType == TOCElementType.ClosedGroup);
+                        ((GroupItem)item).TOCElement.ElementType == TocElementType.ClosedGroup);
                     ShowGroupedLayers((GroupItem)item);
                     return;
                 }
@@ -1761,7 +1761,7 @@ namespace gView.Framework.UI.Controls
                         return;
                     }
 
-                    ITOCElement downTocElement = null;
+                    ITocElement downTocElement = null;
                     if (_mouseDownItem is LayerItem)
                     {
                         downTocElement = ((LayerItem)_mouseDownItem).TOCElement;
@@ -1777,7 +1777,7 @@ namespace gView.Framework.UI.Controls
                         }
                     }
 
-                    ITOCElement overTocElement = null;
+                    ITocElement overTocElement = null;
                     if (item is LayerItem)
                     {
                         overTocElement = ((LayerItem)item).TOCElement;
@@ -1957,16 +1957,16 @@ namespace gView.Framework.UI.Controls
         }
         #endregion
 
-        private string GetGroupNamesPath(ITOCElement elem)
+        private string GetGroupNamesPath(ITocElement elem)
         {
-            if (elem.ElementType != TOCElementType.ClosedGroup &&
-                elem.ElementType != TOCElementType.OpenedGroup)
+            if (elem.ElementType != TocElementType.ClosedGroup &&
+                elem.ElementType != TocElementType.OpenedGroup)
             {
                 return "";
             }
 
             string path = elem.Name;
-            ITOCElement parent = elem;
+            ITocElement parent = elem;
             while ((parent = parent.ParentGroup) != null)
             {
                 path = parent.Name + "/" + path;
@@ -2320,7 +2320,7 @@ namespace gView.Framework.UI.Controls
                             ser.ObjectTypes.Contains(typeof(ITableClass)) ||
                             ser.ObjectTypes.Contains(typeof(IRasterClass)) ||
                             ser.ObjectTypes.Contains(typeof(IFeatureDataset)) ||
-                            ser.ObjectTypes.Contains(typeof(ITOCElement)) ||
+                            ser.ObjectTypes.Contains(typeof(ITocElement)) ||
                             ser.ObjectTypes.Contains(typeof(IMap)) ||
                             ser.ObjectTypes.Contains(typeof(IMapDocument)))
                         {
@@ -2394,13 +2394,13 @@ namespace gView.Framework.UI.Controls
                                 }
                             }
                         }
-                        else if (instance is ITOCElement && ((ITOCElement)instance).Layers != null)
+                        else if (instance is ITocElement && ((ITocElement)instance).Layers != null)
                         {
-                            foreach (ILayer layer in ((ITOCElement)instance).Layers)
+                            foreach (ILayer layer in ((ITocElement)instance).Layers)
                             {
                                 if (layer is IGroupLayer)
                                 {
-                                    AddGroupLayer(layer as IGroupLayer, ((ITOCElement)instance).TOC);
+                                    AddGroupLayer(layer as IGroupLayer, ((ITocElement)instance).TOC);
                                 }
                                 else
                                 {
@@ -2417,11 +2417,11 @@ namespace gView.Framework.UI.Controls
 
                                     _iMapDocument.FocusMap.AddLayer(layer);
 
-                                    ITOC toc = ((ITOCElement)instance).TOC;
+                                    IToc toc = ((ITocElement)instance).TOC;
                                     if (_iMapDocument.FocusMap.TOC != null && toc != null)
                                     {
-                                        ITOCElement newTOCElement = _iMapDocument.FocusMap.TOC.GetTOCElement(layer);
-                                        ITOCElement oldTOCElement = toc.GetTOCElement(layer);
+                                        ITocElement newTOCElement = _iMapDocument.FocusMap.TOC.GetTOCElement(layer);
+                                        ITocElement oldTOCElement = toc.GetTOCElement(layer);
 
                                         if (newTOCElement != null && oldTOCElement != null)
                                         {
@@ -2468,7 +2468,7 @@ namespace gView.Framework.UI.Controls
             _iMapDocument.TemporaryRestore();
         }
 
-        private void AddGroupLayer(IGroupLayer gLayer, ITOC toc)
+        private void AddGroupLayer(IGroupLayer gLayer, IToc toc)
         {
             if (gLayer == null)
             {
@@ -2478,14 +2478,14 @@ namespace gView.Framework.UI.Controls
             _iMapDocument.FocusMap.AddLayer(gLayer);
             if (_iMapDocument.FocusMap.TOC != null && toc != null)
             {
-                ITOCElement newTOCElement = _iMapDocument.FocusMap.TOC.GetTOCElement(gLayer);
-                ITOCElement oldTOCElement = toc.GetTOCElement(gLayer);
+                ITocElement newTOCElement = _iMapDocument.FocusMap.TOC.GetTOCElement(gLayer);
+                ITocElement oldTOCElement = toc.GetTOCElement(gLayer);
 
                 if (newTOCElement != null && oldTOCElement != null)
                 {
                     _iMapDocument.FocusMap.TOC.RenameElement(newTOCElement, oldTOCElement.Name);
                     newTOCElement.LegendVisible = oldTOCElement.LegendVisible;
-                    newTOCElement.OpenCloseGroup(oldTOCElement.ElementType == TOCElementType.OpenedGroup);
+                    newTOCElement.OpenCloseGroup(oldTOCElement.ElementType == TocElementType.OpenedGroup);
                 }
             }
 
@@ -2500,8 +2500,8 @@ namespace gView.Framework.UI.Controls
                     _iMapDocument.FocusMap.AddLayer(layer);
                     if (_iMapDocument.FocusMap.TOC != null && toc != null)
                     {
-                        ITOCElement newTOCElement = _iMapDocument.FocusMap.TOC.GetTOCElement(layer);
-                        ITOCElement oldTOCElement = toc.GetTOCElement(layer);
+                        ITocElement newTOCElement = _iMapDocument.FocusMap.TOC.GetTOCElement(layer);
+                        ITocElement oldTOCElement = toc.GetTOCElement(layer);
 
                         if (newTOCElement != null && oldTOCElement != null)
                         {
@@ -2552,7 +2552,7 @@ namespace gView.Framework.UI.Controls
                 return;
             }
 
-            ITOCElement tocElement = ((GroupItem)_contextItem).TOCElement;
+            ITocElement tocElement = ((GroupItem)_contextItem).TOCElement;
             if (tocElement.Layers.Count != 1 || !(tocElement.Layers[0] is IGroupLayer))
             {
                 return;
@@ -2570,7 +2570,7 @@ namespace gView.Framework.UI.Controls
                 return;
             }
 
-            ITOCElement tocElement = ((GroupItem)_contextItem).TOCElement;
+            ITocElement tocElement = ((GroupItem)_contextItem).TOCElement;
             if (tocElement.Layers.Count != 1 || !(tocElement.Layers[0] is IGroupLayer))
             {
                 return;
@@ -2641,12 +2641,12 @@ namespace gView.Framework.UI.Controls
             }
 
             IMap map = _iMapDocument.FocusMap;
-            ITOC toc = map.TOC;
+            IToc toc = map.TOC;
 
             List<IDatasetElement> unreferenced = new List<IDatasetElement>();
             foreach (IDatasetElement layer in map.MapElements)
             {
-                ITOCElement tocElement = null;
+                ITocElement tocElement = null;
                 if (layer is ILayer)
                 {
                     tocElement = toc.GetTOCElement((ILayer)layer);

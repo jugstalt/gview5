@@ -266,7 +266,7 @@ namespace gView.Framework.XML
             set { }
         }
 
-        public float Transparency
+        public float Opacity
         {
             get
             {

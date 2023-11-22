@@ -4,21 +4,22 @@ using gView.Framework.Data;
 using gView.Framework.Data.Cursors;
 using gView.Framework.Data.Filters;
 using gView.Framework.Geometry;
-using gView.Framework.IO;
 using gView.Framework.OGC.GeoJson;
 using gView.Framework.OGC.GML;
 using gView.Framework.OGC.WMS;
 using gView.Framework.system;
-using gView.Framework.UI;
 using gView.GraphicsEngine;
 using gView.GraphicsEngine.Abstraction;
 using gView.Interoperability.OGC.SLD;
 using gView.MapServer;
+using gView.OGC.Framework.OGC.Exceptions;
+using gView.Web.Framework.Web.Extensions;
 using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
 using System.Linq;
+using System.Net.Mime;
 using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
@@ -67,41 +68,50 @@ namespace gView.Interoperability.OGC
                 return;
             }
 
-            WMSParameterDescriptor parameters = ParseParameters(context);
-            //ServiceRequestContext context = new ServiceRequestContext(_mapServer, this, request);
-            switch (parameters.Request)
+            try
             {
-                case WMSRequestType.GetCapabilities:
-                    var getCapabilitiesResponse = await WMS_GetCapabilities(context.ServiceRequest.OnlineResource, context.ServiceRequest.Service, parameters, context);
-                    context.ServiceRequest.Response = getCapabilitiesResponse.body;
-                    context.ServiceRequest.ResponseContentType = getCapabilitiesResponse.contentType;
-                    break;
-                case WMSRequestType.GetMap:
-                    var getMapResponse = await WMS_GetMap(context.ServiceRequest.Service, parameters, context);
-                    context.ServiceRequest.Response = getMapResponse.body;
-                    context.ServiceRequest.ResponseContentType = getMapResponse.contentType;
-                    break;
-                case WMSRequestType.GetFeatureInfo:
-                    var featureInfoResponse = await WMS_FeatureInfo(context.ServiceRequest.Service, parameters, context);
-                    context.ServiceRequest.Response = featureInfoResponse.body;
-                    context.ServiceRequest.ResponseContentType = featureInfoResponse.contentType;
-                    break;
-                case WMSRequestType.GetLegendGraphic:
-                    var getLegendResponse = await WMS_GetLegendGraphic(context.ServiceRequest.Service, parameters, context);
-                    context.ServiceRequest.Response = getLegendResponse.body;
-                    context.ServiceRequest.ResponseContentType = getLegendResponse.contentType;
-                    break;
+                WMSParameterDescriptor parameters = ParseParameters(context);
 
-                    //case WMSRequestType.DescriptTiles:
-                    //    context.ServiceRequest.Response = await WMSC_DescriptTiles(context.ServiceRequest.Service, parameters, context);
-                    //    context.ServiceRequest.ResponseContentType = "text/xml";
-                    //    break;
-                    //case WMSRequestType.GetTile:
-                    //    context.ServiceRequest.Response = await WMSC_GetTile(context.ServiceRequest.Service, parameters, context);
-                    //    break;
-                    //case WMSRequestType.GenerateTiles:
-                    //    context.ServiceRequest.Response = await WMS_GenerateTiles(context.ServiceRequest.Service, parameters, context);
-                    //    break;
+                //ServiceRequestContext context = new ServiceRequestContext(_mapServer, this, request);
+                switch (parameters.Request)
+                {
+                    case WMSRequestType.GetCapabilities:
+                        var getCapabilitiesResponse = await WMS_GetCapabilities(context.ServiceRequest.OnlineResource, context.ServiceRequest.Service, parameters, context);
+                        context.ServiceRequest.Response = getCapabilitiesResponse.body;
+                        context.ServiceRequest.ResponseContentType = getCapabilitiesResponse.contentType;
+                        break;
+                    case WMSRequestType.GetMap:
+                        var getMapResponse = await WMS_GetMap(context.ServiceRequest.Service, parameters, context);
+                        context.ServiceRequest.Response = getMapResponse.body;
+                        context.ServiceRequest.ResponseContentType = getMapResponse.contentType;
+                        break;
+                    case WMSRequestType.GetFeatureInfo:
+                        var featureInfoResponse = await WMS_FeatureInfo(context.ServiceRequest.Service, parameters, context);
+                        context.ServiceRequest.Response = featureInfoResponse.body;
+                        context.ServiceRequest.ResponseContentType = featureInfoResponse.contentType;
+                        break;
+                    case WMSRequestType.GetLegendGraphic:
+                        var getLegendResponse = await WMS_GetLegendGraphic(context.ServiceRequest.Service, parameters, context);
+                        context.ServiceRequest.Response = getLegendResponse.body;
+                        context.ServiceRequest.ResponseContentType = getLegendResponse.contentType;
+                        break;
+
+                        //case WMSRequestType.DescriptTiles:
+                        //    context.ServiceRequest.Response = await WMSC_DescriptTiles(context.ServiceRequest.Service, parameters, context);
+                        //    context.ServiceRequest.ResponseContentType = "text/xml";
+                        //    break;
+                        //case WMSRequestType.GetTile:
+                        //    context.ServiceRequest.Response = await WMSC_GetTile(context.ServiceRequest.Service, parameters, context);
+                        //    break;
+                        //case WMSRequestType.GenerateTiles:
+                        //    context.ServiceRequest.Response = await WMS_GenerateTiles(context.ServiceRequest.Service, parameters, context);
+                        //    break;
+                }
+            }
+            catch (ParseParametersException ppe)
+            {
+                context.ServiceRequest.Response = ppe.MessageData;
+                context.ServiceRequest.ResponseContentType = ppe.ContentType;
             }
         }
 
@@ -109,18 +119,22 @@ namespace gView.Interoperability.OGC
         {
             var accessTypes = AccessTypes.None;
 
-            WMSParameterDescriptor parameters = ParseParameters(context);
-
-            switch (parameters.Request)
+            try
             {
-                case WMSRequestType.GetMap:
-                case WMSRequestType.GetTile:
-                    accessTypes |= AccessTypes.Map;
-                    break;
-                case WMSRequestType.GetFeatureInfo:
-                    accessTypes |= AccessTypes.Query;
-                    break;
+                WMSParameterDescriptor parameters = ParseParameters(context);
+
+                switch (parameters.Request)
+                {
+                    case WMSRequestType.GetMap:
+                    case WMSRequestType.GetTile:
+                        accessTypes |= AccessTypes.Map;
+                        break;
+                    case WMSRequestType.GetFeatureInfo:
+                        accessTypes |= AccessTypes.Query;
+                        break;
+                }
             }
+            catch (ParseParametersException) { }
 
             return accessTypes;
         }
@@ -134,15 +148,13 @@ namespace gView.Interoperability.OGC
         {
             get
             {
-                return new InterpreterCapabilities(new InterpreterCapabilities.Capability[]{
-                    new InterpreterCapabilities.LinkCapability("GetCapabilities","{server}/ogc/{folder@service}?VERSION=1.1.1&SERVICE=WMS&REQUEST=GetCapabilities","1.1.1"),
-                    //new InterpreterCapabilities.SimpleCapability("GetMap","{server}/{service}/ogc/{service}?VERSION=1.1.1&SERVICE=WMS&REQUEST=GetMap&...","1.1.1"),
-                    //new InterpreterCapabilities.SimpleCapability("GetFeatureInfo","{server}/ogc/{service}?VERSION=1.1.1&SERVICE=WMS&REQUEST=GetFeatureInfo&...","1.1.1"),
-                    new InterpreterCapabilities.LinkCapability("GetCapabilities","{server}/ogc/{folder@service}?VERSION=1.3.0&SERVICE=WMS&REQUEST=GetCapabilities","1.3.0"),
-                    //new InterpreterCapabilities.SimpleCapability("GetMap","{server}/ogc/{service}?VERSION=1.3.0&SERVICE=WMS&REQUEST=GetMap&...","1.3.0"),
-                    //new InterpreterCapabilities.SimpleCapability("GetFeatureInfo","{server}/ogc/{service}?VERSION=1.3.0&SERVICE=WMS&REQUEST=GetFeatureInfo&...","1.3.0")
-                }
-                );
+                return new InterpreterCapabilities(new InterpreterCapabilities.Capability[]
+                {
+                    new InterpreterCapabilities.LinkCapability("Recommended: GetCapabilities (GeoServices - with Token)","{server}/geoservices/rest/services/{folder/service}/MapServer/WmsServer?VERSION=1.1.1&SERVICE=WMS&REQUEST=GetCapabilities","1.1.1"),
+                    new InterpreterCapabilities.LinkCapability("Recommended: GetCapabilities (GeoServices - with Token)","{server}/geoservices/rest/services/{folder/service}/MapServer/WmsServer?VERSION=1.3.0&SERVICE=WMS&REQUEST=GetCapabilities","1.3.0"),
+                    new InterpreterCapabilities.LinkCapability("GetCapabilities (with Basic Auth)","{server}/ogc/{folder@service}?VERSION=1.1.1&SERVICE=WMS&REQUEST=GetCapabilities","1.1.1"),
+                    new InterpreterCapabilities.LinkCapability("GetCapabilities (with Basic Auth)","{server}/ogc/{folder@service}?VERSION=1.3.0&SERVICE=WMS&REQUEST=GetCapabilities","1.3.0")
+                });
             }
         }
 
@@ -151,10 +163,8 @@ namespace gView.Interoperability.OGC
             var queryString = Microsoft.AspNetCore.WebUtilities.QueryHelpers.ParseQuery(context?.ServiceRequest?.Request);
 
             WMSParameterDescriptor parameters = new WMSParameterDescriptor();
-            if (!parameters.ParseParameters(queryString/*context?.ServiceRequest?.Request?.Split('&')*/))
-            {
-                throw new Exception("Invalid WMS Parameters");
-            }
+
+            parameters.ParseParameters(queryString);
 
             return parameters;
         }
@@ -194,8 +204,7 @@ namespace gView.Interoperability.OGC
                     NumberFormatInfo nfi = new NumberFormatInfo();
                     nfi.NumberDecimalSeparator = ".";
 
-                    string sOnlineResource = OnlineResource + "?SERVICE=WMS&";
-                    sOnlineResource = sOnlineResource.Replace("??", "?");
+                    string sOnlineResource = $"{OnlineResource.AddParameterToUrl("SERVICE", "WMS")}&";
 
                     if (parameters.Version == "1.1.1")
                     {
@@ -608,9 +617,9 @@ namespace gView.Interoperability.OGC
                         _parameters.BBOX = new Envelope(ll, ur);
                     }
 
-                    map.Display.dpi = _parameters.dpi;
-                    map.Display.iWidth = _parameters.Width;
-                    map.Display.iHeight = _parameters.Height;
+                    map.Display.Dpi = _parameters.dpi;
+                    map.Display.ImageWidth = _parameters.Width;
+                    map.Display.ImageHeight = _parameters.Height;
                     map.Display.Limit = _parameters.BBOX;
                     map.Display.ZoomTo(_parameters.BBOX);
 
@@ -643,7 +652,7 @@ namespace gView.Interoperability.OGC
                                 {
                                     var sourceRect = new GraphicsEngine.CanvasRectangleF((float)minx, (float)maxy, (float)Math.Abs(maxx - minx), (float)Math.Abs(miny - maxy));
                                     canvas.DrawBitmap(map.MapImage,
-                                        new GraphicsEngine.CanvasRectangleF(0f, 0f, (float)bitmap.Width, (float)bitmap.Height),
+                                        new GraphicsEngine.CanvasRectangleF(0f, 0f, bitmap.Width, bitmap.Height),
                                         sourceRect);
                                 }
 
@@ -777,8 +786,8 @@ namespace gView.Interoperability.OGC
                 }
 
                 map.Display.SpatialReference = sRef;
-                map.Display.iWidth = parameters.Width;
-                map.Display.iHeight = parameters.Height;
+                map.Display.ImageWidth = parameters.Width;
+                map.Display.ImageHeight = parameters.Height;
                 map.Display.Limit = parameters.BBOX;
                 map.Display.ZoomTo(parameters.BBOX);
 
@@ -786,7 +795,7 @@ namespace gView.Interoperability.OGC
                 double y = featureInfoPoint.Y;
                 map.Display.Image2World(ref x, ref y);
 
-                double tol = 5.0 * map.Display.mapScale / (96 / 0.0254);  // [m]
+                double tol = 5.0 * map.Display.MapScale / (96 / 0.0254);  // [m]
                 if (sRef != null &&
                     sRef.SpatialParameters.IsGeographic)
                 {
@@ -1455,201 +1464,6 @@ namespace gView.Interoperability.OGC
                 Id = id;
                 FeatureClass = fc;
                 Feature = feat;
-            }
-        }
-        #endregion
-    }
-
-    public interface IEPSGMetadata
-    {
-        string[] EPSGCodes { get; set; }
-    }
-
-    [gView.Framework.system.RegisterPlugIn("0F6317BC-38FD-41d3-8E1A-82AB1873C526")]
-    public class WMS_Export_Metadata : IMetadataProvider, IPropertyPage, IEPSGMetadata
-    {
-        private IMap _map = null;
-        private Metadata _metadata;
-
-        #region IMetadataProvider Member
-
-        public Task<bool> ApplyTo(object Object)
-        {
-            if (Object is IMap)
-            {
-                _map = (IMap)Object;
-                if (_metadata == null)
-                {
-                    _metadata = new Metadata(_map.Display?.SpatialReference?.Name);
-                }
-                return Task.FromResult(true);
-            }
-            return Task.FromResult(false);
-        }
-
-        public string Name
-        {
-            get { return "WMS Export"; }
-        }
-
-        #endregion
-
-        #region IPersistable Member
-
-        public void Load(IPersistStream stream)
-        {
-            //string epsg = String.Empty;
-            //if (map.Display != null && map.Display.SpatialReference != null)
-            //    epsg = map.Display.SpatialReference.Name;
-
-            _metadata = new Metadata(String.Empty);
-            stream.Load("WMS_Export", null, _metadata);
-        }
-
-        public void Save(IPersistStream stream)
-        {
-            if (_metadata == null && _map != null)
-            {
-                string epsg = String.Empty;
-                if (_map.Display != null && _map.Display.SpatialReference != null)
-                {
-                    epsg = _map.Display.SpatialReference.Name;
-                }
-
-                _metadata = new Metadata(epsg);
-            }
-            stream.Save("WMS_Export", _metadata);
-        }
-
-
-        #endregion
-
-        #region Classes
-
-        internal class Metadata : IPersistable
-        {
-            private string _epsg;
-            private IndexList<string> _epsgCodes = new IndexList<string>();
-
-            public Metadata(string epsg)
-            {
-                _epsg = epsg;
-
-                SetDefaultEPSGCodes();
-            }
-
-            public string[] EPSGCodes
-            {
-                get
-                {
-                    return _epsgCodes.ToArray();
-                }
-                internal set
-                {
-                    if (value == null)
-                    {
-                        return;
-                    }
-
-                    _epsgCodes = new IndexList<string>();
-                    foreach (string code in value)
-                    {
-                        _epsgCodes.Add(code);
-                    }
-                }
-            }
-            private void SetDefaultEPSGCodes()
-            {
-                _epsgCodes = new IndexList<string>();
-                if (!String.IsNullOrEmpty(_epsg))
-                {
-                    _epsgCodes.Add(_epsg.ToUpper());
-                }
-
-                foreach (string srs in WMSConfig.SRS.Split(';'))
-                {
-                    _epsgCodes.Add(srs.ToUpper());
-                }
-            }
-
-            #region IPersistable Member
-
-            public void Load(IPersistStream stream)
-            {
-                _epsgCodes = new IndexList<string>();
-                XmlStreamStringArray epsg = stream.Load("EPSG_Codes") as XmlStreamStringArray;
-                if (epsg != null &&
-                    epsg.Value != null &&
-                    epsg.Value.GetType() == typeof(string[]) &&
-                    ((string[])epsg.Value).Length > 0)
-                {
-                    foreach (string epsgCode in (string[])epsg.Value)
-                    {
-                        _epsgCodes.Add(epsgCode.ToUpper());
-                    }
-                }
-                else
-                {
-                    SetDefaultEPSGCodes();
-                }
-            }
-
-            public void Save(IPersistStream stream)
-            {
-                XmlStreamStringArray epsg = new XmlStreamStringArray(_epsgCodes.ToArray());
-                stream.Save("EPSG_Codes", epsg);
-            }
-
-            #endregion
-        }
-        #endregion
-
-        internal Metadata Data
-        {
-            get { return _metadata; }
-        }
-
-        #region IPropertyPage Member
-
-        public object PropertyPage(object initObject)
-        {
-            string appPath = System.IO.Path.GetDirectoryName(Assembly.GetEntryAssembly().Location);
-            Assembly uiAssembly = Assembly.LoadFrom(appPath + @"/gView.Win.Interoperability.OGC.UI.dll");
-
-            IPlugInParameter p = uiAssembly.CreateInstance("gView.Interoperability.OGC.UI.Dataset.WMS.WMSMetadata") as IPlugInParameter;
-            if (p != null)
-            {
-                p.Parameter = this;
-            }
-
-            return p;
-        }
-
-        public object PropertyPageObject()
-        {
-            return this;
-        }
-
-        #endregion
-
-        #region IEPSGMetadata
-        public string[] EPSGCodes
-        {
-            get
-            {
-                if (_metadata != null)
-                {
-                    return _metadata.EPSGCodes;
-                }
-
-                return null;
-            }
-            set
-            {
-                if (_metadata != null)
-                {
-                    _metadata.EPSGCodes = value;
-                }
             }
         }
         #endregion

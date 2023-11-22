@@ -56,7 +56,7 @@ namespace gView.Framework.Carto
 
                 if (_bitmap == null)
                 {
-                    _bitmap = GraphicsEngine.Current.Engine.CreateBitmap(display.iWidth, display.iHeight, GraphicsEngine.PixelFormat.Rgba32);
+                    _bitmap = GraphicsEngine.Current.Engine.CreateBitmap(display.ImageWidth, display.ImageHeight, GraphicsEngine.PixelFormat.Rgba32);
                 }
 
                 _canvas = _bitmap.CreateCanvas();
@@ -73,7 +73,7 @@ namespace gView.Framework.Carto
                 //_bm.MakeTransparent(Color.White);
 
                 _gridArrayPolygons = new GridArray<List<IAnnotationPolygonCollision>>(
-                                                               new Envelope(0.0, 0.0, display.iWidth, display.iHeight),
+                                                               new Envelope(0.0, 0.0, display.ImageWidth, display.ImageHeight),
                                                                new int[] { 50, 25, 18, 10, 5, 2 },
                                                                new int[] { 50, 25, 18, 10, 5, 2 });
             }

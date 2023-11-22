@@ -1,0 +1,80 @@
+@inherits BaseHandler
+@inject IApplicationScope AppScope
+
+<GvGrid ColumnCount="1">
+    <GvGridItem>
+        <GvCard Title="Coordinate System/Projection">
+            <GvCardContent>
+                @if (SpatialReference != null)
+                {
+                    <MudText Typo="Typo.body2">@SpatialReference.Name</MudText>
+                    <MudText Typo="Typo.body2">@SpatialReference.Description</MudText>
+                    <MudText Typo="Typo.caption">@String.Join(" ", SpatialReference.Parameters)</MudText>
+                }
+            </GvCardContent>
+            @if (!ReadOnly)
+            {
+                <GvCardActions>
+                    <MudButton Variant="Variant.Text" 
+                            Color="Color.Primary"
+                            OnClick="SelectProjection">Select</MudButton>
+                </GvCardActions>
+            }
+        </GvCard>
+    </GvGridItem>
+    @if (SpatialReference != null)
+    {
+        <GvGridItem>
+            <GvCard Title="Geodetic Datum">
+                <GvCardContent>
+                    <MudText Typo="Typo.h6">Geodetic Datum</MudText>
+                    @if (SpatialReference.Datum != null)
+                    {
+                        <MudText Typo="Typo.body2">@SpatialReference.Datum.Name</MudText>
+                        <MudText Typo="Typo.caption">@SpatialReference.Datum.Parameter</MudText>
+                    }
+                </GvCardContent>
+
+                @if (!EpsgOnly && !ReadOnly)
+                {
+                    <GvCardActions>
+                        <MudButton Variant="Variant.Text"
+                               Color="Color.Primary"
+                               OnClick="SelectDatum">Select</MudButton>
+                    </GvCardActions>
+                }
+            </GvCard>
+        </GvGridItem>
+    }
+</GvGrid>
+
+@code{
+    [Parameter] public ISpatialReference? SpatialReference{ get; set; }
+    [Parameter] public EventCallback<ISpatialReference> SRefChanged { get; set; }
+    [Parameter] public bool EpsgOnly { get; set; } = false;
+    [Parameter] public bool ReadOnly { get; set; } = false;
+
+    private Task SelectProjection()
+        => HandleAsync(async () =>
+        {
+            var model = await AppScope.ShowKnownDialog<BaseDialogModel<ISpatialReference>>(KnownDialogs.GeographicProjectionSelectorDialog);
+
+            if (model?.Value != null)
+            {
+                this.SpatialReference = model?.Value;
+                await SRefChanged.InvokeAsync(this.SpatialReference);
+            }
+        });
+
+    private Task SelectDatum()
+        => HandleAsync(async () =>
+            {
+                var model = await AppScope.ShowKnownDialog<BaseDialogModel<IGeodeticDatum>>(KnownDialogs.GeographicDatumSelectorDialog);
+
+                if (model?.Value != null && this.SpatialReference is SpatialReference)
+                {
+                    ((SpatialReference)this.SpatialReference).Datum = model?.Value;
+                    await SRefChanged.InvokeAsync(this.SpatialReference);
+                }
+            });
+}

@@ -144,7 +144,7 @@ namespace gView.DataSources.TileCache
             }
         }
 
-        public float Transparency
+        public float Opacity
         {
             get
             {
@@ -388,7 +388,7 @@ namespace gView.DataSources.TileCache
             FileInfo fi = null;
             if (LocalCachingSettings.UseLocalCaching)
             {
-                string fn = LocalCachingSettings.LocalCachingFolder + @"/" + _dataset.DatasetName + @"/" + _level + @"/" + _row + @"/" + _col + ".jpg";
+                string fn = $"{LocalCachingSettings.LocalCachingFolder}/{_dataset.DatasetName}/{_level}/{_row}/{_col}.jpg";
                 fi = new FileInfo(fn);
                 try
                 {
@@ -441,11 +441,7 @@ namespace gView.DataSources.TileCache
                                         fi.Directory.Create();
                                     }
 
-                                    ms.Position = 0;
-                                    StreamWriter sw = new StreamWriter(fi.FullName);
-                                    ms.WriteTo(sw.BaseStream);
-                                    sw.Flush();
-                                    sw.Close();
+                                    File.WriteAllBytes(fi.FullName, bytes);
                                 }
                             }
 

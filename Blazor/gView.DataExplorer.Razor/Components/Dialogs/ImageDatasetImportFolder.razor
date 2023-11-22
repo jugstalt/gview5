@@ -1,0 +1,88 @@
+@inherits ModalDialogFormBase<ImageDatasetImportFolderModel>
+@inject IconService Icons
+
+<ModalDialogFormBase T="ImageDatasetImportFolderModel"
+                     OnDialogClose="base.OnDialogClose"
+                     Model="base.Model">
+    <FormContent>
+        <SelectFolderControl @bind-Folder="Model.Folder" Label="Root Folder" />
+
+        <GvGrid ColumnCount="1">
+            <GvGridItem>
+                <MudTextField Label="Filter (optional)"
+                             @bind-Value="Model.Filter"
+                             Variant="Variant.Text"></MudTextField>
+            </GvGridItem>
+            
+            <GvGridItem>
+                @if (Model.Providers != null)
+                {
+                    <div style="min-width:450px; max-width:100%; max-height:300px; overflow:auto">
+                        <table style="width:100%">
+                        @foreach(var provider in Model.Providers)
+                        {
+                            <tr>
+                                <td>
+                                        <MudCheckBox Checked="provider.Selected" T="bool"
+                                                      CheckedChanged="(isChecked) => SelectProvider(provider,isChecked)"
+                                                      Label="@provider.Format" />
+                                </td>
+                                <td>
+                                    <span>@provider.Provider</span>
+                                </td>
+                            </tr>
+                        }
+                        </table>
+                    </div>
+                }
+            </GvGridItem>
+        </GvGrid>
+    </FormContent>
+    
+</ModalDialogFormBase>
+
+@code {
+    protected override void OnInitialized()
+    => Handle(() =>
+    {
+        base.OnInitialized();
+
+        if (Model.Providers == null)
+        {
+            Model.Providers = new List<ImageDatasetImportFolderModel.ProviderModel>();
+
+            var pluginManager = new PlugInManager();
+            foreach (var dsType in pluginManager.GetPlugins(Plugins.Type.IDataset))
+            {
+                IRasterFileDataset? rds = pluginManager.CreateInstance<IDataset>(dsType) as IRasterFileDataset;
+                if (rds == null)
+                {
+                    continue;
+                }
+
+                foreach (string format in rds.SupportedFileFilter.Split('|'))
+                {
+                    if (format == String.Empty)
+                    {
+                        continue;
+                    }
+
+                    int priority = rds.SupportsFormat(format.Replace("*", ""));
+
+                    Model.Providers.Add(new ImageDatasetImportFolderModel.ProviderModel()
+                        {
+                            Format = format,
+                            Provider = rds.ToInvariantString(),
+                            Priority = priority,
+                            PluginGuid = PlugInManager.PlugInID(rds)
+                        });
+                }
+            }
+        }
+    });
+
+    private void SelectProvider(ImageDatasetImportFolderModel.ProviderModel provider, bool select)
+    {
+        provider.Selected = select;
+    }
+}

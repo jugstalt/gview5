@@ -3,10 +3,15 @@ using gView.Framework.system;
 using gView.MapServer;
 using gView.Server.AppCode;
 using gView.Server.AppCode.Extensions;
+using gView.Server.Models;
 using gView.Server.Services.MapServer;
 using gView.Server.Services.Security;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.SqlServer.Management.SqlParser.SqlCodeDom;
+using NuGet.Protocol.Plugins;
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -19,17 +24,20 @@ namespace gView.Server.Controllers
         private readonly MapServiceManager _mapServiceManager;
         private readonly MapServiceDeploymentManager _mapServiceDeploymentMananger;
         private readonly LoginManager _loginMananger;
+        private readonly AccessControlService _accessControl;
 
         public MapServerController(
             MapServiceManager mapServiceMananger,
             MapServiceDeploymentManager mapServiceDeploymentManager,
             LoginManager loginMananger,
+            AccessControlService accessControl,
             EncryptionCertificateService encryptionCertificateService)
             : base(mapServiceMananger, loginMananger, encryptionCertificateService)
         {
             _mapServiceManager = mapServiceMananger;
             _mapServiceDeploymentMananger = mapServiceDeploymentManager;
             _loginMananger = loginMananger;
+            _accessControl = accessControl;
         }
 
         public IActionResult Index()
@@ -44,50 +52,79 @@ namespace gView.Server.Controllers
                 //string user, pwd;
                 //var request = Request(out user, out pwd);
 
-                if (format == "xml")
+
+                #region Security
+
+                var credentials = GetRequestCredentials();
+                IIdentity identity = String.IsNullOrEmpty(credentials.user) ?
+                    Identity.FromFormattedString(credentials.user) :
+                    _accessControl.GetIdentity(credentials.user, credentials.password);
+
+                #endregion
+
+                #region Collect Services
+
+                var servicesModel = new ServicesModel() { Services = new List<ServiceModel>() };
+
+                foreach (var service in await _mapServiceManager.Instance.Maps(identity))
+                {
+                    if (service.Type == MapServiceType.Folder)  // if accessable for current user... => ToDo!!!
+                    {
+                        _mapServiceManager.ReloadServices(service.Name);
+                        foreach (var folderService in _mapServiceManager.MapServices.Where(s => s.Folder == service.Name))
+                        {
+                            if (await folderService.HasAnyAccess(identity))
+                            {
+                                servicesModel.Services.Add(new ServiceModel() { Name = folderService.Fullname, Type = folderService.Type.ToInvariantString() });
+                            }
+                        }
+                    }
+                    else if (service.Type == MapServiceType.MXL && String.IsNullOrWhiteSpace(service.Folder))
+                    {
+                        servicesModel.Services.Add(new ServiceModel() { Name = service.Fullname, Type = service.Type.ToInvariantString() });
+                    }
+                }
+
+                #endregion
+
+                if ("xml".Equals(format, StringComparison.InvariantCultureIgnoreCase))
                 {
                     StringBuilder sb = new StringBuilder();
                     sb.Append("<RESPONSE><SERVICES>");
-                    foreach (var service in await _mapServiceManager.Instance.Maps(null))
+                    foreach (var serviceModel in servicesModel.Services)
                     {
-                        if (service.Type == MapServiceType.Folder)  // if accessable for current user... => ToDo!!!
-                        {
-                            _mapServiceManager.ReloadServices(service.Name);
-                            foreach (var folderService in _mapServiceManager.MapServices.Where(s => s.Folder == service.Name))
-                            {
-                                sb.Append("<SERVICE ");
-                                sb.Append("NAME='" + folderService.Fullname + "' ");
-                                sb.Append("name='" + folderService.Fullname + "' ");
-                                sb.Append("type='" + folderService.Type.ToString() + "' ");
-                                sb.Append("/>");
-                            }
-                        }
-                        else if (service.Type == MapServiceType.MXL && String.IsNullOrWhiteSpace(service.Folder))
-                        {
-                            sb.Append("<SERVICE ");
-                            sb.Append("NAME='" + service.Name + "' ");
-                            sb.Append("name='" + service.Name + "' ");
-                            sb.Append("type='" + service.Type.ToString() + "' ");
-                            sb.Append("/>");
-                        }
+                        sb.Append("<SERVICE ");
+                        sb.Append($"NAME='{serviceModel.Name}' ");
+                        sb.Append($"name='{serviceModel.Name}' ");
+                        sb.Append($"type='{serviceModel.Type.ToString()}' ");
+                        sb.Append("/>");
                     }
                     sb.Append("</SERVICES></RESPONSE>");
 
                     return Result(sb.ToString(), "text/xml");
+                }
+                else if ("json".Equals(format, StringComparison.InvariantCultureIgnoreCase))
+                {
+                    return new JsonResult(servicesModel);
                 }
                 else
                 {
                     throw new Exception("Unknown format");
                 }
             }
-            catch (UnauthorizedAccessException)
+            catch (NotAuthorizedException)
             {
-                return WriteUnauthorized();
+                return Unauthorized();
             }
             catch (Exception ex)
             {
-                return WriteError(ex.Message);
+                if ("xml".Equals(format, StringComparison.InvariantCultureIgnoreCase))
+                {
+                    return WriteError(ex.Message);
+                }
             }
+
+            return null;
         }
 
         async public Task<IActionResult> MapRequest(string guid, string name, string folder)
@@ -401,9 +438,9 @@ namespace gView.Server.Controllers
 
         private new void AppendEtag(DateTime expires)
         {
-            this.Request.Headers.Add("ETag", expires.Ticks.ToString());
-            this.Request.Headers.Add("Last-Modified", DateTime.UtcNow.ToString("R"));
-            this.Request.Headers.Add("Expires", expires.ToString("R"));
+            this.Request.Headers.Append("ETag", expires.Ticks.ToString());
+            this.Request.Headers.Append("Last-Modified", DateTime.UtcNow.ToString("R"));
+            this.Request.Headers.Append("Expires", expires.ToString("R"));
 
             //this.Response.CacheControl = "private";
             //this.Response.Cache.SetMaxAge(new TimeSpan(24, 0, 0));

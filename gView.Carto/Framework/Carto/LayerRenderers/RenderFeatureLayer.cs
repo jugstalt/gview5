@@ -150,7 +150,7 @@ namespace gView.Framework.Carto.LayerRenderers
                 filter.AddField(fClass.ShapeFieldName);
                 //filter.FuzzyQuery = true;
                 filter.SpatialRelation = spatialRelation.SpatialRelationMapEnvelopeIntersects;
-                filter.MapScale = _map.Display.mapScale;
+                filter.MapScale = _map.Display.MapScale;
                 filter.CancelTracker = _cancelTracker;
 
                 if (layer.FilterQuery != null)
@@ -185,7 +185,7 @@ namespace gView.Framework.Carto.LayerRenderers
                 //}
 
                 IDisplay display = _map;
-                double refScale = display.refScale;
+                double refScale = display.ReferenceScale;
 
                 #region Layer Clonen
 

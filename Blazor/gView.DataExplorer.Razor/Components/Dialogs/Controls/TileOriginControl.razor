@@ -1,0 +1,43 @@
+<GvCard Title="Origin">
+    <GvCardContent>
+        <GvGrid ColumnCount="12">
+            <GvGridItem Span="1"/>
+            <GvGridItem Span="10">
+                <MudSelect Label=""
+                            @bind-Value="Model.TileOrigin"
+                            Variant="Variant.Outlined">
+                    @foreach (TileOrigin val in Enum.GetValues<TileOrigin>())
+                    {
+                        <MudSelectItem Value="val">@val.ToString()</MudSelectItem>
+                    }
+                </MudSelect>
+
+            </GvGridItem>
+            <GvGridItem Span="1"></GvGridItem>
+
+            <GvGridItem Span="1"/>
+            <GvGridItem Span="4">
+                <MudTextField Label="Origin X"
+                               @bind-Value="Model.Origin.X"
+                               Format="#.00000" Culture="@_en" T="double" T="double" Immediate="true"
+                               InputType="InputType.Number" Step="0.1"
+                               Variant="Variant.Text"></MudTextField>
+            </GvGridItem>
+            <GvGridItem Span="2"></GvGridItem>
+            <GvGridItem Span="4">
+                <MudTextField Label="Origin Y"
+                               @bind-Value="Model.Origin.Y"
+                               Format="#.00000" Culture="@_en" T="double" T="double" Immediate="true"
+                               InputType="InputType.Number" Step="0.1"
+                               Variant="Variant.Text"></MudTextField>
+            </GvGridItem>
+            <GvGridItem Span="1"></GvGridItem>
+        </GvGrid>
+    </GvCardContent>
+</GvCard>
+
+@code {
+    [Parameter] public TileOriginModel Model { get; set; } = new TileOriginModel();
+
+    public System.Globalization.CultureInfo _en = System.Globalization.CultureInfo.GetCultureInfo("en-US");
+}

@@ -1,0 +1,24 @@
+﻿<Project Sdk="Microsoft.NET.Sdk.Web">
+
+  <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="MudBlazor" Version="6.11.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\gView.Carto.Rendering\gView.Carto.Rendering.csproj" />
+    <ProjectReference Include="..\..\gView.Carto\gView.Carto.csproj" />
+    <ProjectReference Include="..\..\gView.Symbology\gView.Symbology.csproj" />
+    <ProjectReference Include="..\gView.Blazor.Core\gView.Blazor.Core.csproj" />
+    <ProjectReference Include="..\gView.DataExplorer.Plugins\gView.DataExplorer.Plugins.csproj" />
+    <ProjectReference Include="..\gView.DataExplorer.Razor\gView.DataExplorer.Razor.csproj" />
+    <ProjectReference Include="..\gView.Framework.DataExplorer\gView.Framework.DataExplorer.csproj" />
+    <ProjectReference Include="..\gView.Razor.Leaflet\gView.Razor.Leaflet.csproj" />
+  </ItemGroup>
+
+</Project>

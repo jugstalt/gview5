@@ -54,7 +54,7 @@ namespace gView.Interoperability.OGC.Dataset.WMS
 
         #region IMetadataProvider Member
 
-        async public Task<bool> ApplyTo(object Object)
+        async public Task<bool> ApplyTo(object Object, bool setDefaults = false)
         {
             if (Object is IServiceMap)
             {

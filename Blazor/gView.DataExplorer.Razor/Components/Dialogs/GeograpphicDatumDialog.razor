@@ -1,0 +1,30 @@
+@inherits ModalDialogFormBase<BaseDialogModel<IGeodeticDatum>>
+
+<ModalDialogFormBase T="BaseDialogModel<IGeodeticDatum>"
+                     OnDialogClose="base.OnDialogClose"
+                     Model="base.Model">
+    <FormContent>
+        <GeographicDatumSelectorControl @ref="control"
+                                          GeodeticDatumChanged="() => DatumChanged()" />
+    </FormContent>
+    <DialogButtons>
+       
+    </DialogButtons>
+</ModalDialogFormBase>
+
+@code {
+    private GeographicDatumSelectorControl? control;
+    protected override Task OnParametersSetAsync()
+    {
+        return base.OnParametersSetAsync();
+    }
+
+    private void DatumChanged()
+    {
+        if(control?.GeodeticDatum != null)
+        {
+            Model.Value = control.GeodeticDatum;
+            base.Submit();
+        }       
+    }
+}

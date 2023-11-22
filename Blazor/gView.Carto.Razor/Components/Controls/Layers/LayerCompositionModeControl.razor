@@ -1,0 +1,43 @@
+@if(Layer is not null)
+{
+    <GvCard Title="Layer Composition Mode">
+        <GvCardContent>
+            <MudSelect T="FeatureLayerCompositionMode"
+                       @bind-Value="Layer.CompositionMode">
+                @(GvUtilities.EnumToSelectItems<FeatureLayerCompositionMode>())
+            </MudSelect>
+
+            @GvUtilities.InfoText("Composition-Mode-Over is the default and most performant methode.")
+            @GvUtilities.InfoText("Composition-Mode-Copy first renders features in an extra bitmap and then copy it to the map with the specified transparency.")
+
+            @if (Layer.CompositionMode == FeatureLayerCompositionMode.Copy)
+            {
+                <MudSlider @bind-Value="Layer.CompositionModeCopyTransparency"
+                           Min="0" Max="100" 
+                           Color="Color.Info">@($"Transparency: {Layer.CompositionModeCopyTransparency}")
+                </MudSlider>
+            }
+            @GvUtilities.InfoTextStringBold("Use only when there is a need: Causes a higher memory consumption!")
+
+            <GvGrid ColumnCount="2">
+                <GvGridItem>
+                    @GvUtilities.InfoText("Drawing transparent symbols (Over - default):")
+                    <MudImage Src="./_content/gView.Carto.Razor/img/trans-symbol.png"
+                              Elevation="25" Style="width:90%"
+                              Class="rounded-lg" />
+                </GvGridItem>
+                <GvGridItem>
+                    @GvUtilities.InfoTextStringBold("Drawing with Composition-Mode-Copy:")
+                    <MudImage Src="./_content/gView.Carto.Razor/img/trans-comp-copy.png"
+                              Elevation="25" Style="width:90%"
+                              Class="rounded-lg" />
+                </GvGridItem>
+            </GvGrid> 
+
+        </GvCardContent>
+    </GvCard>
+}
+
+@code {
+    [Parameter] public IFeatureLayerComposition? Layer { get; set; }
+}

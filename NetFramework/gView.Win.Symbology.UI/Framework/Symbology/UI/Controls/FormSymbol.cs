@@ -66,66 +66,41 @@ namespace gView.Framework.Symbology.UI
             // 
             // panel2
             // 
-            this.panel2.AccessibleDescription = null;
-            this.panel2.AccessibleName = null;
             resources.ApplyResources(this.panel2, "panel2");
-            this.panel2.BackgroundImage = null;
             this.panel2.Controls.Add(this.btnCancel);
             this.panel2.Controls.Add(this.panel3);
-            this.panel2.Font = null;
             this.panel2.Name = "panel2";
             // 
             // btnCancel
             // 
-            this.btnCancel.AccessibleDescription = null;
-            this.btnCancel.AccessibleName = null;
             resources.ApplyResources(this.btnCancel, "btnCancel");
-            this.btnCancel.BackgroundImage = null;
             this.btnCancel.DialogResult = System.Windows.Forms.DialogResult.Cancel;
-            this.btnCancel.Font = null;
             this.btnCancel.Name = "btnCancel";
             // 
             // panel3
             // 
-            this.panel3.AccessibleDescription = null;
-            this.panel3.AccessibleName = null;
             resources.ApplyResources(this.panel3, "panel3");
-            this.panel3.BackgroundImage = null;
             this.panel3.Controls.Add(this.btnOk);
-            this.panel3.Font = null;
             this.panel3.Name = "panel3";
             // 
             // btnOk
             // 
-            this.btnOk.AccessibleDescription = null;
-            this.btnOk.AccessibleName = null;
             resources.ApplyResources(this.btnOk, "btnOk");
-            this.btnOk.BackgroundImage = null;
             this.btnOk.DialogResult = System.Windows.Forms.DialogResult.OK;
-            this.btnOk.Font = null;
             this.btnOk.Name = "btnOk";
             // 
             // symbolControl1
             // 
-            this.symbolControl1.AccessibleDescription = null;
-            this.symbolControl1.AccessibleName = null;
             resources.ApplyResources(this.symbolControl1, "symbolControl1");
-            this.symbolControl1.BackgroundImage = null;
-            this.symbolControl1.Font = null;
             this.symbolControl1.Name = "symbolControl1";
             this.symbolControl1.Symbol = null;
             // 
             // FormSymbol
             // 
-            this.AccessibleDescription = null;
-            this.AccessibleName = null;
             resources.ApplyResources(this, "$this");
-            this.BackgroundImage = null;
             this.Controls.Add(this.symbolControl1);
             this.Controls.Add(this.panel2);
-            this.Font = null;
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.SizableToolWindow;
-            this.Icon = null;
             this.Name = "FormSymbol";
             this.Load += new System.EventHandler(this.FormSymbol_Load);
             this.panel2.ResumeLayout(false);

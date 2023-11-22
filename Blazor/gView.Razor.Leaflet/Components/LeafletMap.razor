@@ -1,0 +1,30 @@
+@inject LeafletInteropService LeafletJs
+
+<div id="@Map.Id" style="width: 100%; height: 100%;"></div>
+
+@code {
+    [Parameter] public required LMap Map { get; set; }
+
+    private bool _firstRenderDone = false;
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender || (_firstRenderDone && Map != null && Map.IsIntialized==false))  // firstRender or rebuild required
+        {
+            using (var mutex = await FuzzyMutexAsync.LockAsync(Map.Id))
+            {
+                if (mutex.WasBlocked) 
+                {
+                    return;
+                }
+
+                _firstRenderDone = true;
+
+                await Task.Delay(100);
+
+                await LeafletJs.Create(Map);
+                await Map.FireOnIntialized();
+            }
+        }
+    }
+}

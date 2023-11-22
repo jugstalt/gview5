@@ -1,0 +1,119 @@
+@inherits ModalDialogFormBase<OgrConnectionModel>
+
+<ModalDialogFormBase T="OgrConnectionModel"
+                      OnDialogClose="base.OnDialogClose"
+                      Model="base.Model">
+    <DialogBody>
+        <MudTextField Label="Connection String" T="string"
+                       @bind-Value="Model.ConnectionString"
+                       InputType="InputType.Text"
+                       Variant="Variant.Text"></MudTextField>
+    </DialogBody>
+    <InfoContent>
+        <MudText Typo="Typo.body1">Examples for Connectionstring:</MudText>
+        <MudText Typo="Typo.body2">Shapefiles: Path of folder containing shapefiles</MudText>
+        <MudText Typo="Typo.body2">GeoPackage, GDB: File path and filename of the *.gpkg/*.gdb file</MudText>
+    </InfoContent>
+    <DialogButtons>
+        @if (_isBusy)
+        {
+            <MudProgressCircular Indeterminate="true" Size="MudBlazor.Size.Small" />
+        }
+        @if (!String.IsNullOrEmpty(_connectionSuccessMessage))
+        {
+            <MudAlert Severity="Severity.Success">@_connectionSuccessMessage</MudAlert>
+        }
+        @if (!String.IsNullOrEmpty(_connectionErrorMessage))
+        {
+            <MudAlert Severity="Severity.Error">@_connectionErrorMessage</MudAlert>
+        }
+        <MudButton Variant="Variant.Filled"
+                   Color="Color.Default"
+                   OnClick="TestConnection">
+            Test Connection
+        </MudButton>
+        <MudButton Variant="Variant.Filled"
+                   Color="Color.Primary"
+                   OnClick="SetConnection">Confirm</MudButton>
+    </DialogButtons>
+</ModalDialogFormBase>
+
+@code{
+    private string _connectionErrorMessage = string.Empty;
+    private string _connectionSuccessMessage = string.Empty;
+
+    private bool _isBusy = false;
+    private Task TestConnection() => HandleAsync(() =>
+    {
+        _isBusy = true;
+        _connectionErrorMessage = "";
+        _connectionSuccessMessage = "";
+
+        try
+        {
+            gView.DataSources.OSGeo.Initializer.RegisterAll();
+
+            if (gView.DataSources.OSGeo.Initializer.InstalledVersion == gView.DataSources.OSGeo.GdalVersion.V1)
+            {
+                OSGeo_v1.OGR.DataSource dataSource = OSGeo_v1.OGR.Ogr.Open(Model.ConnectionString, 0);
+                if (dataSource != null)
+                {
+                    System.Text.StringBuilder sb = new System.Text.StringBuilder();
+                    for (int i = 0; i < Math.Min(dataSource.GetLayerCount(), 20); i++)
+                    {
+                        OSGeo_v1.OGR.Layer ogrLayer = dataSource.GetLayerByIndex(i);
+                        if (ogrLayer == null)
+                        {
+                            continue;
+                        }
+
+                        sb.Append("\n" + ogrLayer.GetName());
+                    }
+                    _connectionSuccessMessage = $"Connection succeeded: {sb.ToString()}";
+                }
+                else
+                {
+                    _connectionErrorMessage = "Connection failed...";
+                }
+            }
+            else if (gView.DataSources.OSGeo.Initializer.InstalledVersion == gView.DataSources.OSGeo.GdalVersion.V3)
+            {
+                OSGeo_v3.OGR.DataSource dataSource = OSGeo_v3.OGR.Ogr.Open(Model.ConnectionString, 0);
+                if (dataSource != null)
+                {
+                    System.Text.StringBuilder sb = new ();
+                    for (int i = 0; i < Math.Min(dataSource.GetLayerCount(), 20); i++)
+                    {
+                        OSGeo_v3.OGR.Layer ogrLayer = dataSource.GetLayerByIndex(i);
+                        if (ogrLayer == null)
+                        {
+                            continue;
+                        }
+
+                        sb.Append("\n" + ogrLayer.GetName());
+                    }
+                    _connectionSuccessMessage = $"Connection succeeded: {sb.ToString()}";
+                }
+                else
+                {
+                    _connectionErrorMessage = "Connection failed...";
+                }
+            }
+        }
+        catch (Exception ex)
+        {
+            _connectionErrorMessage = $"Exception: {ex.Message}";
+        }
+        finally
+        {
+            _isBusy = false;
+        }
+
+        return Task.CompletedTask;
+    });
+
+    protected Task SetConnection() => HandleAsync(() =>
+    {
+       return base.Submit();
+    });
+}

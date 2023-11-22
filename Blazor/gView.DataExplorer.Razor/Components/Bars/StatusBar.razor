@@ -1,0 +1,46 @@
+@inherits BaseHandler
+@implements IDisposable
+@inject IconService Icons
+@inject ExplorerEventBusService EventBus
+
+<table style="width:100%">
+    <tr>
+        <td style="white-space:nowrap; text-align:right; vertical-align:top">
+            @if (_isBusy)
+            {
+                <div style="display:inline-block;vertical-align:top">@_busyMessage</div>
+                <MudProgressCircular Indeterminate="true" Size="MudBlazor.Size.Small" />
+            }
+        </td>
+    </tr>
+</table>
+
+
+@code {
+    private bool _isBusy = false;
+    private string _busyMessage = "";
+
+    protected override void OnInitialized()
+    {
+        base.OnInitialized();
+
+        // init events
+        EventBus.OnBusyStatusChangedAsync += OnBusyStatusChangedAsync;
+    }
+
+    private Task OnBusyStatusChangedAsync(bool isBusy, string message)
+    {
+        _isBusy = isBusy;
+        _busyMessage = message;
+
+        StateHasChanged();
+
+        return Task.CompletedTask;
+    }
+
+    public void Dispose()
+    {
+        // release events
+        EventBus.OnBusyStatusChangedAsync -= OnBusyStatusChangedAsync;
+    }
+}

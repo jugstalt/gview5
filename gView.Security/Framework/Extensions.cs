@@ -15,6 +15,14 @@ namespace gView.Security.Framework
             }
         }
 
+        static public void ValidateRawUrlTokenName(this string rawUrlTokenName)
+        {
+            if (!Regex.IsMatch(rawUrlTokenName, @"^[a-z0-9]+$") || rawUrlTokenName.Length < 3)
+            {
+                throw new MapServerException("Invalid username: lowercase chars, numbers (min length=3)");
+            }
+        }
+
         static public void ValidatePassword(this string password)
         {
             // Forbidden Chars

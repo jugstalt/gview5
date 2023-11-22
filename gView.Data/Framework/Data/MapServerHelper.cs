@@ -47,7 +47,7 @@ namespace gView.Framework.Data
                             //ITOCElement tocElement = map.TOC.GetTOCElement(theme.Class);
                             // Besser layer als layer.Class verwendenden, weil Class von mehrerenen Layern
                             // verwendet werden kann zB bei gesplitteten Layern...
-                            ITOCElement tocElement = map.TOC.GetTOCElement((ILayer)theme);
+                            ITocElement tocElement = map.TOC.GetTOCElement((ILayer)theme);
                             if (tocElement != null)
                             {
                                 title = tocElement.Name;
@@ -73,7 +73,7 @@ namespace gView.Framework.Data
                         //ITOCElement tocElement = map.TOC.GetTOCElement(layer.Class);
                         // Besser layer als layer.Class verwendenden, weil Class von mehrerenen Layern
                         // verwendet werden kann zB bei gesplitteten Layern...
-                        ITOCElement tocElement = map.TOC.GetTOCElement(layer);
+                        ITocElement tocElement = map.TOC.GetTOCElement(layer);
                         if (tocElement != null)
                         {
                             title = tocElement.Name;
@@ -101,11 +101,11 @@ namespace gView.Framework.Data
                 return layersList;
             }
 
-            ITOC toc = map.TOC;
-            foreach (ITOCElement tocElement in toc.Elements)
+            IToc toc = map.TOC;
+            foreach (ITocElement tocElement in toc.Elements)
             {
                 if (tocElement == null ||
-                    tocElement.ElementType != TOCElementType.Layer ||
+                    tocElement.ElementType != TocElementType.Layer ||
                     tocElement.Layers.Count == 0
                     )
                 {
@@ -134,7 +134,7 @@ namespace gView.Framework.Data
             return layersList;
         }
 
-        private static string ParentGroupName(ITOCElement element)
+        private static string ParentGroupName(ITocElement element)
         {
             if (element == null || element.ParentGroup == null)
             {
@@ -194,11 +194,11 @@ namespace gView.Framework.Data
                 return new Layers();
             }
 
-            ITOC toc = map.TOC;
-            foreach (ITOCElement tocElement in toc.Elements)
+            IToc toc = map.TOC;
+            foreach (ITocElement tocElement in toc.Elements)
             {
                 if (tocElement == null ||
-                    tocElement.ElementType != TOCElementType.Layer ||
+                    tocElement.ElementType != TocElementType.Layer ||
                     tocElement.Layers.Count == 0
                     )
                 {
@@ -271,11 +271,11 @@ namespace gView.Framework.Data
                 return new Layers();
             }
 
-            ITOC toc = map.TOC;
-            foreach (ITOCElement tocElement in toc.Elements)
+            IToc toc = map.TOC;
+            foreach (ITocElement tocElement in toc.Elements)
             {
                 if (tocElement == null ||
-                    tocElement.ElementType != TOCElementType.Layer ||
+                    tocElement.ElementType != TocElementType.Layer ||
                     tocElement.Layers.Count == 0
                     )
                 {
@@ -640,7 +640,7 @@ namespace gView.Framework.Data
         public class Layers : List<ILayer>
         {
             private string _title = String.Empty, _group = String.Empty;
-            private ITOCElement _tocElement = null;
+            private ITocElement _tocElement = null;
 
             public Layers()
                 : base()
@@ -733,7 +733,7 @@ namespace gView.Framework.Data
                 base.Add(layer);
             }
 
-            public ITOCElement TocElement
+            public ITocElement TocElement
             {
                 get { return _tocElement; }
                 internal set { _tocElement = value; }

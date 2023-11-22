@@ -59,7 +59,7 @@ namespace gView.Desktop.Wpf.Carto
         private IMap _map = null;
         private IEnvelope _envelope;
         private MapView _mapView;
-        private ITOC _toc = null;
+        private IToc _toc = null;
         private List<IMap> _maps = null;
         private Xceed.Wpf.AvalonDock.Layout.LayoutDocument _tabPage;
         private double _displayRotation = 0.0;
@@ -142,7 +142,7 @@ namespace gView.Desktop.Wpf.Carto
             get { return _tabPage; }
         }
 
-        internal ITOC TOC
+        internal IToc TOC
         {
             get { return _toc; }
             set
@@ -205,7 +205,7 @@ namespace gView.Desktop.Wpf.Carto
             if (this.Map != null)
             {
                 TOC objInst = new TOC(this.Map);
-                objInst.Modifier = TOCModifier.Private;
+                objInst.Modifier = TocModifier.Private;
                 _toc = (TOC)stream.Load("ITOC", null, objInst);
                 if (_toc == null)
                 {

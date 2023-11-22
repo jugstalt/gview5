@@ -437,7 +437,7 @@ namespace gView.Plugins.Editor
             }
 
             List<ILayer> layers = map.TOC.VisibleLayers;
-            double tol = 6 * map.Display.mapScale / (96 / 0.0254);  // [m]
+            double tol = 6 * map.Display.MapScale / (96 / 0.0254);  // [m]
             if (map.Display.SpatialReference != null &&
                 map.Display.SpatialReference.SpatialParameters.IsGeographic)
             {
@@ -459,12 +459,12 @@ namespace gView.Plugins.Editor
                     continue;
                 }
 
-                if (layer.MinimumScale > 1 && layer.MinimumScale > map.Display.mapScale)
+                if (layer.MinimumScale > 1 && layer.MinimumScale > map.Display.MapScale)
                 {
                     continue;
                 }
 
-                if (layer.MaximumScale > 1 && layer.MaximumScale < map.Display.mapScale)
+                if (layer.MaximumScale > 1 && layer.MaximumScale < map.Display.MapScale)
                 {
                     continue;
                 }

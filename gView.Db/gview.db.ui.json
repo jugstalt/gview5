@@ -1,0 +1,94 @@
+﻿{
+  "providers": [
+    {
+      "id": "mssql",
+      "name": "Mircosoft SQL Server",
+      "provider": "SqlClient",
+      "schemes": [
+        {
+          "name": "Standard Security",
+          "connectionString": "Server=[Server];Database=[Database];User Id=[User];Password=[Password];"
+        },
+        {
+          "name": "Trusted Connection",
+          "connectionString": "Server=[Server];Database=[Database];Trusted_Connection=True;"
+        }
+      ]
+    },
+    {
+      "id": "mssql@create",
+      "name": "Mircosoft SQL Server",
+      "provider": "SqlClient",
+      "schemes": [
+        {
+          "name": "Standard Security",
+          "connectionString": "Server=[Server];User Id=[User];Password=[Password];"
+        },
+        {
+          "name": "Trusted Connection",
+          "connectionString": "Server=[Server];Trusted_Connection=True;"
+        }
+      ]
+    },
+    {
+      "id": "oracle",
+      "name": "Oracle",
+      "provider": "OracleClient",
+      "schemes": [
+        {
+          "name": "Omiting tnsnames.ora",
+          "connectionString": "Data Source=(DESCRIPTION=(ADDRESS_LIST=(ADDRESS=(PROTOCOL=TCP)(HOST=[Host])(PORT=[Port])))(CONNECT_DATA=(SERVER=DEDICATED)(SERVICE_NAME=[OracleSID])));User Id=[User];Password=[Password];"
+        }
+      ]
+    },
+    {
+      "id": "postgre",
+      "name": "Postgre Npgsql",
+      "provider": "Npgsql",
+      "schemes": [
+        {
+          "name": "Postgre/Npgsql",
+          "connectionString": "Server=[Server];Port=[Port];Userid=[User];Password=[Password];Database=[Database];Protocol=3;SSL=true; Pooling=true;MinPoolSize=3;MaxPoolSize=20;Encoding=UNICODE;Timeout=20;SslMode=Disable;"
+        },
+        {
+          "name": "Postgre/Npgsql + Schema",
+          "connectionString": "Server=[Server];Port=[Port];Userid=[User];Password=[Password];Database=[Database];SearchPath=[Schema];Protocol=3;SSL=true; Pooling=true;MinPoolSize=3;MaxPoolSize=20;Encoding=UNICODE;Timeout=20;SslMode=Disable;"
+        },
+        {
+          "name": "Postgre/Npgsql SSL",
+          "connectionString": "Server=[Server];Port=[Port];Userid=[User];Password=[Password];Database=[Database];Protocol=3;SSL=true; Pooling=true;MinPoolSize=3;MaxPoolSize=20;Encoding=UNICODE;Timeout=20;SslMode=Require;"
+        }
+      ]
+    },
+    {
+      "id": "postgre@create",
+      "name": "Postgre Npgsql",
+      "provider": "Npgsql",
+      "schemes": [
+        {
+          "name": "Postgre/Npgsql",
+          "connectionString": "Server=[Server];Port=[Port];Userid=[User];Password=[Password];Protocol=3;SSL=true; Pooling=true;MinPoolSize=3;MaxPoolSize=20;Encoding=UNICODE;Timeout=20;SslMode=Disable;"
+        },
+        {
+          "name": "Postgre/Npgsql + Schema",
+          "connectionString": "Server=[Server];Port=[Port];Userid=[User];Password=[Password];SearchPath=[Schema];Protocol=3;SSL=true; Pooling=true;MinPoolSize=3;MaxPoolSize=20;Encoding=UNICODE;Timeout=20;SslMode=Disable;"
+        },
+        {
+          "name": "Postgre/Npgsql SSL",
+          "connectionString": "Server=[Server];Port=[Port];Userid=[User];Password=[Password];Protocol=3;SSL=true; Pooling=true;MinPoolSize=3;MaxPoolSize=20;Encoding=UNICODE;Timeout=20;SslMode=Require;"
+        }
+      ]
+    },
+    {
+      "id": "arcsde",
+      "name": "ArcSDE Connection",
+      "provider": "sde",
+      "schemes": [
+        {
+          "name": "Specifying user and password",
+          "connectionString": "server=[Server];instance=[Instance];database=[Database];usr=[User];pwd=[Password];"
+        }
+      ]
+    }
+  ]
+}

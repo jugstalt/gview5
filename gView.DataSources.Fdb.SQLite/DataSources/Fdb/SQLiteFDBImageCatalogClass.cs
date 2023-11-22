@@ -228,7 +228,7 @@ namespace gView.DataSources.Fdb.SQLite
             }
 
             double dpm = Math.Max(display.Canvas.DpiX, display.Canvas.DpiY) / 0.0254;
-            double pix = display.mapScale / dpm;/*display.dpm;*/  // [m]
+            double pix = display.MapScale / dpm;/*display.dpm;*/  // [m]
 
             IEnvelope dispEnvelope = display.DisplayTransformation.TransformedBounds(display); //display.Envelope;
             if (display.GeometricTransformer != null)

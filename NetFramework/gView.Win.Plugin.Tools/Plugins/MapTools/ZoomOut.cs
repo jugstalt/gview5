@@ -76,7 +76,7 @@ namespace gView.Plugins.MapTools
             if (Math.Abs(ev.maxX - ev.minX) < 1e-5 ||
                 Math.Abs(ev.maxY - ev.minY) < 1e-5)
             {
-                nav.setScale(nav.mapScale * 2.0, ev.maxX, ev.maxY);
+                nav.setScale(nav.MapScale * 2.0, ev.maxX, ev.maxY);
             }
             else
             {

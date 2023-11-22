@@ -1,0 +1,38 @@
+@inherits ModalDialogFormBase<GeoServicesConnectionModel>
+@inject IApplicationScope AppScope
+
+<ModalDialogFormBase T="GeoServicesConnectionModel"
+                       OnDialogClose="base.OnDialogClose"
+                       Model="base.Model">
+    <FormContent>
+        <GvGrid ColumnCount="3">
+            <GvGridItem Span="2">
+                <GvCard Title="Service">
+                    <GvCardContent>
+                        <MudTextField @bind-Value="Model.ServicesUrl"
+                                      Label="Service Url Endpoint" />
+
+                    </GvCardContent>
+                </GvCard>
+            </GvGridItem>
+
+            <GvGridItem>
+                <GvCard Title="Credentials (optional)">
+                    <GvCardContent>
+                        <MudTextField @bind-Value="Model.Username"
+                                      Label="Username" />
+
+                        <MudTextField @bind-Value="Model.Password"
+                                      InputType="InputType.Password"
+                                      Label="Password" />
+                    </GvCardContent>
+                </GvCard>
+            </GvGridItem>
+        </GvGrid>
+    </FormContent>
+    <InfoContent>
+        <MudText Typo="Typo.body1">Examples for input:</MudText>
+        <MudText Typo="Typo.body2">ArcGIS Server: https://my-server/arcgis/rest/services</MudText>
+        <MudText Typo="Typo.body2">gView Server: https://my-server/gview/geoservices/rest/services</MudText>
+    </InfoContent>
+</ModalDialogFormBase>

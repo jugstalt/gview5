@@ -1,0 +1,40 @@
+﻿<Project Sdk="Microsoft.NET.Sdk.Razor">
+
+  <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <None Include="Components\Controls\Classes\WmsClassSettingsControl.razor" />
+    <None Include="Components\Controls\Renderers\SimpleFeatureRendererPropertyPage.razor" />
+    <None Include="Components\Controls\Tables\QueryBuilderControl.razor" />
+    <None Include="Components\Dialogs\NewMapDialog.razor" />
+  </ItemGroup>
+
+
+  <ItemGroup>
+    <SupportedPlatform Include="browser" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.AspNetCore.Components.Web" Version="8.0.0" />
+    <PackageReference Include="MudBlazor" Version="6.11.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\gView.Cmd.Core\gView.Cmd.Core.csproj" />
+    <ProjectReference Include="..\..\gView.Interoperability.OGC\gView.Interoperability.OGC.csproj" />
+    <ProjectReference Include="..\..\gView.System\gView.System.csproj" />
+    <ProjectReference Include="..\gView.Blazor.Core\gView.Blazor.Core.csproj" />
+    <ProjectReference Include="..\gView.Blazor.Models\gView.Blazor.Models.csproj" />
+    <ProjectReference Include="..\gView.Carto.Core\gView.Carto.Core.csproj" />
+    <ProjectReference Include="..\gView.DataExplorer.Core\gView.DataExplorer.Core.csproj" />
+    <ProjectReference Include="..\gView.DataExplorer.Razor\gView.DataExplorer.Razor.csproj" />
+    <ProjectReference Include="..\gView.Framework.Carto\gView.Framework.Carto.csproj" />
+    <ProjectReference Include="..\gView.Razor.Leaflet\gView.Razor.Leaflet.csproj" />
+    <ProjectReference Include="..\gView.Razor\gView.Razor.csproj" />
+  </ItemGroup>
+
+</Project>

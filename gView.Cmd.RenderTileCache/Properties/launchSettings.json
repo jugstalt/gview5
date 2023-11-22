@@ -2,7 +2,7 @@
   "profiles": {
     "gView.Cmd.RenderTileCache": {
       "commandName": "Project",
-      "commandLineArgs": "-render -server https://localhost:44331 -service test@basis"
+      "commandLineArgs": "-render -server https://localhost:44331 -service ortsplan -threads 10 -compact11"
     }
   }
 }

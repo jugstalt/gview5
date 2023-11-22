@@ -68,7 +68,7 @@ namespace gView.Framework.Data.Joins.UI
                         continue;
                     }
 
-                    ITOCElement tocElement = mapDocument.FocusMap.TOC.GetTOCElement(element as ILayer);
+                    ITocElement tocElement = mapDocument.FocusMap.TOC.GetTOCElement(element as ILayer);
                     string alias = tocElement != null ? tocElement.Name : element.Title;
                     cmbJoinedLayer.Items.Add(new DatasetElementItem(element, alias));
 

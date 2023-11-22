@@ -490,12 +490,12 @@ namespace gView.Interoperability.OGC.SLD
 
             public bool RenderFeature(IDisplay display, IFeature feature, ISpatialReference featureSRef)
             {
-                if (this.MaxScale > 1 && this.MaxScale > display.mapScale + 0.5)
+                if (this.MaxScale > 1 && this.MaxScale > display.MapScale + 0.5)
                 {
                     return false;
                 }
 
-                if (this.MinScale > 1 && this.MinScale < display.mapScale - 0.5)
+                if (this.MinScale > 1 && this.MinScale < display.MapScale - 0.5)
                 {
                     return false;
                 }

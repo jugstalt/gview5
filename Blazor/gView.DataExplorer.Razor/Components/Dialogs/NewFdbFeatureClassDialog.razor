@@ -1,0 +1,185 @@
+@inherits ModalDialogFormBase<NewFdbFeatureClassModel>
+@inject IApplicationScope AppScope
+
+<ModalDialogFormBase T="NewFdbFeatureClassModel"
+                     OnDialogClose="base.OnDialogClose"
+                     Model="base.Model">
+    <DialogBody>
+            <GvGrid ColumnCount="1">
+                <GvGridItem>
+                    <GvCard>
+                        <GvCardContent>
+
+                            <MudTextField @bind-Value="Model.Name"
+                                           Label="Name (any)" />
+
+                        </GvCardContent>
+                    </GvCard>
+                </GvGridItem>
+
+                <GvGridItem>
+                     <MudTabs Elevation="1" Rounded="true" PanelClass="pa-6" ApplyEffectsToContainer="true">
+                        <MudTabPanel Text="Gemetry/Index">
+                            <GvGrid ColumnCount="1">
+                                <GvGridItem>
+                                    <MudSelect Label=""
+                                                @bind-Value="Model.GeometryType"
+                                                Variant="Variant.Outlined">
+                                                @foreach (NewFeatureClassGeometryType geomtryType in Enum.GetValues<NewFeatureClassGeometryType>())
+                                                {
+                                                    <MudSelectItem Value="geomtryType">@geomtryType.ToString()</MudSelectItem>
+                                                }
+                                    </MudSelect>
+                                </GvGridItem>
+                                <GvGridItem>
+                                    <SpatialIndexDefControl BinaryTreeDef="Model.SpatialIndex" BinaryTreeDefChanged="SpatialIndexDefChanged" />
+                                </GvGridItem>
+                            </GvGrid>
+                        </MudTabPanel>
+
+                        <MudTabPanel Text="Data">
+                            <table style="width:100%">
+                                <tr>
+                                    <th>Field Name</th>
+                                    <th style="width:140px">Field Type</th>
+                                    <th>Alias (optional)</th>
+                                    <th style="width:120px">Size (optional)</th>
+                                    <th></th>
+                                </tr>
+                                
+                                @foreach(var fieldName in Model.Fields.Keys)
+                                {
+                                   <tr>
+                                       <td>
+                                            <MudTextField Value="fieldName" Label="" ReadOnly="true" />
+                                       </td>
+                                       <td>
+                                            <MudSelect Label="" T="gView.Framework.Data.FieldType"
+                                                        Value="Model.Fields[fieldName].type"
+                                                        ValueChanged="(type)=>SetFieldType(fieldName, type)"
+                                                        Variant="Variant.Text">
+                                                @foreach (var fieldType in Enum.GetValues<gView.Framework.Data.FieldType>())
+                                                {
+                                                    <MudSelectItem Value="fieldType">@fieldType.ToString()</MudSelectItem>
+                                                }
+                                            </MudSelect>
+                                       </td>
+                                       <td>
+                                            <MudTextField Value="Model.Fields[fieldName].aliasname" Label="" T="string"
+                                                          ValueChanged="(alias) => SetFieldAlias(fieldName, alias)" />
+                                       </td>
+                                       <td>
+                                           @if(Model.Fields[fieldName].type == Framework.Data.FieldType.String ||
+                                               Model.Fields[fieldName].type == Framework.Data.FieldType.NString) {
+                                                    <MudNumericField Value="Model.Fields[fieldName].size" Label="" T="int"
+                                                                       ValueChanged="(size) => SetFieldSize(fieldName, size)" />
+                                               }
+                                       </td>
+                                       <td>
+                                            <MudFab Color="Color.Secondary" StartIcon="@Icons.Material.Filled.Remove" Size="MudBlazor.Size.Small"
+                                                    OnClick="() => RemoveField(fieldName)"/>
+          
+                                       </td>
+                                   </tr>
+                                }
+
+                                <tr>
+                                    <td>
+                                        <MudTextField @bind-Value="newFieldName" Label="" />
+                                    </td>
+                                    <td>
+                                        <MudSelect Label=""
+                                                   @bind-Value="newFieldType"
+                                                   Variant="Variant.Text">
+                                            @foreach (var fieldType in Enum.GetValues<gView.Framework.Data.FieldType>())
+                                            {
+                                                <MudSelectItem Value="fieldType">@fieldType.ToString()</MudSelectItem>
+                                            }
+                                        </MudSelect>
+                                    </td>
+                                    <td></td>
+                                    <td></td>
+                                    <td>
+                                        <MudFab Color="Color.Primary" StartIcon="@Icons.Material.Filled.Add" Size="MudBlazor.Size.Small"
+                                                 OnClick="TryAddField" />
+                                    </td>
+                                </tr>
+                            </table>
+
+                            
+                        </MudTabPanel>
+                     </MudTabs>
+                    @if (!String.IsNullOrEmpty(lastErrorMessage))
+                    {
+                        <MudAlert Severity="Severity.Error">@lastErrorMessage</MudAlert>
+                    }
+                </GvGridItem>
+
+            </GvGrid>
+    </DialogBody>
+</ModalDialogFormBase>
+
+@code {
+    private string newFieldName { get; set; } = string.Empty;
+    private gView.Framework.Data.FieldType newFieldType = Framework.Data.FieldType.String;
+    private string lastErrorMessage = string.Empty;
+
+    private void TryAddField()
+    {
+        if (newFieldName.IsValidFieldName())
+        {
+            Model.Fields[newFieldName] = new Field()
+                {
+                    name = newFieldName,
+                    type = newFieldType
+                };
+            newFieldName = string.Empty;
+
+            lastErrorMessage = string.Empty;
+        } 
+        else
+        {
+            lastErrorMessage = "Invalid field name";    
+        }
+
+        StateHasChanged();
+    }
+
+    private void RemoveField(string fieldName)
+    {
+        if (Model.Fields.ContainsKey(fieldName))
+        {
+            Model.Fields.Remove(fieldName);
+            StateHasChanged();
+        }
+    }
+
+    private void SetFieldType(string fieldName, gView.Framework.Data.FieldType fieldType)
+    {
+        if (Model.Fields.ContainsKey(fieldName))
+        {
+            Model.Fields[fieldName].type = fieldType;
+        }
+    }
+
+    private void SetFieldAlias(string fieldName, string alias)
+    {
+        if (Model.Fields.ContainsKey(fieldName))
+        {
+            Model.Fields[fieldName].aliasname = alias;
+        }
+    }
+
+    private void SetFieldSize(string fieldName, int size)
+    {
+        if (Model.Fields.ContainsKey(fieldName))
+        {
+            Model.Fields[fieldName].size = size;
+        }
+    }
+
+    private void SpatialIndexDefChanged(BinaryTreeDef binaryTreeDef)
+    {
+        Model.SpatialIndex = binaryTreeDef;
+    }
+}

@@ -1,0 +1,71 @@
+@using gView.Framework.Carto.Rendering
+@using gView.Framework.Symbology
+
+@inject IApplicationScope AppScope
+
+@if (_renderer != null)
+{
+    <GvCard Title="Symbology">
+        <GvCardContent>
+            <img @onclick = "SelectSymbol"
+                 class = "carto-symbol-composer-button"
+                 src = "@_renderer.Symbol.ToBase64ImageSource(150, 50)" />
+        </GvCardContent>
+    </GvCard>
+
+    @if (_renderer.Symbol is ISymbolCollection)
+    {
+        <GvCard Title
+        ="Cartography">
+            <GvCardContent>
+            <MudSelect T="SimpleRenderer.CartographicMethod" 
+                       Label="Ordering"
+                       @bind-Value="_renderer.CartoMethod" >
+                @(GvUtilities.EnumToSelectItems<SimpleRenderer.CartographicMethod>())
+            </MudSelect>
+        </GvCardContent>
+    </GvCard>
+    }
+
+    <GvCard Title="Advanced">
+        <GvCardContent>
+            @if(_layer?.FeatureClass is not null 
+                &&
+                    (_layer.FeatureClass.GeometryType == GeometryType.Point
+                  || _layer.FeatureClass.GeometryType == GeometryType.Multipoint))
+            {
+                <MudButton>Rotation</MudButton>
+            }
+        </GvCardContent>
+    </GvCard>
+}
+
+@code {
+    [Parameter] public object? Instance { get; set; }
+
+    private IFeatureLayer? _layer;
+    private SimpleRenderer? _renderer;
+
+    protected override void OnParametersSet()
+    {
+        base.OnParametersSet();
+
+        if (Instance is IFeatureLayer fLayer)
+        {
+            _layer = fLayer;
+            _renderer = fLayer.FeatureRenderer as SimpleRenderer;
+        }
+        else
+        {
+            _renderer = Instance as SimpleRenderer;
+        }
+    }
+
+    async private Task SelectSymbol()
+    {
+        if(_renderer is not null)
+        {
+            _renderer.Symbol = await _renderer.Symbol.Compose(AppScope);
+        }
+    }
+}

@@ -68,65 +68,45 @@ namespace gView.Framework.UI.Dialogs
             this.btnQuery = new System.Windows.Forms.Button();
             this.txtWhere = new System.Windows.Forms.TextBox();
             this.listView1 = new System.Windows.Forms.ListView();
-            this.columnHeader1 = new System.Windows.Forms.ColumnHeader();
-            this.columnHeader2 = new System.Windows.Forms.ColumnHeader();
+            this.columnHeader1 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+            this.columnHeader2 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.panel1.SuspendLayout();
             this.SuspendLayout();
             // 
             // panel1
             // 
-            this.panel1.AccessibleDescription = null;
-            this.panel1.AccessibleName = null;
-            resources.ApplyResources(this.panel1, "panel1");
-            this.panel1.BackgroundImage = null;
             this.panel1.Controls.Add(this.btnOK);
             this.panel1.Controls.Add(this.btnQuery);
             this.panel1.Controls.Add(this.txtWhere);
-            this.panel1.Font = null;
+            resources.ApplyResources(this.panel1, "panel1");
             this.panel1.Name = "panel1";
             // 
             // btnOK
             // 
-            this.btnOK.AccessibleDescription = null;
-            this.btnOK.AccessibleName = null;
-            resources.ApplyResources(this.btnOK, "btnOK");
-            this.btnOK.BackgroundImage = null;
             this.btnOK.DialogResult = System.Windows.Forms.DialogResult.OK;
-            this.btnOK.Font = null;
+            resources.ApplyResources(this.btnOK, "btnOK");
             this.btnOK.Name = "btnOK";
             this.btnOK.Click += new System.EventHandler(this.btnOK_Click);
             // 
             // btnQuery
             // 
-            this.btnQuery.AccessibleDescription = null;
-            this.btnQuery.AccessibleName = null;
             resources.ApplyResources(this.btnQuery, "btnQuery");
-            this.btnQuery.BackgroundImage = null;
-            this.btnQuery.Font = null;
             this.btnQuery.Name = "btnQuery";
             this.btnQuery.Click += new System.EventHandler(this.btnQuery_Click);
             // 
             // txtWhere
             // 
-            this.txtWhere.AccessibleDescription = null;
-            this.txtWhere.AccessibleName = null;
-            resources.ApplyResources(this.txtWhere, "txtWhere");
-            this.txtWhere.BackgroundImage = null;
             this.txtWhere.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.txtWhere.Font = null;
+            resources.ApplyResources(this.txtWhere, "txtWhere");
             this.txtWhere.Name = "txtWhere";
             // 
             // listView1
             // 
-            this.listView1.AccessibleDescription = null;
-            this.listView1.AccessibleName = null;
-            resources.ApplyResources(this.listView1, "listView1");
-            this.listView1.BackgroundImage = null;
             this.listView1.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
             this.listView1.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {
             this.columnHeader1,
             this.columnHeader2});
-            this.listView1.Font = null;
+            resources.ApplyResources(this.listView1, "listView1");
             this.listView1.FullRowSelect = true;
             this.listView1.GridLines = true;
             this.listView1.HideSelection = false;
@@ -145,15 +125,10 @@ namespace gView.Framework.UI.Dialogs
             // 
             // FormSpatialReferenceSystems
             // 
-            this.AccessibleDescription = null;
-            this.AccessibleName = null;
             resources.ApplyResources(this, "$this");
-            this.BackgroundImage = null;
             this.Controls.Add(this.listView1);
             this.Controls.Add(this.panel1);
-            this.Font = null;
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.SizableToolWindow;
-            this.Icon = null;
             this.Name = "FormSpatialReferenceSystems";
             this.Load += new System.EventHandler(this.FormSpatialReferenceSystems_Load);
             this.panel1.ResumeLayout(false);

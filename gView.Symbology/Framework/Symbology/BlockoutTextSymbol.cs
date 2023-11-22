@@ -90,7 +90,7 @@ namespace gView.Framework.Symbology
             if (options.ApplyRefScale)
             {
                 fac = ReferenceScaleHelper.RefscaleFactor(
-                    (float)(display.refScale / display.mapScale),
+                    (float)(display.ReferenceScale / display.MapScale),
                     _font.Size,
                     MinFontSize,
                     MaxFontSize);

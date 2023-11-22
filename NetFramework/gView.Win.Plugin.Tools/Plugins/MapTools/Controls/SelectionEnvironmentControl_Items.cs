@@ -6,9 +6,9 @@ namespace gView.Plugins.MapTools.Controls
 {
     internal class SelectionTOCLayerNode : TreeNode
     {
-        private ITOCElement _element = null;
+        private ITocElement _element = null;
 
-        public SelectionTOCLayerNode(IMapDocument mapDocument, ITOCElement element, bool check)
+        public SelectionTOCLayerNode(IMapDocument mapDocument, ITocElement element, bool check)
         {
             if (element == null)
             {
@@ -32,7 +32,7 @@ namespace gView.Plugins.MapTools.Controls
             //}
         }
 
-        public ITOCElement Element
+        public ITocElement Element
         {
             get { return _element; }
         }

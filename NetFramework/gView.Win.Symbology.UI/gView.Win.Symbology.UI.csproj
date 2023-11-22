@@ -34,8 +34,8 @@
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Drawing" />
-    <Reference Include="System.Drawing.Common, Version=6.0.0.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\System.Drawing.Common.6.0.0\lib\net461\System.Drawing.Common.dll</HintPath>
+    <Reference Include="System.Drawing.Common, Version=8.0.0.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\System.Drawing.Common.8.0.0\lib\net462\System.Drawing.Common.dll</HintPath>
     </Reference>
     <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Xml.Linq" />
@@ -199,6 +199,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Framework\Symbology\UI\Controls\FormColorTransparency.resx">
       <DependentUpon>FormColorTransparency.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Framework\Symbology\UI\Controls\FormSymbol.de-DE.resx">
+      <DependentUpon>FormSymbol.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Framework\Symbology\UI\Controls\FormSymbol.de.resx">
       <DependentUpon>FormSymbol.cs</DependentUpon>

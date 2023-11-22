@@ -1,0 +1,60 @@
+@using MudBlazor.Utilities
+@inherits ModalDialogFormBase<ColorPickerModel>
+
+<ModalDialogFormBase T="ColorPickerModel"
+                     OnDialogClose="base.OnDialogClose"
+                     Model="base.Model">
+    <DialogBody>
+        <div style="max-width:320px;margin: 0px auto;">
+            @if (_color is not null)
+            {
+                <MudColorPicker DisableToolbar="false" 
+                                DisableAlpha="false"
+                                DisableColorField="false"
+                                DisablePreview="false"
+                                DisableSliders="false"
+                                DisableInputs="false"
+                                DisableModeSwitch="false"
+                                ColorPickerMode="ColorPickerMode.RGB" 
+                                PickerVariant="PickerVariant.Static"
+                                @bind-Value="_color"/>
+            }
+        </div>
+    </DialogBody>
+    
+    <DialogButtons>
+        <MudButton Variant="Variant.Filled"
+                   Color="Color.Default"
+                   OnClick="()=>base.Close()">Cancel</MudButton>
+        <MudButton Variant="Variant.Filled"
+                   Color="Color.Primary"
+                   OnClick="Apply">Apply</MudButton>
+    </DialogButtons>
+</ModalDialogFormBase>
+
+@code{
+    private MudColor? _color;
+
+    protected override void OnInitialized()
+    {
+        base.OnInitialized();
+
+        _color = new MudColor(
+            Model.ArgbColor.R,
+            Model.ArgbColor.G,
+            Model.ArgbColor.B,
+            Model.ArgbColor.A);
+    }
+
+    private Task Apply()
+    {
+        if(_color is not null) {
+            Model.ArgbColor = GraphicsEngine.ArgbColor.FromArgb(
+                alpha: _color.A,
+                red: _color.R,
+                green: _color.G,
+                blue: _color.B); 
+        }
+        return base.Submit();
+    }
+}

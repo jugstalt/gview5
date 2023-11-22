@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
@@ -13,7 +13,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Proj4Net.Core" Version="1.22.501" />
+    <PackageReference Include="Proj4Net.Core" Version="1.23.2501" />
   </ItemGroup>
 
   <ItemGroup>

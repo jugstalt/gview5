@@ -37,7 +37,7 @@ namespace gView.Plugins.Network.Graphic
                 return;
             }
 
-            Point p1 = new Point(_point.X, _point.Y + (20 * display.mapScale / (96 / 0.0254)));
+            Point p1 = new Point(_point.X, _point.Y + (20 * display.MapScale / (96 / 0.0254)));
             Path path = new Path();
             path.AddPoint(_point);
             path.AddPoint(p1);

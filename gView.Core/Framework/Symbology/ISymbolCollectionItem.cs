@@ -2,7 +2,7 @@
 {
     public interface ISymbolCollectionItem
     {
-        bool Visible { get; }
+        bool Visible { get; set; }
         ISymbol Symbol { get; }
     }
 }

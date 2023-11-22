@@ -112,25 +112,25 @@
     <value>2.0</value>
   </resheader>
   <resheader name="reader">
-    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
   <resheader name="writer">
-    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
-  <assembly alias="mscorlib" name="mscorlib, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
+  <assembly alias="mscorlib" name="mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
   <data name="btnCartoSymbolOrdering.AutoSize" type="System.Boolean, mscorlib">
     <value>True</value>
   </data>
-  <assembly alias="System.Windows.Forms" name="System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
+  <assembly alias="System.Windows.Forms" name="System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
   <data name="btnCartoSymbolOrdering.ImeMode" type="System.Windows.Forms.ImeMode, System.Windows.Forms">
     <value>NoControl</value>
   </data>
-  <assembly alias="System.Drawing" name="System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a" />
+  <assembly alias="System.Drawing" name="System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a" />
   <data name="btnCartoSymbolOrdering.Location" type="System.Drawing.Point, System.Drawing">
-    <value>12, 70</value>
+    <value>19, 102</value>
   </data>
   <data name="btnCartoSymbolOrdering.Size" type="System.Drawing.Size, System.Drawing">
-    <value>191, 17</value>
+    <value>287, 24</value>
   </data>
   <data name="btnCartoSymbolOrdering.TabIndex" type="System.Int32, mscorlib">
     <value>1</value>
@@ -142,7 +142,7 @@
     <value>btnCartoSymbolOrdering</value>
   </data>
   <data name="&gt;&gt;btnCartoSymbolOrdering.Type" xml:space="preserve">
-    <value>System.Windows.Forms.RadioButton, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+    <value>System.Windows.Forms.RadioButton, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
   <data name="&gt;&gt;btnCartoSymbolOrdering.Parent" xml:space="preserve">
     <value>gbCartography</value>
@@ -154,10 +154,10 @@
     <value>True</value>
   </data>
   <data name="btnCartoSimple.Location" type="System.Drawing.Point, System.Drawing">
-    <value>12, 29</value>
+    <value>19, 42</value>
   </data>
   <data name="btnCartoSimple.Size" type="System.Drawing.Size, System.Drawing">
-    <value>130, 17</value>
+    <value>196, 24</value>
   </data>
   <data name="btnCartoSimple.TabIndex" type="System.Int32, mscorlib">
     <value>0</value>
@@ -169,7 +169,7 @@
     <value>btnCartoSimple</value>
   </data>
   <data name="&gt;&gt;btnCartoSimple.Type" xml:space="preserve">
-    <value>System.Windows.Forms.RadioButton, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+    <value>System.Windows.Forms.RadioButton, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
   <data name="&gt;&gt;btnCartoSimple.Parent" xml:space="preserve">
     <value>gbCartography</value>
@@ -178,10 +178,10 @@
     <value>1</value>
   </data>
   <data name="gbCartography.Location" type="System.Drawing.Point, System.Drawing">
-    <value>0, 135</value>
+    <value>0, 197</value>
   </data>
   <data name="gbCartography.Size" type="System.Drawing.Size, System.Drawing">
-    <value>315, 115</value>
+    <value>504, 168</value>
   </data>
   <data name="gbCartography.TabIndex" type="System.Int32, mscorlib">
     <value>4</value>
@@ -193,7 +193,7 @@
     <value>gbCartography</value>
   </data>
   <data name="&gt;&gt;gbCartography.Type" xml:space="preserve">
-    <value>System.Windows.Forms.GroupBox, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+    <value>System.Windows.Forms.GroupBox, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
   <data name="&gt;&gt;gbCartography.Parent" xml:space="preserve">
     <value>panel1</value>
@@ -202,10 +202,10 @@
     <value>0</value>
   </data>
   <data name="btnRotation.Location" type="System.Drawing.Point, System.Drawing">
-    <value>16, 20</value>
+    <value>26, 29</value>
   </data>
   <data name="btnRotation.Size" type="System.Drawing.Size, System.Drawing">
-    <value>176, 24</value>
+    <value>281, 35</value>
   </data>
   <data name="btnRotation.TabIndex" type="System.Int32, mscorlib">
     <value>0</value>
@@ -217,7 +217,7 @@
     <value>btnRotation</value>
   </data>
   <data name="&gt;&gt;btnRotation.Type" xml:space="preserve">
-    <value>System.Windows.Forms.Button, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+    <value>System.Windows.Forms.Button, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
   <data name="&gt;&gt;btnRotation.Parent" xml:space="preserve">
     <value>groupBox2</value>
@@ -226,10 +226,10 @@
     <value>0</value>
   </data>
   <data name="groupBox2.Location" type="System.Drawing.Point, System.Drawing">
-    <value>0, 256</value>
+    <value>0, 374</value>
   </data>
   <data name="groupBox2.Size" type="System.Drawing.Size, System.Drawing">
-    <value>208, 54</value>
+    <value>333, 79</value>
   </data>
   <data name="groupBox2.TabIndex" type="System.Int32, mscorlib">
     <value>1</value>
@@ -241,7 +241,7 @@
     <value>groupBox2</value>
   </data>
   <data name="&gt;&gt;groupBox2.Type" xml:space="preserve">
-    <value>System.Windows.Forms.GroupBox, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+    <value>System.Windows.Forms.GroupBox, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
   <data name="&gt;&gt;groupBox2.Parent" xml:space="preserve">
     <value>panel1</value>
@@ -253,10 +253,10 @@
     <value>Top, Bottom, Left, Right</value>
   </data>
   <data name="btnChooseSymbol.Location" type="System.Drawing.Point, System.Drawing">
-    <value>16, 24</value>
+    <value>26, 35</value>
   </data>
   <data name="btnChooseSymbol.Size" type="System.Drawing.Size, System.Drawing">
-    <value>280, 74</value>
+    <value>448, 108</value>
   </data>
   <data name="btnChooseSymbol.TabIndex" type="System.Int32, mscorlib">
     <value>0</value>
@@ -265,7 +265,7 @@
     <value>btnChooseSymbol</value>
   </data>
   <data name="&gt;&gt;btnChooseSymbol.Type" xml:space="preserve">
-    <value>System.Windows.Forms.Button, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+    <value>System.Windows.Forms.Button, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
   <data name="&gt;&gt;btnChooseSymbol.Parent" xml:space="preserve">
     <value>GroupBox1</value>
@@ -277,7 +277,7 @@
     <value>0, 0</value>
   </data>
   <data name="GroupBox1.Size" type="System.Drawing.Size, System.Drawing">
-    <value>312, 113</value>
+    <value>499, 165</value>
   </data>
   <data name="GroupBox1.TabIndex" type="System.Int32, mscorlib">
     <value>1</value>
@@ -289,7 +289,7 @@
     <value>GroupBox1</value>
   </data>
   <data name="&gt;&gt;GroupBox1.Type" xml:space="preserve">
-    <value>System.Windows.Forms.GroupBox, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+    <value>System.Windows.Forms.GroupBox, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
   <data name="&gt;&gt;GroupBox1.Parent" xml:space="preserve">
     <value>panel2</value>
@@ -301,10 +301,10 @@
     <value>Top</value>
   </data>
   <data name="panel2.Location" type="System.Drawing.Point, System.Drawing">
-    <value>0, 16</value>
+    <value>0, 23</value>
   </data>
   <data name="panel2.Size" type="System.Drawing.Size, System.Drawing">
-    <value>315, 116</value>
+    <value>504, 170</value>
   </data>
   <data name="panel2.TabIndex" type="System.Int32, mscorlib">
     <value>2</value>
@@ -313,7 +313,7 @@
     <value>panel2</value>
   </data>
   <data name="&gt;&gt;panel2.Type" xml:space="preserve">
-    <value>System.Windows.Forms.Panel, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+    <value>System.Windows.Forms.Panel, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
   <data name="&gt;&gt;panel2.Parent" xml:space="preserve">
     <value>panel1</value>
@@ -328,7 +328,7 @@
     <value>0, 0</value>
   </data>
   <data name="panel3.Size" type="System.Drawing.Size, System.Drawing">
-    <value>315, 16</value>
+    <value>504, 23</value>
   </data>
   <data name="panel3.TabIndex" type="System.Int32, mscorlib">
     <value>3</value>
@@ -337,7 +337,7 @@
     <value>panel3</value>
   </data>
   <data name="&gt;&gt;panel3.Type" xml:space="preserve">
-    <value>System.Windows.Forms.Panel, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+    <value>System.Windows.Forms.Panel, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
   <data name="&gt;&gt;panel3.Parent" xml:space="preserve">
     <value>panel1</value>
@@ -349,7 +349,7 @@
     <value>0, 0</value>
   </data>
   <data name="panel1.Size" type="System.Drawing.Size, System.Drawing">
-    <value>315, 310</value>
+    <value>504, 453</value>
   </data>
   <data name="panel1.TabIndex" type="System.Int32, mscorlib">
     <value>0</value>
@@ -358,7 +358,7 @@
     <value>panel1</value>
   </data>
   <data name="&gt;&gt;panel1.Type" xml:space="preserve">
-    <value>System.Windows.Forms.Panel, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+    <value>System.Windows.Forms.Panel, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
   <data name="&gt;&gt;panel1.Parent" xml:space="preserve">
     <value>$this</value>
@@ -366,14 +366,14 @@
   <data name="&gt;&gt;panel1.ZOrder" xml:space="preserve">
     <value>0</value>
   </data>
-  <metadata name="$this.Localizable" type="System.Boolean, mscorlib, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
+  <metadata name="$this.Localizable" type="System.Boolean, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
     <value>True</value>
   </metadata>
   <data name="$this.AutoScaleBaseSize" type="System.Drawing.Size, System.Drawing">
-    <value>5, 13</value>
+    <value>8, 19</value>
   </data>
   <data name="$this.ClientSize" type="System.Drawing.Size, System.Drawing">
-    <value>327, 311</value>
+    <value>708, 643</value>
   </data>
   <data name="$this.Text" xml:space="preserve">
     <value>PropertyForm_SimpleRenderer</value>
@@ -382,6 +382,6 @@
     <value>PropertyForm_SimpleRenderer</value>
   </data>
   <data name="&gt;&gt;$this.Type" xml:space="preserve">
-    <value>System.Windows.Forms.Form, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+    <value>System.Windows.Forms.Form, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
 </root>

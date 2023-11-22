@@ -241,8 +241,8 @@ namespace gView.DataSources.Fdb.UI.MSSql
                 {
                     if (map != null)
                     {
-                        map.iWidth = (int)(_tileSizeX / _resX);
-                        map.iHeight = (int)(_tileSizeY / _resY);
+                        map.ImageWidth = (int)(_tileSizeX / _resX);
+                        map.ImageHeight = (int)(_tileSizeY / _resY);
                     }
                     if (_createLevels.Contains(level))
                     {

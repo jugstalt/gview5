@@ -24,7 +24,6 @@ namespace gView.Framework.Symbology.UI.Controls
         private ToolStripButton btnRemove;
         private ToolStripButton btnMoveDown;
         private ToolStripButton btnMoveUp;
-        private ToolStrip toolStrip2;
         private ToolStripButton toolStripButton5;
         private ToolStripButton toolStripButton6;
         private ToolStripButton toolStripButton7;
@@ -37,6 +36,7 @@ namespace gView.Framework.Symbology.UI.Controls
         private ToolStripTextBox txtXOffset;
         private ToolStripComboBox toolStripComboBox1;
         private Panel panelPreview;
+        private ToolStrip toolStrip2;
         private ISymbol _selectedSymbol = null;
 
         public delegate void SelectedSymbolChangedEvent(ISymbol symbol);

@@ -1,14 +1,17 @@
 ﻿using gView.GraphicsEngine.Abstraction;
 using gView.GraphicsEngine.GdiPlus.Extensions;
 using System;
+using System.Data;
 using System.Drawing;
 using System.IO;
+using System.Threading.Tasks;
 
 namespace gView.GraphicsEngine.GdiPlus
 {
     internal class GdiBitmap : IBitmap
     {
         private Bitmap _bitmap;
+        private int _bytesLockersCount = 0;
 
         #region Constructors
 
@@ -115,18 +118,36 @@ namespace gView.GraphicsEngine.GdiPlus
         }
         public BitmapPixelData LockBitmapPixelData(BitmapLockMode lockMode, PixelFormat pixelFormat)
         {
-            var bitmapData = _bitmap.LockBits(new Rectangle(0, 0, _bitmap.Width, _bitmap.Height),
-                                             lockMode.ToGidImageLockMode(),
-                                             pixelFormat.ToGdiPixelFormat());
+            _bytesLockersCount++;
+            try
+            {
+                var bitmapData = _bitmap.LockBits(new Rectangle(0, 0, _bitmap.Width, _bitmap.Height),
+                                                 lockMode.ToGidImageLockMode(),
+                                                 pixelFormat.ToGdiPixelFormat());
 
-            return new GdiBitmapPixelData(bitmapData, lockMode);
+
+
+                return new GdiBitmapPixelData(bitmapData, lockMode);
+            }
+            catch
+            {
+                _bytesLockersCount--;
+                throw;
+            }
         }
 
         public void UnlockBitmapPixelData(BitmapPixelData bitmapPixelData)
         {
-            if (bitmapPixelData is GdiBitmapPixelData)
+            try
             {
-                _bitmap.UnlockBits(((GdiBitmapPixelData)bitmapPixelData).BitmapData);
+                if (bitmapPixelData is GdiBitmapPixelData)
+                {
+                    _bitmap.UnlockBits(((GdiBitmapPixelData)bitmapPixelData).BitmapData);
+                }
+            }
+            finally
+            {
+                _bytesLockersCount--;
             }
         }
 
@@ -143,9 +164,46 @@ namespace gView.GraphicsEngine.GdiPlus
         {
             if (_bitmap != null)
             {
-                _bitmap.Dispose();
-                _bitmap = null;
+                if (Current.UseSecureDisposingOnUserInteractiveUIs)
+                {
+                    //Task.Run(async () =>
+                    //{
+                    //    await DisposeSecure();
+                    //});
+                    DisposeSecure().Wait(5000);
+                }
+                else
+                {
+                    _bitmap.Dispose();
+                    _bitmap = null;
+                }
             }
+        }
+
+        async private Task DisposeSecure()
+        {
+            var currentBitmap = _bitmap;
+            _bitmap = null;
+
+            if (currentBitmap is null)
+            {
+                return;
+            }
+
+            if (_bytesLockersCount > 0)
+            {
+                var startTime = DateTime.Now;
+                while (_bytesLockersCount > 0)
+                {
+                    await Task.Delay(10);
+                    if ((DateTime.Now - startTime).TotalSeconds > 5)
+                    {
+                        return; // let make GC do the collection later
+                    }
+                }
+            }
+
+            currentBitmap.Dispose();
         }
 
         #endregion IDisposable

@@ -1,0 +1,325 @@
+.carto-main {
+    position: absolute;
+    left: 0px;
+    top: 0px;
+    right: 0px;
+    bottom: 0px;
+    background: #0094ff;
+    user-select: none;
+}
+
+    .carto-main .toolbar {
+        position: absolute;
+        left: 0px;
+        top: 0px;
+        right: 0px;
+        height: 100px;
+        background: #ccc;
+    }
+
+        .carto-main .toolbar .carto-tool-box {
+            height: 94px;
+            display: inline-block;
+            vertical-align: top;
+            margin: 2px;
+            border-radius: 4px;
+        }
+
+            .carto-main .toolbar .carto-tool-box .carto-tool {
+                height: 94px;
+                display: inline-block;
+                text-align: center;
+                padding: 8px;
+                margin: 0px 2px;
+                max-width: 64px;
+                vertical-align: top;
+                border: 1px solid transparent;
+                cursor: pointer;
+                box-sizing: border-box;
+                border-radius: 4px;
+                font-size: 0.9em;
+            }
+
+        .carto-main .toolbar .carto-tool:hover {
+            background-color: #0094ff46;
+            border: 1px solid #0094ff;
+            box-sizing: border-box;
+        }
+
+        .carto-main .toolbar .carto-tool-box .carto-tool-sub-box {
+            position: relative;
+            display: inline-block;
+            height: 94px;
+            vertical-align: top;
+            border: 1px solid #888;
+            border-radius: 8px;
+            box-sizing: border-box;
+        }
+
+            .carto-main .toolbar .carto-tool-box .carto-tool-sub-box > .title {
+                position: absolute;
+                bottom: 0px;
+                left: 0px;
+                right: 0px;
+                height: 20px;
+                text-align: center;
+                color: #888;
+                font-size: 11px;
+                white-space: nowrap;
+                overflow: hidden;
+                text-overflow: ellipsis;
+            }
+
+            .carto-main .toolbar .carto-tool-box .carto-tool-sub-box .carto-tool {
+                height: 74px;
+            }
+
+            .carto-main .toolbar .carto-tool-box .carto-tool-sub-box .explorer-context-tool {
+                height: 37px;
+                overflow: hidden;
+                padding: 4px 7px;
+            }
+
+                .carto-main .toolbar .carto-tool-box .carto-tool-sub-box .explorer-context-tool:hover {
+                    background-color: #0094ff46;
+                    border: 1px solid #0094ff;
+                    box-sizing: border-box;
+                }
+
+                .carto-main .toolbar .carto-tool-box .carto-tool-sub-box .explorer-context-tool .title {
+                    display: inline-block;
+                    vertical-align: top;
+                }
+
+    .carto-main .toc {
+        position: absolute;
+        left: 0px;
+        top: 102px;
+        bottom: 27px;
+        width: 325px;
+        /*background: #fff;*/
+        overflow: auto;
+    }
+
+        .carto-main .toc .grouplayer-text {
+            /*font-weight: bold;*/
+            font-style: italic;
+            color: var(--mud-palette-primary);
+        }
+
+        .carto-main .toc .toctreenode-selected > .mud-treeview-item-content,
+        .carto-main .toc .toctreenode-selected > .mud-treeview-item-content .grouplayer-text {
+            background-color: #0094ff;
+            color: #efefef;
+        }
+
+        .carto-main .toc .carto-initial-tool {
+            border: 1px solid var(--mud-palette-lines-default);
+            background-color: var(--mud-palette-primary-hover);
+            border-radius: 5px;
+            padding: 5px;
+            cursor: pointer;
+            margin: 16px 0px;
+        }
+
+            .carto-main .toc .carto-initial-tool .icon {
+                display: inline-block;
+                vertical-align: bottom;
+            }
+            .carto-main .toc .carto-initial-tool .title {
+                display: inline-block;
+            }
+
+    .carto-main .toc-content-splitter {
+        position: absolute;
+        left: 325px;
+        width: 5px;
+        top: 102px;
+        bottom: 27px;
+        cursor: w-resize;
+    }
+
+    .carto-main .content {
+        position: absolute;
+        left: 330px;
+        top: 102px;
+        right: 0px;
+        bottom: 27px;
+        background: #efefef;
+        overflow: auto;
+        padding: 0px;
+    }
+
+        .carto-main .content .mud-tabs {
+            position: absolute;
+            inset: 0px 0px 0px 0px;
+        }
+
+            .carto-main .content .mud-tabs .mud-tabs-panels {
+                position: absolute;
+                inset: 49px 0px 0px 0px;
+                overflow: auto;
+            }
+
+                .carto-main .content .mud-tabs .mud-tabs-panels .mud-table-container {
+                    overflow: unset !important;
+                }
+
+    .carto-main .status-bar {
+        position: absolute;
+        left: 0px;
+        bottom: 0px;
+        right: 0px;
+        height: 25px;
+        background: #aaa;
+        overflow: hidden;
+    }
+
+.table-column-icon {
+    width: 30px;
+}
+
+.tocnode.selected > li > div:first-child {
+    background: #0078d476;
+    color: #333;
+}
+
+.carto-main .context-selected {
+    background: #ffff00a9;
+}
+
+.carto-main .current-selected {
+    background: #0078d476;
+}
+
+/**** Darkmode ****/
+.carto-main.dark .content {
+    background: #333;
+}
+
+.explorer-dialog-item.selected {
+    background: #0078d476 !important;
+}
+
+.carto-main.dark .toolbar {
+    background: #333;
+}
+
+.carto-main.dark .context-selected {
+    background: #555500a9;
+}
+
+.carto-main.dark .status-bar {
+    background: #333;
+}
+
+.carto-main.dark .sketchpen-icon-basic-bg-light-24 {
+    background-image: url(../../../sketchpen/basic/content/img/sketchpen/bg-dark/24/1/sprite.png) !important;
+}
+
+.carto-main.dark .sketchpen-icon-webgis-bg-light-24 {
+    background-image: url(../../../sketchpen/webgis/content/img/sketchpen/bg-dark/24/1/sprite.png) !important;
+}
+
+.carto-symbol-composer-button {
+    cursor: pointer;
+    width: 150px;
+    height: 50px;
+    border: 1px solid #616161;
+    border-radius: 6px;
+    margin: 5px 0px;
+}
+
+.carto-symbol-composer-preview {
+    width: 220px;
+    height: 130px;
+    background-repeat: no-repeat;
+    background-position: center;
+}
+
+.carto-symbol-gallery-tile {
+    cursor:pointer;
+    display: inline-block;
+    width: 150px;
+    height: 140px;
+    background-repeat: no-repeat;
+    background-position: center;
+}
+    .carto-symbol-gallery-tile:hover {
+        background-color: var(--mud-palette-primary-hover);
+    }
+
+.carto-symbol-composer-stack-item {
+
+}
+
+    .carto-symbol-composer-stack-item.selected {
+        background-color: var(--mud-palette-primary);
+    }
+
+@media (-webkit-min-device-pixel-ratio: 1.5), (min-resolution: 144dpi) {
+
+    .carto-main.dark .sketchpen-icon-basic-bg-light-24 {
+        background-image: url("../../../sketchpen/basic/content/img/sketchpen/bg-dark/24/1.5/sprite.png") !important;
+    }
+
+    .carto-main.dark .sketchpen-icon-webgis-bg-light-24 {
+        background-image: url("../../../sketchpen/webgis/content/img/sketchpen/bg-dark/24/1.5/sprite.png") !important;
+    }
+}
+
+@media (-webkit-min-device-pixel-ratio: 2), (min-resolution: 192dpi) {
+
+    .carto-main.dark .sketchpen-icon-basic-bg-light-24 {
+        background-image: url("../../../sketchpen/basic/content/img/sketchpen/bg-dark/24/2/sprite.png") !important;
+    }
+
+    .carto-main.dark .sketchpen-icon-webgis-bg-light-24 {
+        background-image: url("../../../sketchpen/webgis/content/img/sketchpen/bg-dark/24/2/sprite.png") !important;
+    }
+}
+
+
+/* Icons */
+.sketchpen-icon-basic-bg-light-24 {
+    margin-top: 0px;
+    margin-bottom: 0px;
+}
+
+/* MudBlazor overrides */
+.mud-select-input > .explorer-dialog-root-select-item {
+    padding-left: 0px !important;
+}
+
+.mud-list-item .mud-icon-button {
+    padding: 2px 6px 2px 2px !important;
+}
+
+.mud-list-item .mud-icon-root {
+    margin-right: 6px;
+}
+
+.mud-table-cell {
+    white-space: nowrap;
+}
+
+/* Checkbox in toc */
+.mud-input-control.mud-input-control-boolean-input {
+    position: relative;
+    left: -5px;
+}
+
+/* Cards */
+
+.mud-card-header {
+    padding: 4px 16px;
+    border-bottom: 1px solid var(--mud-palette-lines-default);
+    background-color: var(--mud-palette-primary-hover);
+}
+
+.mud-card-content {
+    padding: 0px 16px;
+}
+
+
+

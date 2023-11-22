@@ -1,6 +1,7 @@
 using gView.Framework.Data;
 using gView.Framework.Geometry;
 using gView.Framework.system;
+using gView.Geometry.Framework.Geometry.Extesnsions;
 using System.IO;
 using System.Threading.Tasks;
 
@@ -44,21 +45,7 @@ namespace gView.DataSources.Raster.File
                 }
 
                 _tfw = new TFWFile(tfwfilename);
-                //if (!_tfw.isValid)
-                //{
-                //    _valid = false;
-                //    return;
-                //}
-
-                FileInfo fiPrj = new FileInfo(fi.FullName.Substring(0, fi.FullName.Length - fi.Extension.Length) + ".prj");
-                if (fiPrj.Exists)
-                {
-                    StreamReader sr = new StreamReader(fiPrj.FullName);
-                    string wkt = sr.ReadToEnd();
-                    sr.Close();
-
-                    _sRef = gView.Framework.Geometry.SpatialReference.FromWKT(wkt);
-                }
+                _sRef = fi.FileSpatialReference();
 
                 if (polygon != null)
                 {

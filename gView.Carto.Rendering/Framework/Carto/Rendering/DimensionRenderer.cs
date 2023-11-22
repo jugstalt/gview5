@@ -101,7 +101,7 @@ namespace gView.Framework.Carto.Rendering
 
         public void Draw(IDisplay disp, gView.Framework.Data.IFeature feature)
         {
-            if (disp == null || disp.mapScale < 1.0 ||
+            if (disp == null || disp.MapScale < 1.0 ||
                 feature == null || !(feature.Shape is IPolyline))
             {
                 return;
@@ -115,10 +115,10 @@ namespace gView.Framework.Carto.Rendering
             path.AddPoint(new Point());
 
             pLine.AddPath(path);
-            double l = 7.0 * disp.mapScale / (disp.dpm);  // [m]
-            if (disp.refScale >= 1.0)
+            double l = 7.0 * disp.MapScale / (disp.Dpm);  // [m]
+            if (disp.ReferenceScale >= 1.0)
             {
-                l *= disp.refScale / disp.mapScale;
+                l *= disp.ReferenceScale / disp.MapScale;
             }
 
             for (int i = 0; i < fpLine.PathCount; i++)

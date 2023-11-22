@@ -26,8 +26,8 @@ namespace gView.Framework.Carto
             this.Display.MapUnits = original.Display.MapUnits;
             this.Display.DisplayUnits = original.Display.DisplayUnits;
 
-            this.Display.mapScale = original.Display.mapScale;
-            this.Display.refScale = original.refScale;
+            this.Display.MapScale = original.Display.MapScale;
+            this.Display.ReferenceScale = original.ReferenceScale;
             this.Display.SpatialReference = original.SpatialReference != null ? original.SpatialReference.Clone() as ISpatialReference : null;
 
             foreach (IGraphicElement grElement in original.Display.GraphicsContainer.Elements)
@@ -293,7 +293,7 @@ namespace gView.Framework.Carto
             if (rootLayer != null)
             {
                 _interpolMethod = rootLayer.InterpolationMethod;
-                _transparency = rootLayer.Transparency;
+                _transparency = rootLayer.Opacity;
             }
         }
 
@@ -318,8 +318,8 @@ namespace gView.Framework.Carto
                 int iWidth = 0, iHeight = 0;
                 int min_x = Math.Max(0, (int)Math.Min(minx, maxx) - 1);
                 int min_y = Math.Max(0, (int)Math.Min(miny, maxy) - 1);
-                int max_x = Math.Min(iWidth = _map.iWidth, (int)Math.Max(minx, maxx) + 1);
-                int max_y = Math.Min(iHeight = _map.iHeight, (int)Math.Max(miny, maxy) + 1);
+                int max_x = Math.Min(iWidth = _map.ImageWidth, (int)Math.Max(minx, maxx) + 1);
+                int max_y = Math.Min(iHeight = _map.ImageHeight, (int)Math.Max(miny, maxy) + 1);
 
                 using (var paintContext = await _layer.RasterClass.BeginPaint(_map.Display, _cancelTracker))
                 {

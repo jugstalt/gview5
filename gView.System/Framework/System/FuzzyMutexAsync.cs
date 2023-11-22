@@ -12,6 +12,7 @@ namespace gView.Framework.system
         {
             var random = new Random(Environment.TickCount);
             var start = DateTime.Now;
+            bool wasBlocked = false;
 
             while (true)
             {
@@ -21,6 +22,7 @@ namespace gView.Framework.system
                 }
                 else
                 {
+                    wasBlocked = true;
                     if ((DateTime.Now - start).TotalMilliseconds > timeoutMilliSeconds)
                     {
                         throw new FuzzyMutexAsyncExcepiton($"FuzzyMutex - timeout milliseconds reached: {(DateTime.Now - start).TotalMilliseconds} > {timeoutMilliSeconds}");
@@ -30,24 +32,27 @@ namespace gView.Framework.system
                 }
             }
 
-            return new Mutex(key);
+            return new Mutex(key, wasBlocked);
         }
 
         #region Classes
 
         public interface IMutex : IDisposable
         {
-
+            bool WasBlocked { get; }  
         }
 
         private class Mutex : IMutex
         {
             private readonly string _key;
-
-            public Mutex(string key)
+            private readonly bool _wasBlocked;
+            public Mutex(string key, bool hadLocks)
             {
                 _key = key;
+                _wasBlocked = hadLocks;
             }
+
+            public bool WasBlocked => _wasBlocked;
 
             #region IDisposable
 

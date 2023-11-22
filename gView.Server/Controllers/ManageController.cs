@@ -1,17 +1,25 @@
 ﻿using gView.Core.Framework.Exceptions;
+using gView.Framework.IO;
+using gView.Framework.Security;
 using gView.Framework.system;
 using gView.MapServer;
+using gView.Security.Framework;
 using gView.Server.AppCode;
 using gView.Server.AppCode.Extensions;
-using gView.Server.Models;
+using gView.Server.Extensions;
+using gView.Server.Models.Manage;
 using gView.Server.Services.Logging;
 using gView.Server.Services.MapServer;
 using gView.Server.Services.Security;
 using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
+using YamlDotNet.Core;
+using YamlDotNet.Serialization;
+using YamlDotNet.Serialization.NamingConventions;
 
 namespace gView.Server.Controllers
 {
@@ -360,6 +368,98 @@ namespace gView.Server.Controllers
         }
 
         [HttpGet]
+        public Task<IActionResult> ServiceMetadata(string service)
+            => SecureApiCall(async () =>
+            {
+                var pluginManager = new PlugInManager();
+                var mapService = _mapServiceMananger.GetMapService(service);
+                var map = await _mapServiceMananger.Instance.GetServiceMapAsync(mapService);
+                Dictionary<string, string> meta = new Dictionary<string, string>();
+
+                if (map == null)
+                {
+                    return Json(meta);
+                }
+
+                var serializer = new SerializerBuilder()
+                    .WithNamingConvention(CamelCaseNamingConvention.Instance)
+                    .Build();
+
+                List<IMetadataProvider> metadataProviders = new List<IMetadataProvider>();
+                foreach (var metadataProviderType in pluginManager.GetPlugins(Framework.system.Plugins.Type.IMetadataProvider))
+                {
+                    var metadataProvider = (map.MetadataProvider(PlugInManager.PluginIDFromType(metadataProviderType))
+                        ?? Activator.CreateInstance(metadataProviderType)) as IMetadataProvider;
+
+                    if (metadataProvider is IPropertyModel && await metadataProvider.ApplyTo(map, true) == true)
+                    {
+                        metadataProviders.Add(metadataProvider);
+                    }
+                }
+
+                foreach (var metadataProvider in metadataProviders.OrderBy(m => m.Name))
+                {
+                    var propertyObject = ((IPropertyModel)metadataProvider).GetPropertyModel();
+                    meta.Add(metadataProvider.Name, serializer.Serialize(propertyObject));
+                }
+
+                return Json(meta);
+            });
+
+        [HttpPost]
+        public Task<IActionResult> ServiceMetadata(string service, Dictionary<string, string> metadata) => SecureApiCall(async () =>
+        {
+            if (metadata == null && metadata.Keys.Count == 0)
+            {
+                return Json(new { success = false });
+            }
+
+            var pluginManager = new PlugInManager();
+            var mapService = _mapServiceMananger.GetMapService(service);
+            var map = await _mapServiceMananger.Instance.GetServiceMapAsync(mapService);
+
+            var deserializer = new DeserializerBuilder()
+                    .WithNamingConvention(CamelCaseNamingConvention.Instance)
+                    .Build();
+            var metadataProviders = new List<IMetadataProvider>();
+
+            foreach (var metadataProviderType in pluginManager.GetPlugins(Framework.system.Plugins.Type.IMetadataProvider))
+            {
+                var metadataProvider = (map.MetadataProvider(PlugInManager.PluginIDFromType(metadataProviderType))
+                    ?? Activator.CreateInstance(metadataProviderType)) as IMetadataProvider;
+
+                if (metadataProvider is IPropertyModel &&
+                    metadata.ContainsKey(metadataProvider.Name) &&
+                    await metadataProvider.ApplyTo(map) == true)
+                {
+                    try
+                    {
+                        var propertyObject = deserializer.Deserialize(metadata[metadataProvider.Name],
+                                                                      ((IPropertyModel)metadataProvider).PropertyModelType);
+
+                        ((IPropertyModel)metadataProvider).SetPropertyModel(propertyObject);
+                        metadataProviders.Add(metadataProvider);
+
+                    }
+                    catch (YamlException see)
+                    {
+                        throw new MapServerException($"Syntax Error ({metadataProvider.Name}): {see.InnerException?.Message ?? see.Message} in Line: {see.End.Line} Column: {see.End.Column}");
+                    }
+                }
+            }
+
+            var meta = new gView.Framework.Data.Metadata.Metadata();
+            await meta.SetMetadataProviders(metadataProviders, map);
+            XmlStream xmlStream = new XmlStream("");
+            await meta.WriteMetadata(xmlStream);
+
+            FileInfo fi = new FileInfo($"{_mapServiceMananger.Options.ServicesPath}/{service}.meta");
+            xmlStream.WriteStream(fi.FullName);
+
+            return Json(new { success = true });
+        });
+
+        [HttpGet]
         async public Task<IActionResult> FolderSecurity(string folder)
         {
             return await SecureApiCall(async () =>
@@ -499,6 +599,8 @@ namespace gView.Server.Controllers
 
         #region Security
 
+        #region TokenUsers (=Clients)
+
         public IActionResult TokenUsers()
         {
             return SecureApiCall(() =>
@@ -508,7 +610,7 @@ namespace gView.Server.Controllers
         }
 
         [HttpPost]
-        public IActionResult CreateTokenUser(CreateTokenUserModel model)
+        public IActionResult TokenUserCreate(CreateTokenUserModel model)
         {
             return SecureApiCall(() =>
             {
@@ -520,6 +622,11 @@ namespace gView.Server.Controllers
                     throw new MapServerException("Username is empty");
                 }
 
+                if(model.NewUsername.StartsWith(Globals.UrlTokenNamePrefix))
+                {
+                    throw new MapServerException($"{Globals.UrlTokenNamePrefix} is not allowed as prefix for a username");
+                }
+
                 _loginManager.CreateTokenLogin(model.NewUsername.ToLower(), model.NewPassword);
 
                 return Json(new { success = true });
@@ -527,7 +634,7 @@ namespace gView.Server.Controllers
         }
 
         [HttpPost]
-        public IActionResult ChangeTokenUserPassword(ChangeTokenUserPasswordModel model)
+        public IActionResult TokenUserChangePassword(ChangeTokenUserPasswordModel model)
         {
             return SecureApiCall(() =>
             {
@@ -539,6 +646,75 @@ namespace gView.Server.Controllers
                 return Json(new { success = true });
             });
         }
+
+        [HttpPost]
+        public IActionResult TokenUserDelete(DeleteTokenUserModel model)
+        {
+            return SecureApiCall(() =>
+            {
+                model.Username = model.Username?.Trim() ?? String.Empty;
+
+                _loginManager.DeleteTokenLogin(model.Username);
+
+                return Json(new { success = true });
+            });
+        }
+
+        #endregion
+
+        #region Url Tokens
+
+        public IActionResult UrlTokenCreate(CreateUrlTokenModel model) => SecureApiCall(() =>
+        {
+            return SecureApiCall(() =>
+            {
+                model.NewTokenName = model.NewTokenName?.Trim().ToLower() ?? String.Empty;
+
+                if (String.IsNullOrWhiteSpace(model.NewTokenName))
+                {
+                    throw new MapServerException("token is empty");
+                }
+
+                model.NewTokenName.ValidateRawUrlTokenName();
+
+                string tokenName = $"{Globals.UrlTokenNamePrefix}{model.NewTokenName}";
+                string token = $"{tokenName}~{SecureCrypto.GenerateToken(64)}";
+
+                _loginManager.CreateTokenLogin(tokenName, token);
+
+                return Json(new { success = true });
+            });
+        });
+
+        [HttpPost]
+        public IActionResult UrlTokenRecycle(UrlTokenModel model)
+        {
+            return SecureApiCall(() =>
+            {
+                string tokenName = model.UrlToken.NameOfUrlToken();
+
+                string token = $"{tokenName}~{SecureCrypto.GenerateToken(64)}";
+
+                _loginManager.ChangeTokenUserPassword(tokenName, token);
+
+                return Json(new { success = true });
+            });
+        }
+
+        [HttpPost]
+        public IActionResult UrlTokenDelete(UrlTokenModel model)
+        {
+            return SecureApiCall(() =>
+            {
+                string tokenName = model.UrlToken.NameOfUrlToken();
+
+                _loginManager.DeleteTokenLogin(tokenName);
+
+                return Json(new { success = true });
+            });
+        }
+
+        #endregion
 
         #endregion
 
@@ -590,9 +766,9 @@ namespace gView.Server.Controllers
             {
                 return Json(new { success = false, error = mse.Message });
             }
-            catch (Exception)
+            catch (Exception/* ex*/)
             {
-                return Json(new { success = false, error = "unknown error" });
+                return Json(new { success = false, error = $"unknown error" });
             }
         }
 

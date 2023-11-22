@@ -55,54 +55,6 @@ namespace gView.Server.AppCode
             this.Response.Cookies.Delete(Globals.AuthCookieName);
         }
 
-        public AuthToken LoginAuthToken(HttpRequest request)
-        {
-            AuthToken authToken = null;
-
-            try
-            {
-                #region From Token
-
-                string token = request.Query["token"];
-                if (String.IsNullOrWhiteSpace(token) && request.HasFormContentType)
-                {
-                    try
-                    {
-                        token = request.Form["token"];
-                    }
-                    catch { }
-                }
-                if (!String.IsNullOrEmpty(token))
-                {
-                    return authToken = _encryptionCertificate.FromToken(token);
-                }
-
-                #endregion
-
-                #region From Cookie
-
-                string cookie = request.Cookies[Globals.AuthCookieName];
-                if (!String.IsNullOrWhiteSpace(cookie))
-                {
-                    return authToken = _encryptionCertificate.FromToken(cookie);
-                }
-
-                #endregion
-
-                return authToken = new AuthToken()
-                {
-                    Username = String.Empty
-                };
-            }
-            finally
-            {
-                if (authToken == null || authToken.IsExpired)
-                {
-                    throw new InvalidTokenException();
-                }
-            }
-        }
-
         #endregion
 
         #region ETAG
@@ -148,15 +100,16 @@ namespace gView.Server.AppCode
 
         public void AppendEtag(DateTime expires)
         {
-            this.Response.Headers.Add("ETag", expires.Ticks.ToString());
-            this.Response.Headers.Add("Last-Modified", DateTime.UtcNow.ToString("R"));
-            this.Response.Headers.Add("Expires", expires.ToString("R"));
-            this.Response.Headers.Add("Cache-Control", "private, max-age=" + (int)(new TimeSpan(24, 0, 0)).TotalSeconds);
+            this.Response.Headers.Append("ETag", expires.Ticks.ToString());
+            this.Response.Headers.Append("Last-Modified", DateTime.UtcNow.ToString("R"));
+            this.Response.Headers.Append("Expires", expires.ToString("R"));
+            this.Response.Headers.Append("Cache-Control", "private, max-age=" + (int)(new TimeSpan(24, 0, 0)).TotalSeconds);
         }
 
         #endregion
 
-        async virtual protected Task<IActionResult> SecureMethodHandler(Func<Identity, Task<IActionResult>> func, Func<Exception, IActionResult> onException = null)
+        async virtual protected Task<IActionResult> SecureMethodHandler(Func<Identity, Task<IActionResult>> func, 
+                                                                        Func<Exception, IActionResult> onException = null)
         {
             if (_mapServerService.Options.IsValid == false)
             {

@@ -521,7 +521,7 @@ namespace gView.Win.Carto
             }
             else
             {
-                cmbScale.Text = String.Format("{0:0,0}", sender.mapScale);
+                cmbScale.Text = String.Format("{0:0,0}", sender.MapScale);
                 sliderScale.Value = _lastSliderValue = 0D;
             }
         }
@@ -642,12 +642,12 @@ namespace gView.Win.Carto
                 return;
             }
 
-            if (scale <= 0 || scale == (int)((IDisplay)_mapDocument.FocusMap).mapScale)
+            if (scale <= 0 || scale == (int)((IDisplay)_mapDocument.FocusMap).MapScale)
             {
                 return;
             }
 
-            _mapDocument.FocusMap.Display.mapScale = scale;
+            _mapDocument.FocusMap.Display.MapScale = scale;
             await _mapApplication.RefreshActiveMap(DrawPhase.All);
         }
 

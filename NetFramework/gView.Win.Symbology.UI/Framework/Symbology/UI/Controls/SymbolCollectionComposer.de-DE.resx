@@ -124,18 +124,6 @@
   <data name="panelPreview.Size" type="System.Drawing.Size, System.Drawing">
     <value>228, 91</value>
   </data>
-  <data name="toolStrip2.Location" type="System.Drawing.Point, System.Drawing">
-    <value>3, 22</value>
-  </data>
-  <data name="toolStrip2.Size" type="System.Drawing.Size, System.Drawing">
-    <value>228, 39</value>
-  </data>
-  <data name="boxPreview.Location" type="System.Drawing.Point, System.Drawing">
-    <value>0, 411</value>
-  </data>
-  <data name="boxPreview.Size" type="System.Drawing.Size, System.Drawing">
-    <value>234, 155</value>
-  </data>
   <data name="toolStripButton5.Image" type="System.Drawing.Bitmap, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
     <value>
         iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8
@@ -231,6 +219,24 @@
   <data name="toolStripButton10.Size" type="System.Drawing.Size, System.Drawing">
     <value>34, 28</value>
   </data>
+  <data name="txtXOffset.Font" type="System.Drawing.Font, System.Drawing">
+    <value>Segoe UI, 9pt</value>
+  </data>
+  <data name="txtXOffset.Size" type="System.Drawing.Size, System.Drawing">
+    <value>100, 31</value>
+  </data>
+  <data name="txtYOffset.Font" type="System.Drawing.Font, System.Drawing">
+    <value>Segoe UI, 9pt</value>
+  </data>
+  <data name="txtYOffset.Size" type="System.Drawing.Size, System.Drawing">
+    <value>100, 31</value>
+  </data>
+  <data name="txtRotation.Font" type="System.Drawing.Font, System.Drawing">
+    <value>Segoe UI, 9pt</value>
+  </data>
+  <data name="txtRotation.Size" type="System.Drawing.Size, System.Drawing">
+    <value>100, 31</value>
+  </data>
   <data name="toolStripSplitButton1.Image" type="System.Drawing.Bitmap, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
     <value>
         iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8
@@ -249,23 +255,20 @@
   <data name="toolStripSplitButton1.Size" type="System.Drawing.Size, System.Drawing">
     <value>21, 4</value>
   </data>
-  <data name="txtXOffset.Size" type="System.Drawing.Size, System.Drawing">
-    <value>100, 31</value>
-  </data>
-  <data name="txtYOffset.Size" type="System.Drawing.Size, System.Drawing">
-    <value>100, 31</value>
-  </data>
-  <data name="txtRotation.Size" type="System.Drawing.Size, System.Drawing">
-    <value>100, 31</value>
-  </data>
   <data name="toolStripComboBox1.Size" type="System.Drawing.Size, System.Drawing">
     <value>121, 33</value>
   </data>
-  <data name="panel2.Size" type="System.Drawing.Size, System.Drawing">
-    <value>234, 24</value>
+  <data name="toolStrip2.Location" type="System.Drawing.Point, System.Drawing">
+    <value>3, 22</value>
   </data>
-  <data name="toolStrip1.Size" type="System.Drawing.Size, System.Drawing">
-    <value>234, 33</value>
+  <data name="toolStrip2.Size" type="System.Drawing.Size, System.Drawing">
+    <value>228, 39</value>
+  </data>
+  <data name="boxPreview.Location" type="System.Drawing.Point, System.Drawing">
+    <value>0, 411</value>
+  </data>
+  <data name="boxPreview.Size" type="System.Drawing.Size, System.Drawing">
+    <value>234, 155</value>
   </data>
   <data name="toolStripButton1.Image" type="System.Drawing.Bitmap, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
     <value>
@@ -333,6 +336,12 @@
   <data name="btnMoveUp.Size" type="System.Drawing.Size, System.Drawing">
     <value>34, 28</value>
   </data>
+  <data name="toolStrip1.Size" type="System.Drawing.Size, System.Drawing">
+    <value>234, 33</value>
+  </data>
+  <data name="panel2.Size" type="System.Drawing.Size, System.Drawing">
+    <value>234, 24</value>
+  </data>
   <data name="lbSymbols.Size" type="System.Drawing.Size, System.Drawing">
     <value>234, 377</value>
   </data>
@@ -347,7 +356,7 @@
         AAEAAAD/////AQAAAAAAAAAMAgAAAFdTeXN0ZW0uV2luZG93cy5Gb3JtcywgVmVyc2lvbj00LjAuMC4w
         LCBDdWx0dXJlPW5ldXRyYWwsIFB1YmxpY0tleVRva2VuPWI3N2E1YzU2MTkzNGUwODkFAQAAACZTeXN0
         ZW0uV2luZG93cy5Gb3Jtcy5JbWFnZUxpc3RTdHJlYW1lcgEAAAAERGF0YQcCAgAAAAkDAAAADwMAAAAK
-        CAAAAk1TRnQBSQFMAgEBAgEAAQwBAAEMAQABEwEAARQBAAT/AQkBAAj/AUIBTQE2AQQGAAE2AQQCAAEo
+        CAAAAk1TRnQBSQFMAgEBAgEAARQBAAEUAQABEwEAARQBAAT/AQkBAAj/AUIBTQE2AQQGAAE2AQQCAAEo
         AwABTAMAARQDAAEBAQABCAUAAfABBRgAAYACAAGAAwACgAEAAYADAAGAAQABgAEAAoACAAPAAQABwAHc
         AcABAAHwAcoBpgEAATMFAAEzAQABMwEAATMBAAIzAgADFgEAAxwBAAMiAQADKQEAA1UBAANNAQADQgEA
         AzkBAAGAAXwB/wEAAlAB/wEAAZMBAAHWAQAB/wHsAcwBAAHGAdYB7wEAAdYC5wEAAZABqQGtAgAB/wEz

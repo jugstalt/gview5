@@ -586,7 +586,7 @@ namespace gView.Framework.Carto.Rendering
             {
                 try
                 {
-                    double tolerance = 1.0 * disp.mapScale / disp.dpm;  // 1 Pixel
+                    double tolerance = 1.0 * disp.MapScale / disp.Dpm;  // 1 Pixel
 
                     // Wichtig bei Flächen mit sehr vielen Vertices... Bundesländer, Länder Thema kann sonst beim Clippen abstürzen
                     //if (polygon.TotalPointCount > MaxPolygonTotalPointCount)

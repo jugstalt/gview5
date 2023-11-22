@@ -296,7 +296,7 @@ namespace gView.Interoperability.ArcXML
                     return;
                 }
 
-                map.Display.dpi = dpi;
+                map.Display.Dpi = dpi;
                 if (sRef != null)
                 {
                     map.Display.SpatialReference = sRef;
@@ -309,7 +309,7 @@ namespace gView.Interoperability.ArcXML
 
                 if (properties.SelectSingleNode("DISPLAY[@refscale]") != null)
                 {
-                    map.Display.refScale = double.Parse(properties.SelectSingleNode("DISPLAY[@refscale]").Attributes["refscale"].Value.Replace(",", "."), _nhi);
+                    map.Display.ReferenceScale = double.Parse(properties.SelectSingleNode("DISPLAY[@refscale]").Attributes["refscale"].Value.Replace(",", "."), _nhi);
                 }
 
 
@@ -841,8 +841,8 @@ namespace gView.Interoperability.ArcXML
                         serviceRequest.Response = CreateException("invalid gv_display node (no iwidth/iheight attribute)");
                         return;
                     }
-                    display.iWidth = Convert.ToInt32(dispNode.Attributes["iwidth"].Value);
-                    display.iHeight = Convert.ToInt32(dispNode.Attributes["iheight"].Value);
+                    display.ImageWidth = Convert.ToInt32(dispNode.Attributes["iwidth"].Value);
+                    display.ImageHeight = Convert.ToInt32(dispNode.Attributes["iheight"].Value);
 
                     XmlNode dispEnvNode = dispNode.SelectSingleNode("ENVELOPE");
                     if (dispNode == null)

@@ -532,7 +532,7 @@ namespace gView.Framework.Data
     public interface IRasterLayer : ILayer
     {
         InterpolationMethod InterpolationMethod { get; set; }
-        float Transparency { get; set; }
+        float Opacity { get; set; }
         ArgbColor TransparentColor { get; set; }
         FilterImplementations FilterImplementation { get; set; }
 

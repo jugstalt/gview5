@@ -1,0 +1,58 @@
+@inherits BaseHandler
+@implements IDisposable
+@inject ExplorerEventBusService EventBus
+
+@if (table != null)
+{
+    <MudTable Items="@table.Rows" Hover="true" Dense="true"
+              T="RowItem">
+        <HeaderContent>
+            @foreach (var column in table.Columns)
+            {
+                <MudTh Class="table-column-icon">@column</MudTh>
+            }
+        </HeaderContent>
+        <RowTemplate>
+            @{
+                foreach (var column in table.Columns)
+                {
+                    <MudTd>
+                        <div style="vertical-align:top;display:inline-flex;width:100%;cursor:pointer">
+                            <span>&nbsp;@context[column]</span>
+                        </div>
+                    </MudTd>
+                }
+            }
+        </RowTemplate>
+    </MudTable>
+} 
+
+@code {
+    [Parameter] public IExplorerTabPage? FrameworkElement { get; set; }
+    [Parameter] public IExplorerObject? CurrentExplorerObject { get; set; }
+
+    private TableItem? table;
+
+    async protected override Task OnParametersSetAsync()
+    {
+        await base.OnParametersSetAsync();
+
+        await base.HandleAsync(async () =>
+        {
+            if (FrameworkElement == null)
+            {
+                return;
+            }
+
+            await FrameworkElement.SetExplorerObjectAsync(CurrentExplorerObject);
+            var result = await FrameworkElement.RefreshContents();
+
+            table = result.Item as TableItem;
+        });
+    }
+
+    public void Dispose()
+    {
+        
+    }
+}

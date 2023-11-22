@@ -61,7 +61,7 @@ namespace gView.Plugins.MapTools
                 return Task.FromResult(true);
             }
 
-            ev.Map.Display.mapScale *= 2.0;
+            ev.Map.Display.MapScale *= 2.0;
 
             ev.refreshMap = true;
 

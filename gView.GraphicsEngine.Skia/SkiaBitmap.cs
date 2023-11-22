@@ -5,6 +5,7 @@ using SkiaSharp;
 using System;
 using System.IO;
 using System.Runtime.InteropServices;
+using System.Threading.Tasks;
 
 namespace gView.GraphicsEngine.Skia
 {
@@ -12,6 +13,8 @@ namespace gView.GraphicsEngine.Skia
     {
         private SKBitmap _bitmap;
         private float _dpiX = 96f, _dpyY = 96f;
+        private int _bytesLockersCount = 0;
+
         private SkiaBitmap(SKBitmap bitmap)
         {
             _bitmap = bitmap;
@@ -84,9 +87,46 @@ namespace gView.GraphicsEngine.Skia
         {
             if (_bitmap != null)
             {
-                _bitmap.Dispose();
-                _bitmap = null;
+                if (Current.UseSecureDisposingOnUserInteractiveUIs)
+                {
+                    //Task.Run(async () =>
+                    //{
+                    //    await DisposeSecure();
+                    //});
+                    DisposeSecure().Wait(5000);
+                }
+                else
+                {
+                    _bitmap.Dispose();
+                    _bitmap = null;
+                }
             }
+        }
+
+        async private Task DisposeSecure()
+        {
+            var currentBitmap = _bitmap;
+            _bitmap = null;
+
+            if (currentBitmap is null)
+            {
+                return;
+            }
+
+            if (_bytesLockersCount > 0)
+            {
+                var startTime = DateTime.Now;
+                while (_bytesLockersCount > 0)
+                {
+                    await Task.Delay(10);
+                    if((DateTime.Now - startTime).TotalSeconds > 5)
+                    {
+                        return; // let make GC do the collection later
+                    }
+                }
+            }
+
+            currentBitmap.Dispose();
         }
 
         public ArgbColor GetPixel(int x, int y)
@@ -128,6 +168,7 @@ namespace gView.GraphicsEngine.Skia
                     pixelData.Scan0 = _bitmap.GetPixels();
                 }
 
+                _bytesLockersCount++;
                 return pixelData;
             }
 
@@ -157,6 +198,8 @@ namespace gView.GraphicsEngine.Skia
                 {
                     Marshal.FreeHGlobal(bitmapPixelData.Scan0);
                 }
+
+                _bytesLockersCount--;
             }
         }
 

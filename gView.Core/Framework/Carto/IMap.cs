@@ -57,7 +57,7 @@ namespace gView.Framework.Carto
         }
         void ClearSelection();
 
-        ITOC TOC { get; }
+        IToc TOC { get; }
 
         Task<bool> RefreshMap(DrawPhase phase, ICancelTracker cancelTracker);
 

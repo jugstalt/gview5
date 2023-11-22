@@ -54,15 +54,19 @@ namespace gView.DataSources.TileCache
                 _loaded = true;
 
                 XmlStream stream = new XmlStream("localcaching");
-                if (!stream.ReadStream(SystemVariables.CommonApplicationData + @"\options_tilecache_local_caching.xml"))
+                if (!stream.ReadStream(System.IO.Path.Combine(SystemVariables.CommonApplicationData, "options_tilecache_local_caching.xml")))
                 {
+                    #region Initialize with defaults and reload ...
+
                     stream = new XmlStream("localcaching");
                     stream.Save("use", (bool)true);
-                    stream.Save("folder", SystemVariables.CommonApplicationData + @"\temp\tilecache");
-                    stream.WriteStream(SystemVariables.CommonApplicationData + @"\options_tilecache_local_caching.xml");
+                    stream.Save("folder", System.IO.Path.Combine(SystemVariables.CommonApplicationData, "temp", "tilecache"));
+                    stream.WriteStream(System.IO.Path.Combine(SystemVariables.CommonApplicationData, "options_tilecache_local_caching.xml"));
 
-                    stream = new XmlStream("webproxy");
-                    stream.ReadStream(SystemVariables.CommonApplicationData + @"\options_tilecache_local_caching.xml");
+                    stream = new XmlStream("localcaching");
+                    stream.ReadStream(System.IO.Path.Combine(SystemVariables.CommonApplicationData, "options_tilecache_local_caching.xml"));
+
+                    #endregion
                 }
 
                 _use = (bool)stream.Load("use", (bool)true);
@@ -81,7 +85,8 @@ namespace gView.DataSources.TileCache
                 XmlStream stream = new XmlStream("localcaching");
                 stream.Save("use", _use);
                 stream.Save("folder", _folder);
-                stream.WriteStream(SystemVariables.CommonApplicationData + @"\options_tilecache_local_caching.xml");
+                stream.WriteStream(System.IO.Path.Combine(SystemVariables.CommonApplicationData, "options_tilecache_local_caching.xml"));
+
                 return true;
             }
             catch

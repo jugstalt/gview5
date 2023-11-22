@@ -1,0 +1,62 @@
+@inherits ModalDialogFormBase<WmsConnectionModel>
+@inject IApplicationScope AppScope
+
+<ModalDialogFormBase T="WmsConnectionModel"
+                       OnDialogClose="base.OnDialogClose"
+                       Model="base.Model">
+    <FormContent>
+
+        <GvGrid ColumnCount="3">
+            <GvGridItem Span="2">
+                <GvCard Title="Service">
+                    <GvCardContent>
+                        <MudSelect Variant="Variant.Filled"
+                                    T="WmsConnectionType"
+                                    @bind-Value="Model.ConnectionType">
+                            @foreach (var val in Enum.GetValues<WmsConnectionType>())
+                            {
+                                <MudSelectItem Value="val">@val.ToString()</MudSelectItem>
+                            }        
+                        </MudSelect>
+
+                        @if (Model.ConnectionType == WmsConnectionType.WMS ||
+                             Model.ConnectionType == WmsConnectionType.WMS_WFS)
+                        {
+                            <MudTextField @bind-Value="Model.WmsUrl"
+                                           Label="WMS Service Url" />
+                        }
+
+                        @if(Model.ConnectionType == WmsConnectionType.WFS ||
+                            Model.ConnectionType == WmsConnectionType.WMS_WFS)
+                        {
+                            <MudTextField @bind-Value="Model.WfsUrl"
+                                           Label="WFS Service Url" />
+                        }
+
+                        <MudTextField @bind-Value="Model.ServiceName"
+                                      Label="Service Name (optional)" />
+
+                    </GvCardContent>
+                </GvCard>
+            </GvGridItem>
+
+            <GvGridItem>
+                <GvCard Title="Credentials (optional)">
+                    <GvCardContent>
+                        <MudTextField @bind-Value="Model.Username"
+                                      Label="Username" />
+
+                        <MudTextField @bind-Value="Model.Password"
+                                      InputType="InputType.Password"
+                                          Label="Password" />
+                    </GvCardContent>
+                </GvCard>
+            </GvGridItem>
+        </GvGrid>
+
+    </FormContent>
+</ModalDialogFormBase>
+
+@code {
+
+}

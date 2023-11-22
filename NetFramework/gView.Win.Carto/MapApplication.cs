@@ -1199,7 +1199,7 @@ namespace gView.Win.Carto
         {
             if (_doc != null && _doc.FocusMap != null && _doc.FocusMap.TOC != null)
             {
-                ITOCElement tocElement = _doc.FocusMap.TOC.GetTOCElement(fLayer);
+                ITocElement tocElement = _doc.FocusMap.TOC.GetTOCElement(fLayer);
                 tocElement.Name = layerNode.Attributes["name"].Value;
                 if (layerNode.Attributes["visible"] != null)
                 {

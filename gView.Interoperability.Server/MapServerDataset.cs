@@ -456,7 +456,7 @@ namespace gView.Interoperability.Server
                 display.SpatialReference.Clone() as ISpatialReference :
                 null;
 
-                int iWidth = display.iWidth, iHeight = display.iHeight;
+                int iWidth = display.ImageWidth, iHeight = display.ImageHeight;
 
                 StringBuilder sb = new StringBuilder();
                 sb.Append("<?xml version='1.0' encoding='utf-8'?>");

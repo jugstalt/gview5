@@ -15,7 +15,7 @@ using System.Threading.Tasks;
 
 namespace gView.DataSources.Fdb.PostgreSql
 {
-    class pgNetworkFeatureClass : IFeatureClass, INetworkFeatureClass
+    public class pgNetworkFeatureClass : IFeatureClass, INetworkFeatureClass
     {
         private pgFDB _fdb;
         private IDataset _dataset;

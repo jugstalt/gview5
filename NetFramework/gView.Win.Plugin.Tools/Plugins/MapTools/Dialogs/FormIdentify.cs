@@ -277,9 +277,9 @@ namespace gView.Plugins.MapTools.Dialogs
                             envelope = geom.Envelope;
                         }
                         _doc.FocusMap.Display.ZoomTo(envelope);
-                        if (layer != null && layer.MaximumZoomToFeatureScale > _doc.FocusMap.Display.mapScale)
+                        if (layer != null && layer.MaximumZoomToFeatureScale > _doc.FocusMap.Display.MapScale)
                         {
-                            _doc.FocusMap.Display.mapScale = layer.MaximumZoomToFeatureScale;
+                            _doc.FocusMap.Display.MapScale = layer.MaximumZoomToFeatureScale;
                         }
                         if (_doc.Application is IMapApplication)
                         {
@@ -756,14 +756,14 @@ namespace gView.Plugins.MapTools.Dialogs
 
     internal class TOCElementItem
     {
-        ITOCElement _element;
+        ITocElement _element;
 
-        public TOCElementItem(ITOCElement element)
+        public TOCElementItem(ITocElement element)
         {
             _element = element;
         }
 
-        public ITOCElement Element
+        public ITocElement Element
         {
             get { return _element; }
         }

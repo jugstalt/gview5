@@ -1,0 +1,22 @@
+@inherits GvLayoutBaseElement
+
+<MudCardActions>
+    @if (ChildContent != null)
+    {
+        @if (base.HasStyles)
+        {
+            <div style="@base.Styles">
+                @ChildContent
+            </div>
+
+        }
+        else
+        {
+            @ChildContent
+        }
+    }
+</MudCardActions>
+
+@code {
+    [Parameter] public RenderFragment? ChildContent { get; set; }
+}

@@ -1,0 +1,200 @@
+@using gView.Framework.Data.Cursors
+@using gView.Framework.Data.Filters
+@inherits BaseHandler
+
+@if(TableClass is not null)
+{
+    <GvCard Title="Query Compontents">
+        <GvCardContent>
+            <GvGrid ColumnCount="3">
+                <GvGridItem>
+                    @GvUtilities.InfoText("Fields:")
+                    <MudPaper Outlined="true" Style="height:300px;overflow-y:auto">
+                        <MudList Clickable="true">
+                            @foreach (var field in TableClass.Fields.ToEnumerable())
+                            {
+                                if(field.type == gView.Framework.Data.FieldType.Shape)
+                                {
+                                    continue;
+                                }
+                                <MudListItem OnClick="() => { if(_currentField != field) { _currentField = field; QueryValues(); } }"
+                                              @ondblclick="async () => await AppendQueryItemAsync(field.name, QueryItemType.Field)"
+                                              Text="@field.name"/>
+                            }
+                        </MudList>
+                    </MudPaper>
+                </GvGridItem>
+
+                <GvGridItem>
+                    @GvUtilities.InfoText("Operators:")
+                    <MudPaper Outlined="true" Style="padding:8px">
+                        <GvGrid ColumnCount="3">
+                            @foreach (var queryOperator in _queryOperators)
+                            {
+                                <GvGridItem>
+                                    <MudButton Variant="Variant.Outlined"
+                                               Color="Color.Surface"
+                                               @ondblclick="async () => await AppendQueryItemAsync(queryOperator, QueryItemType.Operator)">@queryOperator</MudButton>
+                                </GvGridItem>
+                            }
+                        </GvGrid>
+                    </MudPaper>
+                </GvGridItem>
+
+                <GvGridItem>
+                    @GvUtilities.InfoText($"{_currentField?.name} {(_fieldValuesLoading ? "Loading..." : "Values:")} {_fieldValues.Count}")
+                    @if (@* _fieldValuesLoading == false &&  *@ _fieldValues.Count > 0)
+                    {
+                        <MudPaper Outlined="true" Style="height:300px;overflow-y:auto">
+                            <MudList Clickable="true">
+                                @foreach (var fieldValue in _fieldValues)
+                                {
+                                    <MudListItem @ondblclick="async () => await AppendQueryItemAsync(fieldValue, QueryItemType.Value)"
+                                                  Text="@fieldValue" />
+                                }
+
+                                @if(_hasMore)
+                                {
+                                    <MudListItem OnClick="() => QueryValues(true)"
+                                                  Text="more..." />
+                                }
+                            </MudList>
+                        </MudPaper>
+                    }
+                </GvGridItem>
+            </GvGrid>
+        </GvCardContent>
+    </GvCard>
+    
+
+    <GvCard Title="Query">
+        <GvCardContent>
+            <MudTextField T="string"
+                          Label="@($"SELECT * FROM {TableClass.Name} WHERE")"
+                          @bind-Value="QueryString"
+                          OnBlur="CommitQueryStringAsync"
+                          Lines="5" />
+        </GvCardContent>
+    </GvCard>
+    
+}
+
+@code {
+    [Parameter] public ITableClass? TableClass{ get; set; }
+    [Parameter] public string QueryString { get; set; } = "";
+    [Parameter] public EventCallback<string> QueryStringChanged{ get; set; }
+
+    private string[] _queryOperators = [
+    " = ", " <> "," LIKE ",
+    " < ", " <= ", " AND ",
+    " > ", ">=", " OR ",
+    "%", "()", " NOT "
+    ];
+
+    private const int QueryLimit = 1000;
+    private enum QueryItemType
+    {
+        Field, Operator, Value
+    }
+
+    private IField? _currentField;
+    private List<string> _fieldValues = new List<string>();
+    private string _fieldTemplate = "{0}";
+    private bool _fieldValuesLoading = false;
+    private bool _hasMore = false;
+
+    private async Task AppendQueryItemAsync(string queryItem, QueryItemType itemType)
+    {
+        QueryString += itemType switch
+        {
+            QueryItemType.Value => String.Format(_fieldTemplate, queryItem),
+            _ => queryItem
+        };
+
+        await CommitQueryStringAsync();
+    }
+
+    private Task QueryValues(bool append = false) => HandleAsync(async () =>
+    {
+        _fieldValuesLoading = true;
+        _hasMore = false;
+
+        try 
+        {
+            if (!append)
+            {
+                _fieldValues.Clear();
+            }
+
+            await ForceRenderComponent();
+
+            if (TableClass is null || _currentField is null)
+            {
+                return;
+            }
+
+            var count = 0;
+            var filter = new DistinctFilter(_currentField.name)
+            {
+                Limit = QueryLimit,
+                OrderBy = _currentField.name
+            };
+
+            if(append)
+            {
+                filter.BeginRecord = _fieldValues.Count;
+            }
+
+            using (var cursor = await TableClass.Search(filter))
+            {
+                IRow? row;
+
+                while((row = cursor switch
+                {
+                    IFeatureCursor fCursor => await fCursor.NextFeature(),
+                    IRowCursor rCursor => await rCursor.NextRow(),
+                    _ => null
+                }) is not null)
+                {
+                    _fieldValues.Add(row[0]?.ToString() ?? String.Empty);
+
+                    count++;
+                    
+                    if (count > QueryLimit)
+                    {
+                        _hasMore = true;
+                        break;
+                    }
+
+                    if (count % 100 == 0)
+                    {
+                        await ForceRenderComponent();
+                    }
+                }
+            }
+
+            _fieldTemplate = _currentField.type switch
+            {
+                gView.Framework.Data.FieldType.Date => "'{0}'",
+                gView.Framework.Data.FieldType.character => "'{0}'",
+                gView.Framework.Data.FieldType.guid => "'{0}'",
+                gView.Framework.Data.FieldType.NString => "'{0}'",
+                gView.Framework.Data.FieldType.String => "'{0}'",
+                _ => "{0}"
+            };
+
+            _hasMore = count >= QueryLimit;
+        } 
+        finally
+        {
+            _fieldValuesLoading = false;    
+        }
+
+        StateHasChanged();
+    });
+
+    private async Task CommitQueryStringAsync()
+    {
+        await QueryStringChanged.InvokeAsync(QueryString);
+    }
+}

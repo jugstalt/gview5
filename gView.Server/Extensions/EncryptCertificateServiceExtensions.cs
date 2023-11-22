@@ -20,12 +20,10 @@ namespace gView.Server.Extensions
             string authToken = SecureCrypto.DecryptToken(ecs.GetCertificate(), token); //Crypto.Decrypt(token, Globals.MasterPassword);
 
             var at = authToken.Split('|');
-            return new AuthToken()
-            {
-                Username = at[1],
-                AuthType = (AuthTypes)int.Parse(at[2]),
-                Expire = long.Parse(at[3])
-            };
+            return new AuthToken(
+                at[1], 
+                (AuthTypes)int.Parse(at[2]),
+                long.Parse(at[3]));
         }
     }
 }

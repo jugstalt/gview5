@@ -57,12 +57,12 @@ namespace gView.Framework.Carto
 
         static public bool UseWithRefScale(this IFeatureLayer layer, IDisplay display)
         {
-            return display.refScale > 1 && layer.FeatureRenderer.UseReferenceScale && layer.ApplyRefScale;
+            return display.ReferenceScale > 1 && layer.FeatureRenderer.UseReferenceScale && layer.ApplyRefScale;
         }
 
         static public bool UseLabelsWithRefScale(this IFeatureLayer layer, IDisplay display)
         {
-            return display.refScale > 1 && layer.ApplyLabelRefScale;
+            return display.ReferenceScale > 1 && layer.ApplyLabelRefScale;
         }
     }
 }

@@ -6,25 +6,39 @@ namespace gView.Server.AppCode
     {
         public AuthToken()
         {
+            this.Username = string.Empty;
             this.AuthType = AuthTypes.Unknown;
         }
 
-        public AuthToken(string username, AuthTypes authType, DateTimeOffset expires)
+        public AuthToken(string username, AuthTypes authType, TimeSpan expiresIn)
         {
             this.Username = username;
             this.AuthType = authType;
-            this.Expire = (DateTime.UtcNow.AddTicks(expires.Ticks)).Ticks;
+            this.Expire = DateTime.UtcNow.Ticks + expiresIn.Ticks;
         }
 
-        public string Username { get; set; }
-        public string PasswordHash { get; set; }
-        public long Expire { get; set; }
-        public AuthTypes AuthType { get; set; }
+        public AuthToken(string username, AuthTypes authType, long expiresTicksUtc)
+        {
+            this.Username = username;
+            this.AuthType = authType;
+            this.Expire = expiresTicksUtc;
+        }
+
+        public string Username { get; }
+        public long Expire { get; }
+        public AuthTypes AuthType { get; }
 
         public bool IsAnonymous => String.IsNullOrWhiteSpace(this.Username);
         public bool IsManageUser => this.IsAnonymous == false && this.AuthType == AuthTypes.Manage;
         public bool IsTokenUser => this.IsAnonymous == false && this.AuthType == AuthTypes.Tokenuser;
         public bool IsExpired => !IsAnonymous && DateTime.UtcNow.Ticks > Expire;
+
+        #region Static Members
+
+        private static AuthToken _anonymous = new AuthToken();
+        public static AuthToken Anonymous => _anonymous;
+
+        #endregion
 
         #region Classes / Enums
 

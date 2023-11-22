@@ -23,7 +23,7 @@ namespace gView.Interoperability.OGC.UI.Dataset.WMS
             set
             {
                 _metadata = value as WMS_Export_Metadata;
-                epsgSelector1.Metadata = value as IEPSGMetadata;
+                epsgSelector1.Metadata = value as IEpsgMetadata;
             }
         }
 

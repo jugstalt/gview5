@@ -84,12 +84,12 @@ namespace gView.Plugins.MapTools
 
                 var instatnce = await exObject?.GetInstanceAsync();
 
-                if (!(instatnce is ITOCElement))
+                if (!(instatnce is ITocElement))
                 {
                     return true;
                 }
 
-                IFeatureLayer source = ((ITOCElement)instatnce).Layers[0] as IFeatureLayer;
+                IFeatureLayer source = ((ITocElement)instatnce).Layers[0] as IFeatureLayer;
                 if (source == null)
                 {
                     return true;

@@ -1,0 +1,117 @@
+@inherits BaseHandler
+@implements IDisposable
+@inject IconService Icons
+@inject IExplorerApplicationService ExplorerApplication
+@inject IApplicationScope AppScope
+@inject PluginManagerService PluginManager
+
+<MudTreeView  Items="TreeNodes" 
+              ExpandOnClick="true" 
+              MultiSelection="false"
+              Hover="true" Dense="true">
+    <ItemTemplate>
+        <div style="white-space:nowrap; overflow-x:hidden;"
+             class="treenode">
+            <MudTreeViewItem Value="@context"
+                             Icon=@Icons.FromString(context.Icon)
+                             Items="@context.Children"
+                             CanExpand="@context.HasChildren"
+                             Expanded="@context.IsExpanded"
+                             ExpandedChanged="@((expanded) => OnNodeExpandedChanged(context, expanded))"
+                             Text="@context.Text"
+                             EndIcon="@(typeof(IFeatureClass).IsAssignableFrom(context.ExObject.ObjectType) == true ?  Icons.FromString("basic:round-plus") : "")"
+                             @onclick="@(() => OnNodeClickAsync(context))">
+            </MudTreeViewItem>
+        </div>
+    </ItemTemplate>
+</MudTreeView>
+
+@code{
+    private HashSet<ExplorerTreeNode> TreeNodes { get; set; } = new HashSet<ExplorerTreeNode>();
+
+    protected override Task OnInitializedAsync() => HandleAsync(async () =>
+    {
+        // initialize tree
+        TreeNodes.Add(/*_selected = */new ExplorerTreeNode(ExplorerApplication.RootExplorerObject));
+        // await LoadServerData(_selected);
+        // _selected.IsExpanded = true;
+
+        //EventBus.OnSetCurrentExplorerObjectAsync += HandleSetCurrentExplorerObjectAsync;
+        //EventBus.OnRefreshContentAsync += OnRefreshContentAsync;
+    });
+
+    private Task OnNodeExpandedChanged(ExplorerTreeNode node, bool expanded) => base.HandleAsync(async () =>
+    {
+        await using (var busy = await AppScope.RegisterBusyTaskAsync($"Load: {node.Text}"))
+        {
+            node.IsExpanded = expanded;
+            if (expanded)
+            {
+                await LoadServerData(node);
+            }
+        }
+    });
+
+    private Task OnNodeClickAsync(ExplorerTreeNode node) => base.HandleAsync(async () =>
+    {
+        await using (var busy = await AppScope.RegisterBusyTaskAsync($"Load: {node.Text}"))
+        {
+            if (node.IsServerLoaded == false)
+            {
+                await LoadServerData(node);
+            }
+
+            //_selected = node;
+
+            await RefreshCurrentNodeAsync();
+            //await EventBus.FireCurrentExplorerObjectChanged(node.ExObject);
+        }
+    });
+
+    private Task<bool> RefreshCurrentNodeAsync() => base.HandleFuncAsync(async () =>
+    {
+        /*if (_selected != null && await _selected.ExObject.SecureRefresh() == true)
+        {
+            _selected.Children = null;
+            await LoadServerData(_selected);
+
+            return true;
+        }*/
+
+        return false;
+    });
+
+    public Task<HashSet<ExplorerTreeNode>?> LoadServerData(ExplorerTreeNode parentNode) => base.HandleFuncAsync(async () =>
+    {
+        if (parentNode.IsServerLoaded)
+        {
+            return parentNode.Children;
+        }
+
+        var exObject = parentNode.ExObject;
+
+        parentNode.Children = new HashSet<ExplorerTreeNode>();
+
+        if (exObject is IExplorerParentObject)
+        {
+            var exParent = (IExplorerParentObject)exObject;
+
+            foreach (var childObject in (await exParent.ChildObjects()).OrderBy(c => c.Priority))
+            {
+                if (childObject is IExplorerObjectDoubleClick)  // don't show "new database connection" icons, etc. The are only visible in the content list
+                {
+                    continue;
+                }
+                parentNode.Children.Add(new ExplorerTreeNode(childObject));
+            }
+        }
+
+        return parentNode.Children;
+    });
+
+    public void Dispose()
+    {
+        //EventBus.OnSetCurrentExplorerObjectAsync -= HandleSetCurrentExplorerObjectAsync;
+        //EventBus.OnRefreshContentAsync -= OnRefreshContentAsync;
+    }
+}

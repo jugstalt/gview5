@@ -1,0 +1,26 @@
+@using System.Text;
+@inherits GvLayoutBaseElement
+
+<MudCard Outlined="true" Style="@base.Styles">
+    @if (!String.IsNullOrEmpty(Title))
+    {
+        <MudCardHeader>
+            <MudText Typo="Typo.h6">@Title</MudText>
+        </MudCardHeader>
+    }
+   
+    @if (ChildContent != null)
+    {
+        @ChildContent
+    }
+</MudCard>
+
+@code {
+    [Parameter] public string? Title { get; set; }
+    [Parameter] public RenderFragment? ChildContent { get; set; }
+
+    protected override void OnInitialized()
+    {
+        base.OnInitialized();
+    }
+}

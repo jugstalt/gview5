@@ -108,9 +108,19 @@ namespace gView.DataSources.EventTable
 
         async public Task<bool> Open()
         {
-            await RefreshClasses();
-            _state = DatasetState.opened;
-            return true;
+            try
+            {
+                await RefreshClasses();
+                _state = DatasetState.opened;
+
+                return true;
+            }
+            catch(Exception ex) 
+            {
+                LastErrorMessage = ex.Message;
+
+                return false;
+            }
         }
 
         public string LastErrorMessage

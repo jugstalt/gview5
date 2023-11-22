@@ -107,7 +107,7 @@ namespace gView.Interoperability.Server.TileService
                             else if (args.Length == 7) // tms/srs/1.0.0/service/0/0/0.png
                             {
                                 int epsg = int.Parse(args[1]);
-                                double scale = metadata.Scales[int.Parse(args[4])];
+                                double scale = metadata.Scales.InnerList[int.Parse(args[4])];
                                 int row = (args[0] == "tms" ? int.Parse(args[5]) : int.Parse(args[6].Split('.')[0]));
                                 int col = (args[0] == "tms" ? int.Parse(args[6].Split('.')[0]) : int.Parse(args[5]));
                                 string format = ".png";
@@ -121,7 +121,7 @@ namespace gView.Interoperability.Server.TileService
                             else if (args.Length == 10)  // tms/srs/service/01/000/000/001/000/000/001.png
                             {
                                 int epsg = int.Parse(args[1]);
-                                double scale = metadata.Scales[int.Parse(args[3])];
+                                double scale = metadata.Scales.InnerList[int.Parse(args[3])];
                                 int col = int.Parse(args[4]) * 1000000 + int.Parse(args[5]) * 1000 + int.Parse(args[6]);
                                 int row = int.Parse(args[7]) * 1000000 + int.Parse(args[8]) * 1000 + int.Parse(args[9].Split('.')[0]);
                                 string format = ".png";
@@ -319,10 +319,10 @@ namespace gView.Interoperability.Server.TileService
             ISpatialReference sRef = SpatialReference.FromID("epsg:" + epsg);
 
             serviceMap.Display.SpatialReference = sRef;
-            serviceMap.Display.dpi = metadata.Dpi;
+            serviceMap.Display.Dpi = metadata.Dpi;
 
-            serviceMap.Display.iWidth = metadata.TileWidth;
-            serviceMap.Display.iHeight = metadata.TileHeight;
+            serviceMap.Display.ImageWidth = metadata.TileWidth;
+            serviceMap.Display.ImageHeight = metadata.TileHeight;
 
             double res = (double)scale / (metadata.Dpi / 0.0254);
             if (serviceMap.Display.MapUnits != GeoUnits.Meters)
@@ -446,7 +446,7 @@ namespace gView.Interoperability.Server.TileService
             ISpatialReference sRef = SpatialReference.FromID("epsg:" + epsg);
 
             serviceMap.Display.SpatialReference = sRef;
-            serviceMap.Display.dpi = metadata.Dpi;
+            serviceMap.Display.Dpi = metadata.Dpi;
 
             double res = (double)scale / (metadata.Dpi / 0.0254);
             if (serviceMap.Display.MapUnits != GeoUnits.Meters)
@@ -464,8 +464,8 @@ namespace gView.Interoperability.Server.TileService
 
             int tileMatrixWidth = 8, tileMatrixHeight = 8;
 
-            serviceMap.Display.iWidth = metadata.TileWidth * tileMatrixWidth;
-            serviceMap.Display.iHeight = metadata.TileHeight * tileMatrixHeight;
+            serviceMap.Display.ImageWidth = metadata.TileWidth * tileMatrixWidth;
+            serviceMap.Display.ImageHeight = metadata.TileHeight * tileMatrixHeight;
 
             for (int r = 0; r < 128; r += 8)
             {
@@ -715,12 +715,12 @@ namespace gView.Interoperability.Server.TileService
             }
 
             List<CompactTileConfig.LevelConfig> levels = new List<CompactTileConfig.LevelConfig>();
-            for (int i = 0; i < metadata.Scales.Count; i++)
+            for (int i = 0; i < metadata.Scales.InnerList.Count; i++)
             {
                 levels.Add(new CompactTileConfig.LevelConfig()
                 {
                     Level = i,
-                    Scale = metadata.Scales[i]
+                    Scale = metadata.Scales.InnerList[i]
                 });
             }
 
@@ -756,7 +756,7 @@ namespace gView.Interoperability.Server.TileService
             if (scaleArgument.StartsWith("~"))
             {
                 scaleArgument = scaleArgument.Substring(1);
-                return metadata.Scales[int.Parse(scaleArgument)];
+                return metadata.Scales.InnerList[int.Parse(scaleArgument)];
             }
             return double.Parse(scaleArgument.Replace(",", "."), _nhi);
         }
@@ -1095,7 +1095,7 @@ namespace gView.Interoperability.Server.TileService
             sb.Append("<TileSets>");
 
             int level = 0;
-            foreach (double scale in metadata.Scales)
+            foreach (double scale in metadata.Scales.InnerList)
             {
                 double res = (double)scale / (metadata.Dpi / 0.0254);
                 if (sRef.SpatialParameters.IsGeographic)

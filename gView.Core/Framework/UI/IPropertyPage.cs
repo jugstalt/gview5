@@ -5,6 +5,4 @@
         object PropertyPage(object initObject);
         object PropertyPageObject();
     }
-
-
 }

@@ -119,7 +119,50 @@ namespace gView.Framework.Data
             }
             else
             {
-                this.type = FieldType.unknown;
+                if (schemaRow["DataType"]?.ToString() == typeof(System.Int32).ToString())
+                {
+                    this.type = FieldType.integer;
+                }
+                else if (schemaRow["DataType"]?.ToString() == typeof(System.Int16).ToString())
+                {
+                    this.type = FieldType.smallinteger;
+                }
+                else if (schemaRow["DataType"]?.ToString() == typeof(System.Int64).ToString())
+                {
+                    this.type = FieldType.biginteger;
+                }
+                else if (schemaRow["DataType"]?.ToString() == typeof(System.DateTime).ToString())
+                {
+                    this.type = FieldType.Date;
+                }
+                else if (schemaRow["DataType"]?.ToString() == typeof(System.Double).ToString())
+                {
+                    this.type = FieldType.Double;
+                }
+                else if (schemaRow["DataType"]?.ToString() == typeof(System.Single).ToString())
+                {
+                    this.type = FieldType.Float;
+                }
+                else if (schemaRow["DataType"]?.ToString() == typeof(System.Boolean).ToString())
+                {
+                    this.type = FieldType.boolean;
+                }
+                else if (schemaRow["DataType"]?.ToString() == typeof(System.Char).ToString())
+                {
+                    this.type = FieldType.character;
+                }
+                else if (schemaRow["DataType"]?.ToString() == typeof(System.String).ToString())
+                {
+                    this.type = FieldType.String;
+                }
+                else if (schemaRow["DataType"]?.ToString() == typeof(System.Byte[]).ToString())
+                {
+                    this.type = FieldType.binary;
+                }
+                else
+                {
+                    this.type = FieldType.unknown;
+                }
             }
 
             this.size = Convert.ToInt32(schemaRow["ColumnSize"]);

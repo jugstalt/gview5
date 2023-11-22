@@ -59,12 +59,12 @@ namespace gView.Interoperability.ArcXML.Dataset
                     continue;
                 }
 
-                if (theme.MinimumScale > 1 && theme.MinimumScale > display.mapScale)
+                if (theme.MinimumScale > 1 && theme.MinimumScale > display.MapScale)
                 {
                     continue;
                 }
 
-                if (theme.MaximumScale > 1 && theme.MaximumScale < display.mapScale)
+                if (theme.MaximumScale > 1 && theme.MaximumScale < display.MapScale)
                 {
                     continue;
                 }
@@ -123,8 +123,8 @@ namespace gView.Interoperability.ArcXML.Dataset
                 display.SpatialReference.Clone() as ISpatialReference :
                 null;
 
-            int iWidth = display.iWidth;
-            int iHeight = display.iHeight;
+            int iWidth = display.ImageWidth;
+            int iHeight = display.ImageHeight;
 
             try
             {
@@ -137,8 +137,8 @@ namespace gView.Interoperability.ArcXML.Dataset
                 IEnvelope bounds = display.DisplayTransformation.TransformedBounds(display);
                 if (display.DisplayTransformation.UseTransformation == true)
                 {
-                    iWidth = (int)(bounds.Width * display.dpm / display.mapScale);
-                    iHeight = (int)(bounds.Height * display.dpm / display.mapScale);
+                    iWidth = (int)(bounds.Width * display.Dpm / display.MapScale);
+                    iHeight = (int)(bounds.Height * display.Dpm / display.MapScale);
                 }
                 sb.Append("<ENVELOPE minx='" + bounds.minx.ToString() + "' miny='" + bounds.miny.ToString() + "' maxx='" + bounds.maxx.ToString() + "' maxy='" + bounds.maxy.ToString() + "' />");
                 sb.Append("<IMAGESIZE width='" + iWidth + "' height='" + iHeight + "' />");
@@ -318,12 +318,12 @@ namespace gView.Interoperability.ArcXML.Dataset
                     continue;
                 }
 
-                if (theme.MinimumScale > 1 && theme.MinimumScale > display.mapScale)
+                if (theme.MinimumScale > 1 && theme.MinimumScale > display.MapScale)
                 {
                     continue;
                 }
 
-                if (theme.MaximumScale > 1 && theme.MaximumScale < display.mapScale)
+                if (theme.MaximumScale > 1 && theme.MaximumScale < display.MapScale)
                 {
                     continue;
                 }
@@ -387,7 +387,7 @@ namespace gView.Interoperability.ArcXML.Dataset
                 sb.Append("<GET_IMAGE>");
                 sb.Append("<PROPERTIES>");
                 sb.Append("<ENVELOPE minx='" + display.Envelope.minx.ToString() + "' miny='" + display.Envelope.miny.ToString() + "' maxx='" + display.Envelope.maxx.ToString() + "' maxy='" + display.Envelope.maxy.ToString() + "' />");
-                sb.Append("<IMAGESIZE width='" + display.iWidth + "' height='" + display.iHeight + "' />");
+                sb.Append("<IMAGESIZE width='" + display.ImageWidth + "' height='" + display.ImageHeight + "' />");
                 sb.Append("<BACKGROUND color='255,255,255' transcolor='255,255,255' />");
 
                 sb.Append(_dataset._properties.PropertyString);

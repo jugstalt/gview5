@@ -1,0 +1,12 @@
+@inherits ModalDialogFormBase<NewMapModel>
+
+<ModalDialogFormBase T="NewMapModel"
+                     OnDialogClose="base.OnDialogClose"
+                     Model="base.Model">
+    <FormContent>
+        <MudTextField @bind-Value="Model.Name"
+                      Label="New Map"
+                      HelperText="Please enter the name for the new map"
+                      Required="true" />
+    </FormContent>
+</ModalDialogFormBase>

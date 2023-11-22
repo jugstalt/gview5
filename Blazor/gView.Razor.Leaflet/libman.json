@@ -1,0 +1,21 @@
+{
+  "version": "1.0",
+  "defaultProvider": "cdnjs",
+  "libraries": [
+    {
+      "library": "leaflet@1.9.4",
+      "destination": "wwwroot/lib/leaflet/"
+    },
+    {
+      "provider": "cdnjs",
+      "library": "proj4js@2.9.0",
+      "destination": "wwwroot/lib/proj4js/"
+    }
+  ,
+  {
+    "provider": "cdnjs",
+    "library": "proj4leaflet@1.0.2",
+    "destination": "wwwroot/lib/proj4leaflet/"
+  }
+  ]
+}

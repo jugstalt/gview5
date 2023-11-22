@@ -98,15 +98,15 @@ namespace gView.Web.Framework.Web.Authorization
             }
         }
 
-        public string Username { get; }
-        public string Password { get; }
+        public string Username { get; set; }
+        public string Password { get; set;  }
 
-        public AuthorizationType AuthType { get; }
+        public AuthorizationType AuthType { get; set; }
 
-        public string AccessTokenTokenServiceUrl { get; }
+        public string AccessTokenTokenServiceUrl { get; set; }
 
-        public string GrantType { get; }
-        public string Scope { get; }
+        public string GrantType { get; set; }
+        public string Scope { get; set; }
 
         async public Task AddAuthorizationHeaders(HttpClient httpClient)
         {

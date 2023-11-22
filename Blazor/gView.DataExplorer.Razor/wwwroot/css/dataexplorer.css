@@ -1,0 +1,265 @@
+﻿.dataexplorer-main {
+    position: absolute;
+    left: 0px;
+    top: 0px;
+    right: 0px;
+    bottom: 0px;
+    background: #0094ff;
+
+    user-select:none;
+}
+
+    .dataexplorer-main .toolbar {
+        position: absolute;
+        left: 0px;
+        top: 0px;
+        right: 0px;
+        height: 100px;
+        background: #ccc;
+    }
+
+        .dataexplorer-main .toolbar .explorer-tool-box {
+            height: 96px;
+            display: inline-block;
+            vertical-align: top;
+            margin:2px;
+            border-radius:4px;
+        }
+
+            .dataexplorer-main .toolbar .explorer-tool-box .explorer-tool {
+                height: 94px;
+                display: inline-block;
+                text-align: center;
+                padding: 8px;
+                margin: 0px 2px;
+                max-width: 120px;
+                vertical-align: top;
+                border:1px solid transparent;
+                cursor: pointer;
+                box-sizing: border-box;
+                border-radius:4px;
+                font-size: 0.9em;
+            }
+
+        .dataexplorer-main .toolbar .explorer-tool:hover {
+            background-color: #0094ff46;
+            border: 1px solid #0094ff;
+            box-sizing:border-box;
+        }
+
+        .dataexplorer-main .toolbar .explorer-tool-box .explorer-tool-sub-box {
+            position:relative;
+            display:inline-block;
+            height:96px;
+            vertical-align:top;
+        }
+            .dataexplorer-main .toolbar .explorer-tool-box .explorer-tool-sub-box > .title {
+                position: absolute;
+                bottom: 0px;
+                left: 0px;
+                right: 0px;
+                height: 20px;
+                text-align: center;
+                color: #888;
+                font-size: 11px;
+                white-space: nowrap;
+                overflow: hidden;
+                text-overflow: ellipsis;
+            }
+
+            .dataexplorer-main .toolbar .explorer-tool-box .explorer-tool-sub-box .explorer-tool {
+                height:74px;
+            }
+
+            .dataexplorer-main .toolbar .explorer-tool-box .explorer-tool-sub-box .explorer-context-tool {
+                height: 37px;
+                overflow: hidden;
+                padding: 4px 7px;
+            }
+
+                .dataexplorer-main .toolbar .explorer-tool-box .explorer-tool-sub-box .explorer-context-tool:hover {
+                    background-color: #0094ff46;
+                    border: 1px solid #0094ff;
+                    box-sizing: border-box;
+                }
+
+                .dataexplorer-main .toolbar .explorer-tool-box .explorer-tool-sub-box .explorer-context-tool .title {
+                    display: inline-block;
+                    vertical-align: top;
+                }
+
+    .dataexplorer-main .navigation-bar {
+        position: absolute;
+        left: 0px;
+        top: 102px;
+        right: 0px;
+        height: 40px;
+        background: #0078d4;
+        padding: 0px;
+    }
+
+        .dataexplorer-main .navigation-bar .mud-breadcrumbs,
+        .dataexplorer-main .navigation-bar .mud-breadcrumbs .mud-breadcrumb-separator {
+            padding: 0px;
+        }
+
+    .dataexplorer-main .tree {
+        position: absolute;
+        left: 0px;
+        top: 144px;
+        bottom: 27px;
+        width: 300px;
+        /*background: #fff;*/
+        overflow: auto;
+    }
+
+    .dataexplorer-main .tree-content-splitter {
+        position: absolute;
+        left: 300px;
+        width: 5px;
+        top: 124px;
+        bottom: 27px;
+        cursor: w-resize;
+    }
+
+    .dataexplorer-main .content {
+        position: absolute;
+        left: 305px;
+        top: 144px;
+        right: 0px;
+        bottom: 27px;
+        background: #efefef;
+        overflow: auto;
+        padding:0px;
+    }
+        .dataexplorer-main .content .mud-tabs {
+            position: absolute;
+            inset: 0px 0px 0px 0px;
+        }
+            .dataexplorer-main .content .mud-tabs .mud-tabs-panels {
+                position: absolute;
+                inset: 49px 0px 0px 0px;
+                overflow: auto;
+            }
+
+                .dataexplorer-main .content .mud-tabs .mud-tabs-panels .mud-table-container {
+                    overflow: unset !important;
+                }
+
+    .dataexplorer-main .status-bar {
+        position: absolute;
+        left: 0px;
+        bottom: 0px;
+        right: 0px;
+        height: 25px;
+        background: #aaa;
+        overflow: hidden;
+    }
+
+.table-column-icon {
+    width: 30px;
+}
+
+.treenode.selected > li > div:first-child {
+    background: #0078d476;
+    color:#333;
+}
+
+.dataexplorer-main .context-selected {
+    background: #ffff00a9;
+}
+
+.dataexplorer-main .current-selected {
+    background: #0078d476;
+}
+
+/**** Darkmode ****/
+.dataexplorer-main.dark .content{
+    background:#333;
+}
+
+.explorer-dialog-item.selected {
+    background: #0078d476 !important;
+}
+
+.dataexplorer-main.dark .toolbar {
+    background: #333;
+}
+
+.dataexplorer-main.dark .navigation-bar {
+    background: #1e5684;
+}
+
+.dataexplorer-main.dark .context-selected {
+    background: #555500a9;
+}
+
+.dataexplorer-main.dark .status-bar {
+    background: #333;
+
+}
+
+.dataexplorer-main.dark .sketchpen-icon-basic-bg-light-24 {
+    background-image: url(../../../sketchpen/basic/content/img/sketchpen/bg-dark/24/1/sprite.png) !important;
+}
+
+.dataexplorer-main.dark .sketchpen-icon-webgis-bg-light-24 {
+    background-image: url(../../../sketchpen/webgis/content/img/sketchpen/bg-dark/24/1/sprite.png) !important;
+}
+
+
+@media (-webkit-min-device-pixel-ratio: 1.5), (min-resolution: 144dpi) {
+
+    .dataexplorer-main.dark .sketchpen-icon-basic-bg-light-24 {
+        background-image: url("../../../sketchpen/basic/content/img/sketchpen/bg-dark/24/1.5/sprite.png") !important;
+    }
+    .dataexplorer-main.dark .sketchpen-icon-webgis-bg-light-24 {
+        background-image: url("../../../sketchpen/webgis/content/img/sketchpen/bg-dark/24/1.5/sprite.png") !important;
+    }
+}
+
+@media (-webkit-min-device-pixel-ratio: 2), (min-resolution: 192dpi) {
+
+    .dataexplorer-main.dark .sketchpen-icon-basic-bg-light-24 {
+        background-image: url("../../../sketchpen/basic/content/img/sketchpen/bg-dark/24/2/sprite.png") !important;
+    }
+    .dataexplorer-main.dark .sketchpen-icon-webgis-bg-light-24 {
+        background-image: url("../../../sketchpen/webgis/content/img/sketchpen/bg-dark/24/2/sprite.png") !important;
+    }
+}
+
+
+/* Icons */
+.sketchpen-icon-basic-bg-light-24 {
+    margin-top: 0px;
+    margin-bottom: 0px;
+}
+
+/* MudBlazor overrides */
+.mud-select-input > .explorer-dialog-root-select-item {
+    padding-left: 0px !important;
+}
+
+.mud-list-item .mud-icon-button {
+    padding: 2px 6px 2px 2px !important;
+}
+
+.mud-list-item .mud-icon-root {
+    margin-right: 6px;
+}
+
+.mud-table-cell {
+    white-space: nowrap;
+}
+
+/* Cards */
+
+.mud-card-header {
+    padding: 4px 16px;
+    border-bottom: 1px solid var(--mud-palette-lines-default);
+    background-color: var(--mud-palette-primary-hover);
+}
+
+.mud-card-content {
+    padding: 0px 16px;
+}

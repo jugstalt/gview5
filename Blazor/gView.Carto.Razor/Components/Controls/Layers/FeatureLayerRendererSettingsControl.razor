@@ -1,0 +1,110 @@
+@inject PluginManagerService PluginManager
+
+@if(_featureRenderers is not null && _categories is not null)
+{
+    <GvGrid ColumnCount="3">
+        <GvGridItem>
+            @foreach(var category in _categories)
+            {
+                <GvCard Title="@category">
+                    <GvCardContent>
+                        <MudList Dense="true" Clickable="true">
+                            @foreach(var featureRenderer in _featureRenderers.Where(r=>category == r.Category))
+                            {
+                                <MudListItem Style="white-space:nowrap;overflow:hiddden" 
+                                             Dense="true"
+                                             OnClick="() => SelectRenderer(featureRenderer)">
+                                    @featureRenderer.Name
+                                </MudListItem>
+                            }
+                        </MudList>
+                    </GvCardContent>
+                </GvCard>
+            }
+        </GvGridItem>
+
+        <GvGridItem Span="2">
+            @if(_selectedRendererType is not null)
+            {
+                var renderer = _featureRenderers.First(r => _selectedRendererType.Equals(r.GetType()));
+
+                <GvCard Title="@renderer.Name">
+                    <GvCardContent>
+                        @if (_propertyPageRenderFragment is not null)
+                        {
+                            @(_propertyPageRenderFragment)
+                        }
+                    </GvCardContent>
+                </GvCard>
+            }
+        </GvGridItem>
+    </GvGrid>
+}
+
+@code {
+    [Parameter] public IMap? Map { get; set; }
+    [Parameter] public IFeatureLayer? Layer { get; set; }
+
+    private IFeatureRenderer[]? _featureRenderers;
+    private IPerpertyPageDefinition[]? _propertyPageDefs;
+    private string[]? _categories;
+
+    private Type? _selectedRendererType;
+    private IPerpertyPageDefinition? _currentPropertyPage;
+    private RenderFragment? _propertyPageRenderFragment;
+
+    protected override void OnParametersSet()
+    {
+        base.OnParametersSet();
+
+        if(Map is not null && Layer is not null) 
+        {
+            _featureRenderers = PluginManager.GetPlugins<IFeatureRenderer>(gView.Framework.system.Plugins.Type.IFeatureRenderer)
+                                             .Where(r => r.CanRender(Layer, Map))
+                                             .Select(r => r.GetType().Equals(Layer.FeatureRenderer?.GetType()) 
+                                                            ? Layer.FeatureRenderer! 
+                                                            : r)
+                                             .ToArray();
+
+            _categories = _featureRenderers.Select(r => r.Category)
+                                           .Distinct()
+                                           .ToArray();
+
+            _propertyPageDefs = PluginManager.GetPlugins<IPerpertyPageDefinition>(gView.Framework.system.Plugins.Type.IPerpertyPageDefinition)
+                                             .Where(p => p.InterfaceType == typeof(IFeatureRenderer))
+                                             .ToArray();
+
+            SelectRenderer(Layer.FeatureRenderer);
+        } 
+        else
+        {
+            _featureRenderers = null;
+            _categories = null;    
+        }
+    }
+
+    private void SelectRenderer(IFeatureRenderer? featureRenderer)
+    {
+        _selectedRendererType = featureRenderer?.GetType();
+
+        if(Layer is not null)
+        {
+            Layer.FeatureRenderer = featureRenderer;
+
+            _currentPropertyPage = _propertyPageDefs?.FirstOrDefault(p => p.InstanceType == featureRenderer?.GetType());
+            if (_currentPropertyPage is not null)
+            {
+                _propertyPageRenderFragment = new RenderFragment(builder =>
+                {
+                    var sequence = 0;
+                    builder.OpenComponent(sequence, _currentPropertyPage.PropertyPageType);
+                    builder.AddAttribute(++sequence, "Instance", Layer);
+                    builder.CloseComponent();
+                });
+            } else
+            {
+                _propertyPageRenderFragment = null;
+            }
+        }
+    }
+}

@@ -1,0 +1,26 @@
+@inherits ModalDialogFormBase<ConnectionStringModel>
+
+
+    <ModalDialogFormBase T="ConnectionStringModel"
+                           OnDialogClose="base.OnDialogClose"
+                           Model="base.Model">
+        <DialogBody>
+           
+            <ConnectionStringControl DbConnectionString="@Model.DbConnectionString" 
+                                        ProviderId="@Model.ProviderId"
+                                        OnSubmit="SetConnection"
+                                        />
+
+        </DialogBody>
+        <DialogButtons>
+
+        </DialogButtons>
+    </ModalDialogFormBase>
+
+
+@code{
+    protected Task SetConnection() => HandleAsync(() =>
+    {
+        return base.Submit();
+    });
+}

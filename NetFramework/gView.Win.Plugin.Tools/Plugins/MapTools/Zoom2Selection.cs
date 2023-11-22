@@ -172,9 +172,9 @@ namespace gView.Plugins.MapTools
             {
                 env.Raise(110.0);
                 map.Display.ZoomTo(env);
-                if (maximumScale > _doc.FocusMap.Display.mapScale)
+                if (maximumScale > _doc.FocusMap.Display.MapScale)
                 {
-                    _doc.FocusMap.Display.mapScale = maximumScale;
+                    _doc.FocusMap.Display.MapScale = maximumScale;
                 }
                 //((Map)map).setScale(env.minx, env.miny, env.maxx, env.maxy, true);
                 ((MapEvent)MapEvent).refreshMap = true;

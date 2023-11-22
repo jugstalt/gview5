@@ -1,0 +1,72 @@
+<GvGrid ColumnCount="1">
+    <GvGridItem>
+        @if (BinaryTreeDef != null)
+        {
+            <ExtentControl Extent="_bounds" ExtentChanged="ExtentChanged"></ExtentControl>
+
+            <GvCard>
+                <GvCardContent>
+                    <MudNumericField T="int" ValueChanged="(val) => MaxLabelChanged(val)" Value="_maxLevel"
+                                     Label="Max Level"
+                                     Min="0" Max="64" />
+                    <MudNumericField @bind-Value="_cellSize" T="double" ReadOnly="true"
+                                     Label="Cellsize" />
+                </GvCardContent>
+            
+            </GvCard>
+        }
+    </GvGridItem>
+</GvGrid>
+
+@code{
+    [Parameter] public BinaryTreeDef? BinaryTreeDef { get; set; }
+    [Parameter] public EventCallback<BinaryTreeDef> BinaryTreeDefChanged { get; set; }
+
+    private IEnvelope? _bounds = null;
+    private int _maxLevel;
+    private double _cellSize;
+
+    protected override void OnInitialized()
+    {
+        base.OnInitialized();
+
+        if (BinaryTreeDef != null)
+        {
+            _bounds = BinaryTreeDef.Bounds;
+            _maxLevel = BinaryTreeDef.MaxLevel;
+        }
+
+        CalcCellSize();
+    }
+
+    async protected void MaxLabelChanged(int value)
+    {
+        _maxLevel = value;
+
+        this.BinaryTreeDef = new BinaryTreeDef(_bounds, _maxLevel);
+
+        CalcCellSize();
+
+        await BinaryTreeDefChanged.InvokeAsync(this.BinaryTreeDef);
+    }
+
+    async protected void ExtentChanged()
+    {
+        this.BinaryTreeDef = new BinaryTreeDef(_bounds, _maxLevel);
+
+        CalcCellSize();
+
+        await BinaryTreeDefChanged.InvokeAsync(this.BinaryTreeDef);
+    }
+
+    private void CalcCellSize()
+    {
+        if (_bounds != null)
+        {
+            var tree = new BinaryTree2(_bounds, _maxLevel, 100);
+
+            IEnvelope cell = tree[_maxLevel];
+            _cellSize = Math.Sqrt(cell.Width * cell.Width + cell.Height * cell.Height);
+        }
+    }
+}

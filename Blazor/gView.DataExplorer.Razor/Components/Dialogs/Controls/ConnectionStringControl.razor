@@ -1,0 +1,217 @@
+@using gView.Framework.Db;
+
+@if (_commonDbConnections?.Providers != null)
+{
+    <GvCard>
+        <GvCardContent>
+            <MudSelect Label="Provider" T="string" Style='min-width:280px;'
+            @bind-Value="_currentProvider"
+                       Variant="Variant.Outlined"
+                       Dense="true">
+                @foreach (var provider in _commonDbConnections.Providers)
+                {
+                    <MudSelectItem Value="@provider.Id">
+                        @provider.Name
+                    </MudSelectItem>
+                }
+            </MudSelect>
+            @{
+                var schemes = _commonDbConnections.Providers.Where(p => p.Id == _currentProvider).FirstOrDefault()?.Schemes;
+                if(schemes?.Where(s=>s.Name==_currentScheme).Any() != true)
+                {
+                _currentScheme = schemes?.FirstOrDefault()?.Name;
+                }
+            }
+
+            @if (schemes != null)
+            {
+                <MudSelect Label="Connection Type" T="string"
+                @bind-Value="_currentScheme"
+                           Variant="Variant.Text"
+                           Dense="true">
+                    @foreach (var scheme in _commonDbConnections.Providers.Where(p => p.Id == _currentProvider).First().Schemes)
+                    {
+                        <MudSelectItem Value="scheme.Name">
+                            @scheme.Name
+                        </MudSelectItem>
+                    }
+                </MudSelect>
+            }
+
+            @{
+                var scheme = schemes?.Where(s => s.Name == _currentScheme).FirstOrDefault();
+            }
+
+            @if (scheme != null)
+            {
+                <GvGrid ColumnCount="2">
+                    @foreach (var parameter in ConnectionStringParameters(_connectionString = scheme.ConnectionString))
+                    {
+                        if (!_parameters.ContainsKey(parameter))
+                        {
+                            _parameters.Add(parameter, "");
+                        }
+                        <GvGridItem>
+                            <MudTextField Label="@parameter" T="string"
+                                           @bind-Value="_parameters[parameter]"
+                                           InputType="GetInputType(parameter)"
+                                           Variant="Variant.Text"></MudTextField>
+                        </GvGridItem>
+                    }
+                </GvGrid>
+            }
+        </GvCardContent>
+
+    </GvCard>
+
+    if(CustomControls!=null)
+    {
+        <br/>
+        <GvCard>
+            <GvCardContent>
+                @CustomControls
+            </GvCardContent>
+        </GvCard>
+    }
+
+    <br/>
+    <div class="mud-dialog-actions">
+            @if (_isBusy)
+            {
+                <MudProgressCircular Indeterminate="true" Size="MudBlazor.Size.Small" />
+            }
+            @if (!String.IsNullOrEmpty(_connectionSuccessMessage))
+            {
+                <MudAlert Severity="Severity.Success">@_connectionSuccessMessage</MudAlert>
+            }
+            @if (!String.IsNullOrEmpty(_connectionErrorMessage))
+            {
+                <MudAlert Severity="Severity.Error">@_connectionErrorMessage</MudAlert>
+            }
+            <MudButton Variant="Variant.Filled"
+                       Color="Color.Default"
+                       OnClick="TestConnection">
+                Test Connection
+            </MudButton>
+            <MudButton Variant="Variant.Filled"
+                       Color="Color.Primary"
+                       OnClick="SetConnection">Confirm</MudButton>
+
+    </div>
+}
+
+@code {
+    [Parameter] public DbConnectionString? DbConnectionString { get; set; }
+    [Parameter] public string ProviderId { get; set; } = string.Empty;
+    [Parameter] public EventCallback OnSubmit { get; set; }
+    [Parameter] public RenderFragment? CustomControls { get; set; }
+
+    private string _currentProvider = string.Empty;
+    private string? _currentScheme = string.Empty;
+
+    private string _connectionString = string.Empty;
+    private Dictionary<string, string> _parameters = new Dictionary<string, string>();
+
+    private string _connectionErrorMessage = string.Empty;
+    private string _connectionSuccessMessage = string.Empty;
+
+    async protected override Task OnInitializedAsync()
+    {
+        await base.OnInitializedAsync();
+
+        await LoadConnectionStringsModel();  // intialize Conenctions/Providers
+
+        _currentProvider = ProviderId;
+        if (!String.IsNullOrEmpty(_currentProvider) && _commonDbConnections?.Providers != null)
+        {
+            _commonDbConnections.Providers = _commonDbConnections.Providers.Where(p => p.Id == _currentProvider).ToArray();
+        }
+
+        if (DbConnectionString != null)
+        {
+            foreach (var key in DbConnectionString.UserDataTypes)
+            {
+                _parameters[key] = DbConnectionString.GetUserData(key)?.ToString() ?? "";
+            }
+        }
+    }
+
+    private bool _isBusy = false;
+    async private Task TestConnection()
+    {
+        _isBusy = true;
+
+        _connectionErrorMessage = _connectionSuccessMessage = string.Empty;
+        DataProvider dataProvider = new();
+        try
+        {
+            await Task.Delay(300);
+
+            if (dataProvider.Open(BuildDbConnectionString(useProvider: true).ConnectionString, true))
+            {
+                _connectionSuccessMessage = "Connection succeeded...";
+                dataProvider.Close();
+            }
+            else
+            {
+                _connectionErrorMessage = $"Error: {dataProvider.lastErrorMessage}";
+            }
+        }
+        catch (Exception ex)
+        {
+            _connectionErrorMessage = $"Exception: {ex.Message}";
+        }
+        finally
+        {
+            _isBusy = false;
+        }
+    }
+
+    async protected Task SetConnection()
+    {
+        BuildDbConnectionString(DbConnectionString);
+
+        //return base.Submit();
+         await OnSubmit.InvokeAsync();
+        
+    }
+
+    #region Helper
+
+    private DbConnectionString BuildDbConnectionString(DbConnectionString? proto = null, bool? useProvider = null)
+    {
+        string connectionString = _connectionString;
+        foreach (var parameter in _parameters.Keys)
+        {
+            connectionString = connectionString.Replace($"[{parameter}]", _parameters[parameter]);
+        }
+
+        if (proto == null)
+        {
+            proto = DbConnectionString.Build(_currentProvider,
+                                             useProvider.HasValue ?
+                                                    useProvider.HasValue :
+                                                    DbConnectionString?.UseProviderInConnectionString ?? true);
+        }
+        else
+        {
+            proto.ProviderId = _currentProvider;
+        }
+
+        proto.SchemaName = _currentScheme;
+        proto.TryFromConnectionString(_currentProvider, connectionString);
+
+        return proto;
+    }
+
+    private InputType GetInputType(string parameter)
+            => parameter.ToLower() switch
+            {
+                "password" => InputType.Password,
+                "port" => InputType.Number,
+                _ => InputType.Text
+            };
+
+
+    #endregion
+}

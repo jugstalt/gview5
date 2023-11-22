@@ -1,0 +1,43 @@
+@using gView.GraphicsEngine.Filters
+
+@if(Layer is not null)
+{
+    <GvCard Title="Raster Filter & Interpolation">
+        <GvCardContent>
+            <MudSelect Label="Filter" T="FilterImplementations"
+                       @bind-Value="Layer.FilterImplementation">
+                @(GvUtilities.EnumToSelectItems<FilterImplementations>())
+            </MudSelect>
+            
+            <MudSelect Label="Interpolation Method" T="InterpolationMethod"
+                       @bind-Value="Layer.InterpolationMethod">
+                @(GvUtilities.EnumToSelectItems<InterpolationMethod>())
+            </MudSelect>
+        </GvCardContent>
+    </GvCard>
+
+    <GvCard Title="Transparency/Opacity">
+        <GvCardContent>
+            <MudSlider @bind-Value="Layer.Opacity"
+                       Min="0" Max="100"
+                       Color="Color.Info">
+                @($"Opacity: {(Layer.Opacity == 0 ? "ignored" : $"{Layer.Opacity}%")}")
+            </MudSlider>
+            @GvUtilities.InfoText("Opacity 100%: no transparency")
+            @GvUtilities.InfoText("Opacity 0: this settings is ignored => no transparency applied")
+
+            <MudInputLabel>Transparent Color (NODATA):</MudInputLabel>
+            <ColorSelectorButton ArgbColor="Layer.TransparentColor" 
+                                 ArgbColorChanged="(color) => Layer.TransparentColor = color" />
+            <MudButton Size="MudBlazor.Size.Small"
+                       OnClick="() => Layer.TransparentColor = GraphicsEngine.ArgbColor.Transparent">
+                Reset NODATA
+            </MudButton>
+        </GvCardContent>
+    </GvCard>
+        
+}
+
+@code {
+    [Parameter] public IRasterLayer? Layer { get; set; }
+}

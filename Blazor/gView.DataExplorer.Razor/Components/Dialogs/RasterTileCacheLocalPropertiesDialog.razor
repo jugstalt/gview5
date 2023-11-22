@@ -1,0 +1,113 @@
+@inherits ModalDialogFormBase<RasterTileCacheLocalPropertiesModel>
+@inject IApplicationScope AppScope
+
+<ModalDialogFormBase T="RasterTileCacheLocalPropertiesModel"
+                     OnDialogClose="base.OnDialogClose"
+                     Model="base.Model">
+    <DialogBody>
+        <GvGrid ColumnCount="1">
+            <GvGridItem>
+                <GvCard Title="Properties">
+                    <GvCardContent>
+
+                        <MudCheckBox @bind-Checked="Model.UseLocalCache" 
+                                     Color="Color.Primary">
+                                     Use local caching for downloaded files
+                        </MudCheckBox>
+
+                        <MudTextField @bind-Value="Model.LocalCacheFolder"
+                                      Label="Local Cache Folder" />
+
+                    </GvCardContent>
+                </GvCard>
+
+                <GvCard Title="Local Caches">
+                      <GvCardContent>
+                        @if (_caches != null)
+                        {
+                            <MudTable Items="_caches" MultiSelection="false">
+                                <HeaderContent>
+                                    <MudTh>Cache</MudTh>
+                                    <MudTh>Files</MudTh>
+                                    <MudTh>Size (MB)</MudTh>
+                                    <MudTh>
+                                    </MudTh>
+                                </HeaderContent>
+                                <RowTemplate>
+                                    <MudTd>@context.Key</MudTd>
+                                    <MudTd>@context.Value.count</MudTd>
+                                    <MudTd>@context.Value.size</MudTd>
+                                    <MudTd>
+                                        <MudButton Size="MudBlazor.Size.Small" Color="Color.Secondary" OnClick="() => ClearCache(context.Key)">
+                                            Clear
+                                        </MudButton>
+                                    </MudTd>
+                                </RowTemplate>
+                            </MudTable>
+                        }
+                    </GvCardContent>
+                </GvCard>
+            </GvGridItem>
+        </GvGrid>
+    </DialogBody>
+</ModalDialogFormBase>
+
+@code {
+    private Dictionary<string, (string count, string size)>? _caches;
+
+    protected override void OnInitialized() => Handle(() =>
+    {
+        base.OnInitialized();
+
+        LoadCaches();
+    });
+
+    private void ClearCache(string cache) => Handle(() =>
+    {
+        if (_caches?.ContainsKey(cache) == true)
+        {
+            DirectoryInfo di = new DirectoryInfo(System.IO.Path.Combine(gView.DataSources.TileCache.LocalCachingSettings.LocalCachingFolder, cache));
+            di.Delete(true);
+
+            _caches.Remove(cache);
+        }
+    });
+
+    #region Helper
+
+    private void LoadCaches()
+    {
+        DirectoryInfo di = new DirectoryInfo(gView.DataSources.TileCache.LocalCachingSettings.LocalCachingFolder);
+        if (di.Exists)
+        {
+            _caches = new Dictionary<string, (string count, string size)>();
+            foreach (DirectoryInfo sub in di.GetDirectories())
+            {
+                double size;
+                int count = CountFiles(sub.FullName, out size);
+
+                _caches.Add(sub.Name, (count: (count >= 1000 ? ">" : "") + count.ToString(), size: (count >= 1000 ? ">" : "") + Math.Round(size, 2).ToString()));
+            }
+        }
+    }
+
+    private int CountFiles(string directory, out double size)
+    {
+        size = 0D;
+        int counter = 0;
+        foreach (string filename in System.IO.Directory.GetFiles(directory, "*.*", System.IO.SearchOption.AllDirectories))
+        {
+            FileInfo fi = new FileInfo(filename);
+            size += (double)fi.Length / 1024D / 1024D;
+            counter++;
+            if (counter > 1000)
+            {
+                break;
+            }
+        }
+
+        return counter;
+    }
+
+    #endregion
+}

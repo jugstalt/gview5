@@ -1,0 +1,14 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netstandard2.0</TargetFramework>
+    <LangVersion>11</LangVersion>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\gView.Metadata\gView.Metadata.csproj" />
+    <ProjectReference Include="..\gView.Server.Models\gView.Server.Models.csproj" />
+  </ItemGroup>
+
+</Project>

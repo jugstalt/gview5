@@ -122,7 +122,7 @@ namespace gView.Server.AppCode.Extensions
 
     static public class gViewFrameworkExtensions
     {
-        static public bool IsHidden(this ITOCElement tocElement)
+        static public bool IsHidden(this ITocElement tocElement)
         {
             var parent = tocElement.ParentGroup;
 

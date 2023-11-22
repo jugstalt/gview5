@@ -83,5 +83,10 @@ namespace gView.Framework.system.UI
         {
             Process.Start(e.Link.LinkData.ToString());
         }
+
+        private void richTextBox1_TextChanged(object sender, EventArgs e)
+        {
+
+        }
     }
 }

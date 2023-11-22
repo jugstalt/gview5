@@ -81,7 +81,7 @@ namespace gView.DataSources.Fdb.Sqlite
             get { return _errMsg; }
         }
 
-        public Exception lastException
+        public Exception LastException
         {
             get { return _lastException; }
         }
@@ -682,20 +682,29 @@ namespace gView.DataSources.Fdb.Sqlite
             throw new NotImplementedException();
         }
 
-        public string[] TableNames()
+        public string[] TableNames(bool appendViews = false)
         {
             List<string> tableNames = new List<string>();
+            List<string> querySchemes = new List<string>() { "Tables" };
+            if (appendViews)
+            {
+                querySchemes.Add("Views");
+            }
+
             try
             {
                 using (SQLiteConnection connection = new SQLiteConnection(this.ConnectionString))
                 {
                     connection.Open();
-                    DataTable tables = connection.GetSchema("Tables");
-                    foreach (DataRow row in tables.Rows)
+                    foreach (var queryScheme in querySchemes)
                     {
-                        string schema = row["TABLE_SCHEMA"].ToString();
-                        string table = string.IsNullOrEmpty(schema) ? row["TABLE_NAME"].ToString() : schema + "." + row["TABLE_NAME"].ToString();
-                        tableNames.Add(table);
+                        DataTable tables = connection.GetSchema(queryScheme);
+                        foreach (DataRow row in tables.Rows)
+                        {
+                            string scheme = row["TABLE_SCHEMA"].ToString();
+                            string table = string.IsNullOrEmpty(scheme) ? row["TABLE_NAME"].ToString() : scheme + "." + row["TABLE_NAME"].ToString();
+                            tableNames.Add(table);
+                        }
                     }
                 }
             }

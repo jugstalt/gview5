@@ -222,7 +222,7 @@ namespace gView.Plugins.MapTools.Dialogs
                     string title = fc.Name;
                     if (_focusMap != null && _focusMap.TOC != null)
                     {
-                        ITOCElement tocElement = _focusMap.TOC.GetTOCElement(element as ILayer);
+                        ITocElement tocElement = _focusMap.TOC.GetTOCElement(element as ILayer);
                         if (tocElement != null)
                         {
                             title = tocElement.Name;
@@ -432,7 +432,7 @@ namespace gView.Plugins.MapTools.Dialogs
                     string title = fc.Name;
                     if (_focusMap != null && _focusMap.TOC != null)
                     {
-                        ITOCElement tocElement = _focusMap.TOC.GetTOCElement(layer);
+                        ITocElement tocElement = _focusMap.TOC.GetTOCElement(layer);
                         if (tocElement != null)
                         {
                             title = tocElement.Name;

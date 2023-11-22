@@ -9,14 +9,14 @@ namespace gView.Interoperability.OGC.UI.Dataset.WMS
 {
     public partial class EPSGSelector : UserControl
     {
-        private IEPSGMetadata _metadata = null;
+        private IEpsgMetadata _metadata = null;
 
         public EPSGSelector()
         {
             InitializeComponent();
         }
 
-        public IEPSGMetadata Metadata
+        public IEpsgMetadata Metadata
         {
             get { return _metadata; }
             set { _metadata = value; }
@@ -24,9 +24,9 @@ namespace gView.Interoperability.OGC.UI.Dataset.WMS
 
         private void EPSGSelector_Load(object sender, EventArgs e)
         {
-            if (_metadata != null && _metadata.EPSGCodes != null)
+            if (_metadata != null && _metadata.EpsgCodes != null)
             {
-                foreach (string code in _metadata.EPSGCodes)
+                foreach (string code in _metadata.EpsgCodes)
                 {
                     lstCodes.Items.Add(code);
                 }
@@ -43,7 +43,7 @@ namespace gView.Interoperability.OGC.UI.Dataset.WMS
                     codes.Add(item);
                 }
 
-                _metadata.EPSGCodes = codes.ToArray();
+                _metadata.EpsgCodes = codes.ToArray();
             }
         }
         private void btnAdd_Click(object sender, EventArgs e)

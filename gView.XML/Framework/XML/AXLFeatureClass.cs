@@ -1201,8 +1201,8 @@ namespace gView.Framework.XML
                 if (display != null)
                 {
                     axl.WriteStartElement("gv_display");
-                    axl.WriteAttribute("iwidth", display.iWidth.ToString());
-                    axl.WriteAttribute("iheight", display.iHeight.ToString());
+                    axl.WriteAttribute("iwidth", display.ImageWidth.ToString());
+                    axl.WriteAttribute("iheight", display.ImageHeight.ToString());
                     if (display.Envelope != null)
                     {
                         axl.WriteEnvelope(display.Envelope.minx, display.Envelope.miny,

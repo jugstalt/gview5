@@ -1,0 +1,59 @@
+@using MudBlazor.Utilities
+@using gView.GraphicsEngine
+
+@inherits BaseHandler
+@inject IApplicationScope AppScope
+
+@if(_color is not null)
+{
+    <MudButton Style="@($"background-color:{_color.ToString(MudColorOutputFormats.Hex)};color:{TextColor.ToString(MudColorOutputFormats.Hex)};width:200px")"
+               OnClick="OpenColorPicker">
+            @_color.ToString(MudColorOutputFormats.HexA)
+    </MudButton>
+}
+
+@code {
+    [Parameter] public ArgbColor ArgbColor { get; set; }
+    [Parameter] public EventCallback<ArgbColor> ArgbColorChanged { get; set; }
+
+    private MudColor? _color;
+
+    protected override void OnParametersSet()
+    {
+        base.OnParametersSet();
+
+        _color = new MudColor(ArgbColor.R, ArgbColor.G, ArgbColor.B, ArgbColor.A);
+    }
+
+    private Task OpenColorPicker() => HandleAsync(async () =>
+        {
+            var model = await AppScope.ShowModalDialog(
+                typeof(gView.Razor.Dialogs.ColorPickerDialog),
+                "Color Picker",
+                new ColorPickerModel()
+                {
+                    ArgbColor = ArgbColor
+                },
+                new Framework.Blazor.Models.ModalDialogOptions()
+                {
+                    Width = Framework.Blazor.Models.ModalDialogWidth.ExtraSmall
+                }
+            );
+
+            if (model is not null)
+            {
+                ArgbColor = model.ArgbColor;
+                _color = new MudColor(ArgbColor.R, ArgbColor.G, ArgbColor.B, ArgbColor.A);
+
+                await ArgbColorChanged.InvokeAsync(ArgbColor);
+            }
+        });
+
+    private MudColor TextColor
+        => _color is null 
+            ? new MudColor("#000")
+            : new MudColor(
+                    (byte)(255 - _color.R), 
+                    (byte)(255 - _color.G), 
+                    (byte)(255 - _color.B), (byte)255);
+}

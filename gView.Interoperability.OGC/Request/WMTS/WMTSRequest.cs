@@ -311,10 +311,10 @@ namespace gView.Interoperability.OGC.Request.WMTS
                     ISpatialReference sRef = SpatialReference.FromID("epsg:" + epsg);
 
                     map.Display.SpatialReference = sRef;
-                    map.Display.dpi = metadata.Dpi;
+                    map.Display.Dpi = metadata.Dpi;
 
-                    map.Display.iWidth = metadata.TileWidth;
-                    map.Display.iHeight = metadata.TileHeight;
+                    map.Display.ImageWidth = metadata.TileWidth;
+                    map.Display.ImageHeight = metadata.TileHeight;
 
                     double res = scale / (metadata.Dpi / 0.0254);
                     if (map.Display.MapUnits != GeoUnits.Meters)
@@ -678,7 +678,7 @@ namespace gView.Interoperability.OGC.Request.WMTS
                     matrixSet.Identifier = new gView.Framework.OGC.WMTS.Version_1_0_0.CodeType() { Value = layerId + "_default_matrixset" };
                     matrixSet.SupportedCRS = "urn:ogc:def:crs:EPSG::" + epsg;
 
-                    matrixSet.TileMatrix = new gView.Framework.OGC.WMTS.Version_1_0_0.TileMatrix[metadata.Scales.Count];
+                    matrixSet.TileMatrix = new gView.Framework.OGC.WMTS.Version_1_0_0.TileMatrix[metadata.Scales.InnerList.Count];
 
                     #region DPI
 
@@ -688,17 +688,17 @@ namespace gView.Interoperability.OGC.Request.WMTS
 
                     #endregion
 
-                    for (int s = 0, to = metadata.Scales.Count; s < to; s++)
+                    for (int s = 0, to = metadata.Scales.InnerList.Count; s < to; s++)
                     {
                         string scalePath = _mapServer.TileCachePath + @"/" + MapName(context) + @"/_alllayers/" + (cacheType == "compact" ? @"compact/" : "") +
-                            TileServiceMetadata.ScalePath(GridOrientation.UpperLeft, epsg, metadata.Scales[s]);
+                            TileServiceMetadata.ScalePath(GridOrientation.UpperLeft, epsg, metadata.Scales.InnerList[s]);
 
                         if (!new DirectoryInfo(scalePath).Exists)
                         {
                             break;
                         }
 
-                        double resolution = metadata.Scales[s] / (metadata.Dpi / inchMeter);
+                        double resolution = metadata.Scales.InnerList[s] / (metadata.Dpi / inchMeter);
 
                         matrixSet.TileMatrix[s] = new gView.Framework.OGC.WMTS.Version_1_0_0.TileMatrix();
                         matrixSet.TileMatrix[s].Identifier = new gView.Framework.OGC.WMTS.Version_1_0_0.CodeType() { Value = s.ToString() };
@@ -793,12 +793,12 @@ namespace gView.Interoperability.OGC.Request.WMTS
             {
                 scaleArgument = scaleArgument.Substring(1);
                 int index = int.Parse(scaleArgument);
-                if (index < 0 || index >= metadata.Scales.Count())
+                if (index < 0 || index >= metadata.Scales.InnerList.Count)
                 {
                     return 0D;
                 }
 
-                return metadata.Scales[int.Parse(scaleArgument)];
+                return metadata.Scales.InnerList[int.Parse(scaleArgument)];
             }
             return double.Parse(scaleArgument.Replace(",", "."), _nhi);
         }

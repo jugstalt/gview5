@@ -276,7 +276,7 @@ namespace gView.Framework.Symbology
                 CanvasRectangleF rect =
                     (_rectType == GradientRectType.Feature ?
                     path.GetBounds() :
-                    new CanvasRectangleF(0, 0, display.iWidth, display.iHeight));
+                    new CanvasRectangleF(0, 0, display.ImageWidth, display.ImageHeight));
 
                 using (var brush = _gradient.CreateNewLinearGradientBrush(rect))
                 {
@@ -401,13 +401,13 @@ namespace gView.Framework.Symbology
             float fac = 1;
             if (options.ApplyRefScale)
             {
-                fac = (float)(display.refScale / display.mapScale);
+                fac = (float)(display.ReferenceScale / display.MapScale);
                 fac = options.RefScaleFactor(fac);
             }
 
-            if (display.dpi != 96.0)
+            if (display.Dpi != 96.0)
             {
-                fac *= (float)(display.dpi / 96.0);
+                fac *= (float)(display.Dpi / 96.0);
             }
 
             GradientFillSymbol fSym = new GradientFillSymbol(_gradient);

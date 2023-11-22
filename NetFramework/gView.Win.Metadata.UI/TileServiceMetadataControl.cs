@@ -345,17 +345,17 @@ namespace gView.Framework.Metadata.UI
         {
             if ((int)numScale.Value > 0.0)
             {
-                TileServiceMetadata.DoubleScales scales = new TileServiceMetadata.DoubleScales();
+                TileServiceMetadata.DoubleScales scales = new TileServiceMetadata.DoubleScales(new List<double>());
                 foreach (double s in lstScales.Items)
                 {
-                    scales.Add(s);
+                    scales.InnerList.Add(s);
                 }
                 if (scales.Contains((double)numScale.Value))
                 {
                     return;
                 }
 
-                scales.Add((double)numScale.Value);
+                scales.InnerList.Add((double)numScale.Value);
 
                 scales.Order();
                 if (_metadata != null)
@@ -371,7 +371,7 @@ namespace gView.Framework.Metadata.UI
         {
             if (_metadata != null)
             {
-                _metadata.Scales.Remove(Convert.ToInt32(lstScales.SelectedItem));
+                _metadata.Scales.InnerList.Remove(Convert.ToInt32(lstScales.SelectedItem));
             }
 
             FillScaleList();
@@ -535,7 +535,7 @@ namespace gView.Framework.Metadata.UI
             lstScales.Items.Clear();
             if (_metadata != null)
             {
-                foreach (double scale in _metadata.Scales)
+                foreach (double scale in _metadata.Scales.InnerList)
                 {
                     lstScales.Items.Add(scale);
                 }

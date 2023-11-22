@@ -1,0 +1,56 @@
+@if (Model != null)
+{
+    <GvCard Title="Scales">
+        <GvCardContent>
+            <GvGrid ColumnCount="6">
+                <GvGridItem Span="5">
+                    <MudTextField Label="New Scale" @ref="_addScaleInput"
+                                  Format="N6" T="double" Immediate="true"
+                                  InputType="InputType.Number" Step="0.1"
+                                  Variant="Variant.Text"></MudTextField>
+                </GvGridItem>
+                <GvGridItem Span="1">
+                    <MudButton OnClick="AddScale" 
+                               Variant="Variant.Filled" 
+                               Color="Color.Primary" 
+                               Size="MudBlazor.Size.Small">Add</MudButton>
+                </GvGridItem>
+
+                @foreach (var scale in Model.Scales.OrderDescending())
+                {
+                    <GvGridItem Span="5">
+                        <MudText Typo="Typo.body2">@scale.ToString()</MudText>
+                    </GvGridItem>
+                    <GvGridItem Span="1">
+                        <MudButton OnClick="() => RemoveScale(scale)"
+                                   Variant="Variant.Filled" 
+                                   Color="Color.Secondary" 
+                                   Size="MudBlazor.Size.Small">Remove</MudButton>
+                    </GvGridItem>
+                }
+            </GvGrid>
+        </GvCardContent>
+    </GvCard>
+}
+
+@code{
+    [Parameter] public TileScalesModel? Model { get; set; }
+    private MudTextField<double>? _addScaleInput;
+
+    private void AddScale()
+    {
+        if (_addScaleInput != null && Model != null && !Model.Scales.Contains(_addScaleInput.Value))
+        {
+            Model.Scales.Add(_addScaleInput.Value);
+            _addScaleInput.Value = 0D;
+        }
+    }
+
+    private void RemoveScale(double scale)
+    {
+        if (Model != null && Model.Scales.Contains(scale))
+        {
+            Model.Scales.Remove(scale);
+        }
+    }
+}

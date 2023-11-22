@@ -1,3 +1,4 @@
+using gView.Db.Framework.Extensions;
 using gView.Framework.Data.Filters;
 using Oracle.ManagedDataAccess.Client;
 using System;
@@ -102,7 +103,8 @@ namespace gView.Framework.Db
             set
             {
                 if (value.ToLower().IndexOf("sql:") == 0 ||
-                   value.ToLower().IndexOf("sqlclient:") == 0)
+                   value.ToLower().IndexOf("sqlclient:") == 0 ||
+                   value.ToLower().IndexOf("mssql:") == 0)
                 {
                     _connectionString = value.Substring(value.IndexOf(":") + 1, value.Length - value.IndexOf(":") - 1);
                     _dbtype = DBType.sql;
@@ -118,9 +120,11 @@ namespace gView.Framework.Db
                     _connectionString = value.Substring(value.IndexOf(":") + 1, value.Length - value.IndexOf(":") - 1);
                     _dbtype = DBType.oracle;
                 }
-                else if (value.ToLower().IndexOf("npgsql:") == 0)
+                else if (value.ToLower().IndexOf("npgsql:") == 0 ||
+                         value.ToLower().IndexOf("postgre:") == 0)
                 {
                     _connectionString = value.Substring(value.IndexOf(":") + 1, value.Length - value.IndexOf(":") - 1);
+                    _connectionString = DbConnectionString.ParseNpgsqlConnectionString(_connectionString);
                     _dbtype = DBType.npgsql;
                 }
                 else
@@ -167,7 +171,7 @@ namespace gView.Framework.Db
             }
         }
         public string errorMessage { get { return m_errMsg; } }
-        public Exception lastException { get { return _lastException; } }
+        public Exception LastException { get { return _lastException; } }
 
         async public Task<bool> SQLQuery(DataSet ds, string sql, string table, bool writeable)
         {
@@ -1073,7 +1077,7 @@ namespace gView.Framework.Db
                             oconn.Open();
                             if (oconn.State == ConnectionState.Open)
                             {
-                                ocomm = new OracleCommand("SELECT * FROM " + name, oconn);
+                                ocomm = new OracleCommand($"SELECT * FROM {name}", oconn);
                                 oreader = ocomm.ExecuteReader(CommandBehavior.SchemaOnly);
                                 _schemaTable = oreader.GetSchemaTable();
                             }
@@ -1088,13 +1092,10 @@ namespace gView.Framework.Db
                             if (dbconn.State == ConnectionState.Open)
                             {
                                 DbCommand dbcomm = dbfactory.CreateCommand();
-                                dbcomm.Connection = dbconn;
-                                if (!name.Contains("\""))
-                                {
-                                    name = "\"" + name + "\"";
-                                }
 
-                                dbcomm.CommandText = "select * from " + name + " limit 0";
+                                dbcomm.Connection = dbconn;
+                                dbcomm.CommandText = $"select * from {name.ToPostgreSqlTableName()} limit 0";
+
                                 DbDataReader dbreader = dbcomm.ExecuteReader(CommandBehavior.SchemaOnly);
                                 _schemaTable = dbreader.GetSchemaTable();
                             }
@@ -1391,9 +1392,15 @@ namespace gView.Framework.Db
              * */
         }
 
-        public string[] TableNames()
+        public string[] TableNames(bool appendViews = false)
         {
             List<string> tableNames = new List<string>();
+            List<string> querySchemes = new List<string>() { "Tables" };
+            if (appendViews)
+            {
+                querySchemes.Add("Views");
+            }
+
             try
             {
                 switch (dbType)
@@ -1402,12 +1409,15 @@ namespace gView.Framework.Db
                         using (SqlConnection connection = new SqlConnection(this.ConnectionString))
                         {
                             connection.Open();
-                            DataTable tables = connection.GetSchema("Tables");
-                            foreach (DataRow row in tables.Rows)
+                            foreach (var queryScheme in querySchemes)
                             {
-                                string schema = row["TABLE_SCHEMA"].ToString();
-                                string table = string.IsNullOrEmpty(schema) ? row["TABLE_NAME"].ToString() : schema + "." + row["TABLE_NAME"].ToString();
-                                tableNames.Add(table);
+                                DataTable tables = connection.GetSchema(queryScheme);
+                                foreach (DataRow row in tables.Rows)
+                                {
+                                    string scheme = row["TABLE_SCHEMA"].ToString();
+                                    string table = string.IsNullOrEmpty(scheme) ? row["TABLE_NAME"].ToString() : scheme + "." + row["TABLE_NAME"].ToString();
+                                    tableNames.Add(table);
+                                }
                             }
                         }
                         break;
@@ -1416,12 +1426,16 @@ namespace gView.Framework.Db
                         using (DbConnection dbconnection = dbfactory.CreateConnection())
                         {
                             dbconnection.ConnectionString = this.ConnectionString;
-                            DataTable tables3 = dbconnection.GetSchema("Tables");
-                            foreach (DataRow row in tables3.Rows)
+
+                            foreach (var queryScheme in querySchemes)
                             {
-                                string schema = row["table_schema"].ToString();
-                                string table = string.IsNullOrEmpty(schema) ? row["table_name"].ToString() : schema + "." + row["table_name"].ToString();
-                                tableNames.Add(table);
+                                DataTable tables3 = dbconnection.GetSchema(queryScheme);
+                                foreach (DataRow row in tables3.Rows)
+                                {
+                                    string scheme = row["table_schema"].ToString();
+                                    string table = string.IsNullOrEmpty(scheme) ? row["table_name"].ToString() : scheme + "." + row["table_name"].ToString();
+                                    tableNames.Add(table);
+                                }
                             }
                         }
                         break;

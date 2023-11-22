@@ -1,0 +1,36 @@
+@inherits ModalDialogFormBase<CreateFdbModel>
+
+
+<ModalDialogFormBase T="CreateFdbModel"
+                       OnDialogClose="base.OnDialogClose"
+                       Model="base.Model">
+    <DialogBody>
+
+        <ConnectionStringControl DbConnectionString="@Model.DbConnectionString"
+                                    ProviderId="@Model.ProviderId"
+                                    OnSubmit="CreateFdb">
+        
+            <CustomControls>
+                @* <MudTextField Label="Database Name"
+                               @bind-Value="@Model.DatabaseName"
+                               Variant="Variant.Text"></MudTextField> *@
+
+                <MudCheckBox Label="Create Repository in existing database"
+                              @bind-Checked="@Model.CreateRepositoryOnly" />
+            </CustomControls>
+
+        </ConnectionStringControl>
+
+    </DialogBody>
+    <DialogButtons>
+
+    </DialogButtons>
+</ModalDialogFormBase>
+
+
+@code {
+    protected Task CreateFdb() => HandleAsync(() =>
+    {
+        return base.Submit();
+    });
+}

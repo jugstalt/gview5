@@ -18,7 +18,7 @@ namespace gView.Framework.Carto
         string Name { get; }
         string Title { get; }
         IDisplay Display { get; }
-        ITOC TOC { get; }
+        IToc TOC { get; }
 
         List<IDatasetElement> MapElements { get; }
 
@@ -37,8 +37,6 @@ namespace gView.Framework.Carto
         string GetLayerDescription(int layerId);
 
         string GetLayerCopyrightText(int layerId);
-
-        IDictionary<string, double> Metrics { get; }
 
         ISpatialReference LayerDefaultSpatialReference
         {

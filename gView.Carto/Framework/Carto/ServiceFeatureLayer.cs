@@ -21,8 +21,8 @@ namespace gView.Framework.Carto
 
             _title = layer.Title;
             _visible = layer.Visible;
-            _MinimumScale = layer.MinimumScale;
-            _MaximumScale = layer.MaximumScale;
+            _minimumScale = layer.MinimumScale;
+            _maximumScale = layer.MaximumScale;
         }
 
         public IFeatureLayer FeatureLayer

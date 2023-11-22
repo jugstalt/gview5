@@ -1,0 +1,17 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netstandard2.1</TargetFramework>
+    <Nullable>enable</Nullable>
+	 <LangVersion>11</LangVersion>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Folder Include="Abstraction\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\gView.Framework.DataExplorer\gView.Framework.DataExplorer.csproj" />
+  </ItemGroup>
+
+</Project>

@@ -4,6 +4,7 @@ using gView.Interoperability.OGC.Request.WMTS;
 using gView.MapServer;
 using gView.Server.AppCode;
 using gView.Server.AppCode.Extensions;
+using gView.Server.Extensions;
 using gView.Server.Services.MapServer;
 using gView.Server.Services.Security;
 using Microsoft.AspNetCore.Mvc;
@@ -66,7 +67,7 @@ namespace gView.Server.Controllers
                 string requestString = Request.QueryString.ToString();
                 if (Request.Method.ToLower() == "post" && Request.Body.CanRead)
                 {
-                    string body = await GetBody();
+                    string body = await Request.GetBody();
 
                     if (!String.IsNullOrWhiteSpace(body))
                     {
@@ -189,20 +190,6 @@ namespace gView.Server.Controllers
             }
 
             return File(data, contentType);
-        }
-
-        async private Task<string> GetBody()
-        {
-            if (Request.Body.CanRead)
-            {
-                using (var reader = new StreamReader(Request.Body))
-                {
-                    var body = await reader.ReadToEndAsync();
-                    return body;
-                }
-            }
-
-            return String.Empty;
         }
 
         #endregion

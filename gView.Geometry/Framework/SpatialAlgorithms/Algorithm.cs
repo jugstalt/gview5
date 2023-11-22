@@ -2078,7 +2078,7 @@ namespace gView.Framework.SpatialAlgorithms
                     Math.Max(
                     Math.Max(Math.Abs(env.minx - _centerPoint.X), Math.Abs(env.maxx - _centerPoint.X)),
                     Math.Max(Math.Abs(env.miny - _centerPoint.Y), Math.Abs(env.maxy - _centerPoint.Y)));
-                double dr = 20.0 * display.mapScale / display.dpm;
+                double dr = 20.0 * display.MapScale / display.Dpm;
 
                 for (double r = dr; r < R; r += dr)
                 {

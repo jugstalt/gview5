@@ -381,6 +381,8 @@ namespace gView.Framework.UI.Dialogs
             this.cmbLabelRenderer = new System.Windows.Forms.ComboBox();
             this.label3 = new System.Windows.Forms.Label();
             this.tabRaster = new System.Windows.Forms.TabPage();
+            this.cmbFilter = new System.Windows.Forms.ComboBox();
+            this.label25 = new System.Windows.Forms.Label();
             this.panelNoDataColor = new System.Windows.Forms.Panel();
             this.label10 = new System.Windows.Forms.Label();
             this.btnTranscolor = new System.Windows.Forms.Button();
@@ -445,8 +447,6 @@ namespace gView.Framework.UI.Dialogs
             this.panel2 = new System.Windows.Forms.Panel();
             this.button1 = new System.Windows.Forms.Button();
             this.btnOK = new System.Windows.Forms.Button();
-            this.label25 = new System.Windows.Forms.Label();
-            this.cmbFilter = new System.Windows.Forms.ComboBox();
             this.tabControl1.SuspendLayout();
             this.tabGeneral.SuspendLayout();
             this.groupBox6.SuspendLayout();
@@ -846,6 +846,18 @@ namespace gView.Framework.UI.Dialogs
             resources.ApplyResources(this.tabRaster, "tabRaster");
             this.tabRaster.Name = "tabRaster";
             this.tabRaster.UseVisualStyleBackColor = true;
+            // 
+            // cmbFilter
+            // 
+            this.cmbFilter.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.cmbFilter.FormattingEnabled = true;
+            resources.ApplyResources(this.cmbFilter, "cmbFilter");
+            this.cmbFilter.Name = "cmbFilter";
+            // 
+            // label25
+            // 
+            resources.ApplyResources(this.label25, "label25");
+            this.label25.Name = "label25";
             // 
             // panelNoDataColor
             // 
@@ -1304,18 +1316,6 @@ namespace gView.Framework.UI.Dialogs
             this.btnOK.Name = "btnOK";
             this.btnOK.Click += new System.EventHandler(this.btnOK_Click);
             // 
-            // label25
-            // 
-            resources.ApplyResources(this.label25, "label25");
-            this.label25.Name = "label25";
-            // 
-            // cmbFilter
-            // 
-            this.cmbFilter.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
-            this.cmbFilter.FormattingEnabled = true;
-            resources.ApplyResources(this.cmbFilter, "cmbFilter");
-            this.cmbFilter.Name = "cmbFilter";
-            // 
             // FormLayerProperties
             // 
             resources.ApplyResources(this, "$this");
@@ -1472,7 +1472,7 @@ namespace gView.Framework.UI.Dialogs
                         cmbInterpolationMode.SelectedItem = mode;
                     }
                 }
-                tbTransparency.Value = (int)Math.Max(Math.Min((int)(((IRasterLayer)_layer).Transparency * 100f), 100), 0);
+                tbTransparency.Value = (int)Math.Max(Math.Min((int)(((IRasterLayer)_layer).Opacity * 100f), 100), 0);
                 lblTransPercent.Text = tbTransparency.Value.ToString() + "%";
 
                 btnTranscolor.BackColor = ((IRasterLayer)_layer).TransparentColor.ToGdiColor();
@@ -1963,7 +1963,7 @@ namespace gView.Framework.UI.Dialogs
             {
                 ((IRasterLayer)_layer).FilterImplementation = (GraphicsEngine.Filters.FilterImplementations)cmbFilter.SelectedItem;
                 ((IRasterLayer)_layer).InterpolationMethod = (InterpolationMethod)cmbInterpolationMode.SelectedItem;
-                ((IRasterLayer)_layer).Transparency = ((float)tbTransparency.Value) / 100f;
+                ((IRasterLayer)_layer).Opacity = ((float)tbTransparency.Value) / 100f;
                 ((IRasterLayer)_layer).TransparentColor = btnTranscolor.BackColor.ToArgbColor();
             }
             if (_layer.Class is IGridClass)

@@ -126,7 +126,7 @@
     <value>80, 0</value>
   </data>
   <data name="cmbSymbolTypes.Size" type="System.Drawing.Size, System.Drawing">
-    <value>691, 21</value>
+    <value>691, 28</value>
   </data>
   <assembly alias="mscorlib" name="mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
   <data name="cmbSymbolTypes.TabIndex" type="System.Int32, mscorlib">

@@ -37,7 +37,7 @@ namespace gView.Framework.UI.Dialogs
             }
 
             txtName.Text = _map.Name;
-            numRefScale.Value = (int)_display.refScale;
+            numRefScale.Value = (int)_display.ReferenceScale;
 
             int index = 0;
             foreach (GeoUnits unit in Enum.GetValues(typeof(GeoUnits)))
@@ -120,8 +120,8 @@ namespace gView.Framework.UI.Dialogs
 
             txtCurrentBBox.Text = _display.Envelope.ToBBoxString();
 
-            int iWidth = (int)((float)_display.iWidth * 96f / (float)_display.dpi);
-            int iHeight = (int)((float)_display.iHeight * 96f / (float)_display.dpi);
+            int iWidth = (int)((float)_display.ImageWidth * 96f / (float)_display.Dpi);
+            int iHeight = (int)((float)_display.ImageHeight * 96f / (float)_display.Dpi);
             txtCurrentSize.Text = $"{iWidth},{iHeight}";
 
             #endregion
@@ -141,7 +141,7 @@ namespace gView.Framework.UI.Dialogs
                 bool refresh = false;
 
                 _map.Name = txtName.Text;
-                _display.refScale = Convert.ToDouble(numRefScale.Value);
+                _display.ReferenceScale = Convert.ToDouble(numRefScale.Value);
 
                 if (cmbMapUnits.Enabled)
                 {

@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace gView.Framework.IO
 {
-    static public class Extensions
+    static public class IOExtensions
     {
         static private HttpClient _httpClient = null;
 

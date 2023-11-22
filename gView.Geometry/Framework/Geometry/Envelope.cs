@@ -1,4 +1,5 @@
 using gView.Framework.system;
+using NpgsqlTypes;
 using System;
 using System.IO;
 using System.Text;
@@ -586,6 +587,8 @@ namespace gView.Framework.Geometry
 
             return false;
         }
+
+        public static IEnvelope Null() => new Envelope(0D, 0D, 0D, 0D);
 
         public static IEnvelope FromBBox(string bboxString)
         {

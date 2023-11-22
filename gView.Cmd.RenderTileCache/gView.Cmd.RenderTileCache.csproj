@@ -11,6 +11,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\gView.Carto\gView.Carto.csproj" />
+    <ProjectReference Include="..\gView.Cmd.TileCache.Lib\gView.Cmd.TileCache.Lib.csproj" />
     <ProjectReference Include="..\gView.Metadata\gView.Metadata.csproj" />
     <ProjectReference Include="..\gView.Server.Connector\gView.Server.Connector.csproj" />
   </ItemGroup>

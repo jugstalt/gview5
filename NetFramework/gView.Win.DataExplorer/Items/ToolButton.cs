@@ -47,9 +47,9 @@ namespace gView.Win.DataExplorer.Items
             {
                 Tool.OnEvent(_contextType.ContextObject, _doc);
             }
-            else if (_contextType.ContextObject is ITOCElement && ((ITOCElement)_contextType.ContextObject).Layers != null)
+            else if (_contextType.ContextObject is ITocElement && ((ITocElement)_contextType.ContextObject).Layers != null)
             {
-                ITOCElement tocElement = (ITOCElement)_contextType.ContextObject;
+                ITocElement tocElement = (ITocElement)_contextType.ContextObject;
 
                 foreach (var layer in tocElement.Layers)
                 {

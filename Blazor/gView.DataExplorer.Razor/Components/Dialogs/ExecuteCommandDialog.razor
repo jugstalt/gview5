@@ -1,0 +1,175 @@
+@inherits ModalDialogFormBase<ExecuteCommandModel>
+
+<ModalDialogFormBase T="ExecuteCommandModel"
+                     OnDialogClose="base.OnDialogClose"
+                     Model="base.Model">
+    <FormContent>
+        @if(_isStarted) {
+            <pre style="width:800px;height:500px;background-color:#333;color:#eee;padding:8px;white-space:pre-wrap">
+                @foreach(var line in _logLines)
+                {
+                    if (line.Contains("error", StringComparison.OrdinalIgnoreCase))
+                    {
+                        <div style='color:red'>@line</div>
+                    }
+                    else if (line.Contains("cancel", StringComparison.OrdinalIgnoreCase) || line.Contains("warning", StringComparison.OrdinalIgnoreCase))
+                    {
+                        <div style='color:yellow'>@line</div>
+                    }
+                    else if (line.Contains("success", StringComparison.OrdinalIgnoreCase))
+                    {
+                        <div style='color:green'>@line</div>
+                    }
+                    else
+                    {
+                        <div>@line</div>
+                    }
+                }
+            </pre>
+        } 
+        else
+        {
+            <pre style="width:800px;height:500px;background-color:#333;color:#eee;padding:8px">
+                @CommandLine()
+            </pre>
+        }
+    </FormContent>
+    <DialogButtons>
+        @if(_isStarted == false)
+        {
+            <MudButton Variant="Variant.Filled"
+                       Color="Color.Secondary"
+                       OnClick="base.Submit">Close</MudButton>
+            <MudButton Variant="Variant.Filled"
+                       Color="Color.Primary"
+                       OnClick="Start">Start</MudButton>
+        }
+        else if(_isFinshed)
+        {
+            <MudButton Variant="Variant.Filled"
+                       Color="Color.Primary"
+                       OnClick="base.Submit">Close</MudButton>
+        } 
+        else
+        {
+            <MudButton Variant="Variant.Filled"
+                       Color="Color.Secondary"
+                       OnClick="Cancel">Cancel</MudButton>
+        }
+    </DialogButtons>
+</ModalDialogFormBase>
+
+@code {
+    private System.Text.StringBuilder LoggerOutput = new();
+    private string[] _logLines= new string[0];
+    private ICancelTracker _cancelTracker = new CancelTracker();
+    private bool _isFinshed = false, _isStarted = false;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await base.OnInitializedAsync();
+
+        Model.Result = true;
+    }
+
+    private void Start()
+    {
+        _isStarted = true;
+
+        var task = Task.Run(async () =>
+        {
+            var logger = new Logger(this);
+
+            foreach (var commandItem in Model.CommandItems)
+            {
+                logger.LogLine("#");
+                logger.LogLine($"### Execute {commandItem.Command.Name}");
+                logger.LogLine("#");
+
+                var result = await commandItem.Command.Run(commandItem.Parameters, _cancelTracker, logger);
+
+                logger.LogLine($"Finished {(result ? "successful" : "with errors")}");
+                Model.Result &= result;
+
+                if (!_cancelTracker.Continue)
+                {
+                    logger.LogLine("Operation is canceled");
+                    break;
+                }
+            }
+
+            _isFinshed = true;
+            Refresh();
+        });
+
+        Refresh();
+    }
+
+    private void Cancel()
+    {
+        _cancelTracker.Cancel();
+    }
+
+    private void Refresh()
+    {
+        _logLines = LoggerOutput.ToString().Split('\n');
+        InvokeAsync(StateHasChanged);
+    }
+
+    private string CommandLine()
+    {
+        System.Text.StringBuilder sb = new();
+
+        foreach(var commandItem in Model.CommandItems)
+        {
+            if (String.IsNullOrEmpty(commandItem.Command.ExecutableName))
+            {
+                sb.Append($"./gView.cmd.exe -command {commandItem.Command.Name}");
+            } 
+            else
+            {
+                sb.Append($"./{commandItem.Command.ExecutableName}");
+            }
+
+            foreach(var parameter in commandItem.Parameters)
+            {
+                sb.Append($" -{parameter.Key} \"{parameter.Value.ToInvariantString()}\"");
+            }
+            sb.AppendLine();
+        }
+
+        return sb.ToString();
+    }
+
+    private class Logger : Cmd.Core.Abstraction.ICommandLogger
+    {
+        private bool _requireNewline=false;
+        private readonly ExecuteCommandDialog _parent;
+
+        public Logger(ExecuteCommandDialog parent)
+        {
+            _parent = parent;
+        }
+
+        public void Log(string message)
+        {
+            _parent.LoggerOutput.Append(message);
+            _requireNewline = true;
+
+            _parent.Refresh();
+        }
+
+        public void LogLine(string message)
+        {
+            if(_requireNewline)
+            {
+                _parent.LoggerOutput.AppendLine("");
+            }
+
+            _parent.LoggerOutput.AppendLine(message);
+            _requireNewline = false;
+
+            _parent.Refresh();
+        }
+    }
+}

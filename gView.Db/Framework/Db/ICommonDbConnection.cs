@@ -17,7 +17,7 @@ namespace gView.Framework.Db
         string dbTypeString { get; set; }
 
         string errorMessage { get; }
-        Exception lastException { get; }
+        Exception LastException { get; }
 
         Task<bool> SQLQuery(DataSet ds, string sql, string table, bool writeable);
         bool Update(DataTable table);
@@ -57,6 +57,6 @@ namespace gView.Framework.Db
         dataType getFieldType(string fieldname);
         int getFieldSize(string fieldname);
 
-        string[] TableNames();
+        string[] TableNames(bool appendViews = false);
     }
 }

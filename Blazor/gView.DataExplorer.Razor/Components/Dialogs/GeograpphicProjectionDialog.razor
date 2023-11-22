@@ -1,0 +1,30 @@
+@inherits ModalDialogFormBase<BaseDialogModel<ISpatialReference>>
+
+<ModalDialogFormBase T="BaseDialogModel<ISpatialReference>"
+                     OnDialogClose="base.OnDialogClose"
+                     Model="base.Model">
+    <FormContent>
+        <GeographicProjectionSelectorControl @ref="control"
+            SpatialReferenceChanged="() => SRefChanged()" />
+    </FormContent>
+    <DialogButtons>
+       
+    </DialogButtons>
+</ModalDialogFormBase>
+
+@code {
+    private GeographicProjectionSelectorControl? control;
+    protected override Task OnParametersSetAsync()
+    {
+        return base.OnParametersSetAsync();
+    }
+
+    private void SRefChanged()
+    {
+        if(control?.SpatialReference != null)
+        {
+            Model.Value = control.SpatialReference;
+            base.Submit();
+        }       
+    }
+}

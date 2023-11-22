@@ -10,7 +10,7 @@ namespace gView.Framework.system
 {
     public class SystemInfo
     {
-        public static Version Version = new Version(5, 23, 3402);
+        public static Version Version = new Version(6, 23, 4701);
 
         #region -> Private Variables
 
@@ -27,87 +27,12 @@ namespace gView.Framework.system
 
         #endregion
 
-        internal static string MashineName
-        {
-            get
-            {
-                try
-                {
-                    return global::System.Net.Dns.GetHostName().Split('.')[0];
-                }
-                catch
-                {
-                    try
-                    {
-                        return global::System.Environment.MachineName.Split('.')[0];
-                    }
-                    catch { }
-                }
-
-                return String.Empty;
-            }
-        }
-
-        private static string RemoveUseLess(string st)
-        {
-            char ch;
-            for (int i = st.Length - 1; i >= 0; i--)
-            {
-                ch = char.ToUpper(st[i]);
-
-                if ((ch < 'A' || ch > 'Z') &&
-                    (ch < '0' || ch > '9'))
-                {
-                    st = st.Remove(i, 1);
-                }
-            }
-            return st;
-        }
-
-        private static string TrimString(string str)
-        {
-            if (str == null)
-            {
-                return "";
-            }
-
-            str = str.Trim();
-            while (str.IndexOf("0") == 0)
-            {
-                str = str.Substring(1, str.Length - 1);
-            }
-            return str;
-        }
-
         static public NumberFormatInfo Nhi = System.Globalization.CultureInfo.InvariantCulture.NumberFormat;
         static public NumberFormatInfo Cnf = System.Globalization.CultureInfo.CurrentCulture.NumberFormat;
 
         static public bool IsLinux = System.Runtime.InteropServices.RuntimeInformation.IsOSPlatform(OSPlatform.Linux);
         static public bool IsWindows = System.Runtime.InteropServices.RuntimeInformation.IsOSPlatform(OSPlatform.Windows);
         static public bool IsOSX = System.Runtime.InteropServices.RuntimeInformation.IsOSPlatform(OSPlatform.OSX);
-
-        static public string Platform
-        {
-            get
-            {
-                if (IsLinux)
-                {
-                    return OSPlatform.Linux.ToString();
-                }
-
-                if (IsOSX)
-                {
-                    return OSPlatform.OSX.ToString();
-                }
-
-                if (IsWindows)
-                {
-                    return OSPlatform.Windows.ToString();
-                }
-
-                return "Unknown";
-            }
-        }
 
         static public void RegisterGdal1_10_PluginEnvironment()
         {

@@ -91,7 +91,7 @@ namespace gView.Plugins.DbTools.Migrate
 
             Map migMap = new Map();
             migMap.Name = txtMap.Text;
-            migMap.Display.refScale = _map.Display.refScale;
+            migMap.Display.ReferenceScale = _map.Display.ReferenceScale;
             migMap.Display.MapUnits = _map.Display.MapUnits;
             migMap.Display.DisplayUnits = _map.Display.DisplayUnits;
             migMap.Display.SpatialReference = _map.Display.SpatialReference;
@@ -162,8 +162,8 @@ namespace gView.Plugins.DbTools.Migrate
 
                     migMap.AddLayer(layer);
 
-                    ITOCElement tocElement = migMap.TOC.GetTOCElement(layer);
-                    ITOCElement sourceTocElement = _map.TOC.GetTOCElement(sourceLayer);
+                    ITocElement tocElement = migMap.TOC.GetTOCElement(layer);
+                    ITocElement sourceTocElement = _map.TOC.GetTOCElement(sourceLayer);
                     if (tocElement != null && sourceTocElement != null)
                     {
                         tocElement.Name = sourceTocElement.Name;

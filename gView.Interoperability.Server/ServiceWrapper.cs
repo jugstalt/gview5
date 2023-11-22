@@ -11,7 +11,7 @@ namespace gView.Interoperability.Server
         #region IMetadataProvider Member
 
 
-        public Task<bool> ApplyTo(object Object)
+        public Task<bool> ApplyTo(object Object, bool setDefaults = false)
         {
             if (Object is IServiceMap)
             {

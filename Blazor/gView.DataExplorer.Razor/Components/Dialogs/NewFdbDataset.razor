@@ -1,0 +1,106 @@
+@inherits ModalDialogFormBase<NewFdbDatasetModel>
+@inject IApplicationScope AppScope
+
+<ModalDialogFormBase T="NewFdbDatasetModel"
+                     OnDialogClose="base.OnDialogClose"
+                     Model="base.Model">
+    <DialogBody>
+            <GvGrid ColumnCount="1">
+                <GvGridItem>
+                    <GvCard>
+                        <GvCardContent>
+
+                            <MudTextField @bind-Value="Model.Name"
+                                           Label="Name" />
+                            <MudSelect Label="Type"
+                                @bind-Value="Model.DatasetType"
+                                           Variant="Variant.Text">
+                                    @foreach (NewFdbDatasetType datasetType in Enum.GetValues<NewFdbDatasetType>())
+                                    {
+                                        <MudSelectItem Value="datasetType">@datasetType.ToString()</MudSelectItem>
+                                    }
+                            </MudSelect>
+                        </GvCardContent>
+                    </GvCard>
+                </GvGridItem>
+
+                <GvGridItem>
+                    <MudTabs Elevation="1" Rounded="true" PanelClass="pa-6" ApplyEffectsToContainer="true">
+                        <MudTabPanel Text="Spatial Reference">
+                            <GvGrid ColumnCount="1">
+                                <GvGridItem>
+                                    <SpatialReferenceControl SpatialReference="Model.SpatialReference" 
+                                                              SRefChanged="SpatialReferenceChanged"
+                                                              EpsgOnly="true" />
+                                </GvGridItem>
+                            </GvGrid>
+                        </MudTabPanel>
+                        @if (Model.DatasetType == NewFdbDatasetType.ImageDataset)
+                        {
+                            <MudTabPanel Text="Spatial Index">
+                                <GvGrid ColumnCount="1">
+                                    <GvGridItem>
+                                        <SpatialIndexDefControl BinaryTreeDef="Model.SpatialIndex" BinaryTreeDefChanged="SpatialIndexDefChanged" />
+                                    </GvGridItem>
+                                </GvGrid>
+                            </MudTabPanel>
+
+                            @if (Model.AutoFields != null && Model.AutoFields.Any())
+                            {
+                                <MudTabPanel Text="Additional Fields">
+                                    <GvGrid ColumnCount="1">
+                                        <GvGridItem>
+                                            <table>
+                                                @foreach (var autoField in Model.AutoFields.Keys)
+                                                {
+                                                    <tr>
+                                                        <td>
+                                                            <MudCheckBox Checked="Model.AutoFields[autoField]" T="bool"
+                                                                          CheckedChanged="(isChecked) => CheckAutoField(autoField, isChecked)"
+                                                                          Label="@autoField.AutoFieldDescription" />
+                                                        </td>
+                                                        <td>
+                                                            <MudTextField Value="autoField.name" T="string"
+                                                                           ValueChanged="(name) => SetAutoFieldName(autoField, name)" />
+                                                        </td>
+                                                    </tr>
+                                                    
+                                                }
+                                            </table>
+                                           
+                                        </GvGridItem>
+                                    </GvGrid>
+                                </MudTabPanel>
+                            }
+                        }
+                    </MudTabs>
+                </GvGridItem>
+            </GvGrid>
+    </DialogBody>
+</ModalDialogFormBase>
+
+@code{
+
+    private void SpatialReferenceChanged(ISpatialReference sRef)
+    {
+        Model.SpatialReference = sRef;
+    }
+
+    private void SpatialIndexDefChanged(BinaryTreeDef binaryTreeDef)
+    {
+        Model.SpatialIndex = binaryTreeDef;
+    }
+
+    private void CheckAutoField(Framework.FDB.IAutoField autoField, bool isChecked)
+    {
+        Model.AutoFields[autoField] = isChecked;
+    }
+
+    private void SetAutoFieldName(Framework.FDB.IAutoField autoField, string name)
+    {
+        if(autoField is Field)
+        {
+            ((Field)autoField).name = name;
+        }
+    }
+}

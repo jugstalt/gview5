@@ -153,8 +153,8 @@ namespace gView.Framework.Data
     public class Layer : DatasetElement, ILayer, IPersistable
     {
         protected bool _visible = true;
-        protected double _MinimumScale = -1, _MaximumScale = -1;
-        protected double _MinimumLabelScale = -1, _MaximumLabelScale = -1;
+        protected double _minimumScale = -1, _maximumScale = -1;
+        protected double _minimumLabelScale = -1, _maximumLabelScale = -1;
         protected double _MaximumZoomToFeatureScale = 100;
         protected IGroupLayer _groupLayer = null;
         protected string _namespace = String.Empty;
@@ -184,11 +184,11 @@ namespace gView.Framework.Data
                 }
 
                 _visible = layer.Visible;
-                _MinimumScale = layer.MinimumScale;
-                _MaximumScale = layer.MaximumScale;
+                _minimumScale = layer.MinimumScale;
+                _maximumScale = layer.MaximumScale;
 
-                _MinimumLabelScale = layer.MinimumLabelScale;
-                _MaximumLabelScale = layer.MaximumLabelScale;
+                _minimumLabelScale = layer.MinimumLabelScale;
+                _maximumLabelScale = layer.MaximumLabelScale;
 
                 _MaximumZoomToFeatureScale = layer.MaximumZoomToFeatureScale;
 
@@ -311,42 +311,42 @@ namespace gView.Framework.Data
         {
             get
             {
-                double scale = _MinimumScale;
+                double scale = _minimumScale;
                 Layer.minimumScale(this, ref scale);
                 return scale;
             }
-            set { _MinimumScale = value; }
+            set { _minimumScale = value; }
         }
         public double MaximumScale
         {
             get
             {
-                double scale = _MaximumScale;
+                double scale = _maximumScale;
                 Layer.maximumScale(this, ref scale);
                 return scale;
             }
-            set { _MaximumScale = value; }
+            set { _maximumScale = value; }
         }
 
         public double MinimumLabelScale
         {
             get
             {
-                double scale = _MinimumLabelScale;
+                double scale = _minimumLabelScale;
                 Layer.minimumLabelScale(this, ref scale);
                 return scale;
             }
-            set { _MinimumLabelScale = value; }
+            set { _minimumLabelScale = value; }
         }
         public double MaximumLabelScale
         {
             get
             {
-                double scale = _MaximumLabelScale;
+                double scale = _maximumLabelScale;
                 Layer.maximumLabelScale(this, ref scale);
                 return scale;
             }
-            set { _MaximumLabelScale = value; }
+            set { _maximumLabelScale = value; }
         }
 
         public double MaximumZoomToFeatureScale
@@ -396,11 +396,11 @@ namespace gView.Framework.Data
             _namespace = (string)stream.Load("Namespace", String.Empty);
 
             _visible = (bool)stream.Load("visible", true);
-            _MinimumScale = (double)stream.Load("MinimumScale", 0.0);
-            _MaximumScale = (double)stream.Load("MaximumScale", 0.0);
+            _minimumScale = (double)stream.Load("MinimumScale", 0.0);
+            _maximumScale = (double)stream.Load("MaximumScale", 0.0);
 
-            _MinimumLabelScale = (double)stream.Load("MinimumLabelScale", 0.0);
-            _MaximumLabelScale = (double)stream.Load("MaximumLabelScale", 0.0);
+            _minimumLabelScale = (double)stream.Load("MinimumLabelScale", 0.0);
+            _maximumLabelScale = (double)stream.Load("MaximumLabelScale", 0.0);
 
             _MaximumZoomToFeatureScale = (double)stream.Load("MaximumZoomToFeatureScale", 0.0);
         }
@@ -419,11 +419,11 @@ namespace gView.Framework.Data
             stream.Save("Namespace", _namespace);
 
             stream.Save("visible", _visible);
-            stream.Save("MinimumScale", _MinimumScale);
-            stream.Save("MaximumScale", _MaximumScale);
+            stream.Save("MinimumScale", _minimumScale);
+            stream.Save("MaximumScale", _maximumScale);
 
-            stream.Save("MinimumLabelScale", _MinimumLabelScale);
-            stream.Save("MaximumLabelScale", _MaximumLabelScale);
+            stream.Save("MinimumLabelScale", _minimumLabelScale);
+            stream.Save("MaximumLabelScale", _maximumLabelScale);
 
             stream.Save("MaximumZoomToFeatureScale", _MaximumZoomToFeatureScale);
         }
@@ -644,6 +644,8 @@ namespace gView.Framework.Data
                 _primaryField = _fields[0];
             }
         }
+
+        public IField[] ToArray() => _fields.ToArray();
 
         #region IFields Member
         public IField FindField(string aliasname)
@@ -1014,7 +1016,7 @@ namespace gView.Framework.Data
             FieldCollection newFields = new FieldCollection();
             if (_class is ITableClass)
             {
-                foreach (IField field in ((ITableClass)_class).Fields.ToEnumerable())
+                foreach (IField field in ((ITableClass)_class).Fields?.ToEnumerable() ?? Array.Empty<IField>())
                 {
                     Field f = new Field(field);
                     newFields.Add(f);
@@ -1023,7 +1025,7 @@ namespace gView.Framework.Data
                         newFields.PrimaryDisplayField = f;
                     }
                 }
-                if (newFields.PrimaryDisplayField == null)
+                if (newFields.PrimaryDisplayField == null && _fields != null)
                 {
                     foreach (IField field in _fields.ToEnumerable())
                     {
@@ -1460,7 +1462,7 @@ namespace gView.Framework.Data
                 IRasterLayer layer = (IRasterLayer)element;
 
                 _interpolMethod = layer.InterpolationMethod;
-                _transparency = layer.Transparency;
+                _transparency = layer.Opacity;
                 _transColor = layer.TransparentColor;
                 FilterImplementation = layer.FilterImplementation;
             }
@@ -1479,7 +1481,7 @@ namespace gView.Framework.Data
             }
         }
 
-        public float Transparency
+        public float Opacity
         {
             get
             {
@@ -1582,7 +1584,7 @@ namespace gView.Framework.Data
                 IRasterLayer layer = (IRasterLayer)element;
 
                 _interpolMethod = layer.InterpolationMethod;
-                _transparency = layer.Transparency;
+                _transparency = layer.Opacity;
                 _transColor = layer.TransparentColor;
             }
         }
@@ -1601,7 +1603,7 @@ namespace gView.Framework.Data
             }
         }
 
-        public float Transparency
+        public float Opacity
         {
             get
             {
@@ -2527,7 +2529,6 @@ namespace gView.Framework.Data
 
                 return layer;
             }
-
 
             return null;
         }

@@ -2,9 +2,9 @@
 
 namespace gView.Core.Framework.Exceptions
 {
-    public class NotAuthorizedException : Exception
+    public class NotAuthorizedException : MapServerException
     {
-        public NotAuthorizedException() : base() { }
+        public NotAuthorizedException() : base("Not Authorized") { }
         public NotAuthorizedException(string message) : base(message) { }
     }
 }

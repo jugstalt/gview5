@@ -521,7 +521,7 @@ namespace gView.Framework.Symbology.UI
             Path path = new Path();
             pLine.AddPath(path);
 
-            double tol = 25.0 * display.mapScale / (96 / 0.0254);  // [m]
+            double tol = 25.0 * display.MapScale / (96 / 0.0254);  // [m]
             if (display.SpatialReference != null &&
                 display.SpatialReference.SpatialParameters.IsGeographic)
             {
@@ -568,7 +568,7 @@ namespace gView.Framework.Symbology.UI
                 coll.AddPoint(new Point(env.LowerLeft.X + env.Width / 2, env.LowerLeft.Y));
                 coll.AddPoint(new Point(env.LowerLeft.X, env.LowerLeft.Y + env.Width / 2));
 
-                double tol = 25.0 * display.mapScale / (96 / 0.0254);  // [m]
+                double tol = 25.0 * display.MapScale / (96 / 0.0254);  // [m]
                 if (display.SpatialReference != null &&
                 display.SpatialReference.SpatialParameters.IsGeographic)
                 {
@@ -745,7 +745,7 @@ namespace gView.Framework.Symbology.UI
                 return;
             }
 
-            if (display.refScale > 1 && !(this is Ghost))
+            if (display.ReferenceScale > 1 && !(this is Ghost))
             {
                 ISymbol sym = _symbol.Clone(new CloneOptions(display, false)) as ISymbol;
                 if (sym != null)
@@ -780,7 +780,7 @@ namespace gView.Framework.Symbology.UI
                 return null;
             }
 
-            double tol = 5.0 * display.mapScale / (display.dpi / 0.0254);  // [m]
+            double tol = 5.0 * display.MapScale / (display.Dpi / 0.0254);  // [m]
             if (display.SpatialReference != null &&
                 display.SpatialReference.SpatialParameters.IsGeographic)
             {
@@ -899,7 +899,7 @@ namespace gView.Framework.Symbology.UI
             TranslateGeometry(geometry, _xOffset, _yOffset);
 
             //return SpatialAlgorithms.Algorithm.Contains(geometry, point);
-            double tol = 5.0 * display.mapScale / (display.dpi / 0.0254);
+            double tol = 5.0 * display.MapScale / (display.Dpi / 0.0254);
             if (display.SpatialReference != null &&
                 display.SpatialReference.SpatialParameters.IsGeographic)
             {

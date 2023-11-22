@@ -46,6 +46,22 @@ namespace gView.Framework.Security
             return Encoding.UTF8.GetString(data);
         }
 
+        public static string GenerateToken(int length)
+        {
+            const string chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-._";
+            var token = new char[length];
+            var random = new RNGCryptoServiceProvider();
+
+            for (int i = 0; i < token.Length; i++)
+            {
+                byte[] randomByte = new byte[1];
+                random.GetBytes(randomByte);
+                token[i] = chars[randomByte[0] % chars.Length];
+            }
+
+            return new String(token);
+        }
+
         #endregion
 
         #region AES

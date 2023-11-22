@@ -1,0 +1,58 @@
+<Project Sdk="Microsoft.NET.Sdk.Razor">
+
+  <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Content Remove="wwwroot\lib\leaflet\leaflet-src.js" />
+    <Content Remove="wwwroot\lib\leaflet\leaflet-src.js.map" />
+    <Content Remove="wwwroot\lib\leaflet\leaflet-src.min.js" />
+    <Content Remove="wwwroot\lib\leaflet\leaflet.js" />
+    <Content Remove="wwwroot\lib\leaflet\leaflet.js.map" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <_ContentIncludedByDefault Remove="wwwroot\lib\leaflet\images\layers-2x.png" />
+    <_ContentIncludedByDefault Remove="wwwroot\lib\leaflet\images\layers.png" />
+    <_ContentIncludedByDefault Remove="wwwroot\lib\leaflet\images\marker-icon-2x.png" />
+    <_ContentIncludedByDefault Remove="wwwroot\lib\leaflet\images\marker-icon.png" />
+    <_ContentIncludedByDefault Remove="wwwroot\lib\leaflet\images\marker-shadow.png" />
+    <_ContentIncludedByDefault Remove="wwwroot\lib\leaflet\leaflet-src.js" />
+    <_ContentIncludedByDefault Remove="wwwroot\lib\leaflet\leaflet-src.js.map" />
+    <_ContentIncludedByDefault Remove="wwwroot\lib\leaflet\leaflet-src.min.js" />
+    <_ContentIncludedByDefault Remove="wwwroot\lib\leaflet\leaflet.css" />
+    <_ContentIncludedByDefault Remove="wwwroot\lib\leaflet\leaflet.js" />
+    <_ContentIncludedByDefault Remove="wwwroot\lib\leaflet\leaflet.js.map" />
+    <_ContentIncludedByDefault Remove="wwwroot\lib\leaflet\leaflet.min.css" />
+  </ItemGroup>
+
+
+  <ItemGroup>
+    <SupportedPlatform Include="browser" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.AspNetCore.Components.Web" Version="8.0.0" />
+    <PackageReference Include="Microsoft.JSInterop" Version="8.0.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Components\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="wwwroot\lib\leaflet\leaflet-src.js" />
+    <None Include="wwwroot\lib\leaflet\leaflet-src.js.map" />
+    <None Include="wwwroot\lib\leaflet\leaflet-src.min.js" />
+    <None Include="wwwroot\lib\leaflet\leaflet.js" />
+    <None Include="wwwroot\lib\leaflet\leaflet.js.map" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\gView.System\gView.System.csproj" />
+  </ItemGroup>
+
+</Project>

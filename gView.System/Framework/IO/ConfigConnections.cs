@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Text;
+using System.Xml.Linq;
 
 namespace gView.Framework.IO
 {
@@ -96,7 +97,9 @@ namespace gView.Framework.IO
                 connectionstring = Convert.ToBase64String(bytes);
             }
 
-            StreamWriter sw = new StreamWriter(di.FullName + @"/" + ReplaceSlash(name) + ".con", false, _encoding);
+            StreamWriter sw = new StreamWriter(
+                Path.Combine(di.FullName, $"{ReplaceSlash(name)}.con"), false, _encoding);
+
             sw.Write(connectionstring);
             sw.Close();
 
@@ -118,7 +121,7 @@ namespace gView.Framework.IO
 
             try
             {
-                FileInfo fi = new FileInfo(di.FullName + @"/" + ReplaceSlash(name) + ".con");
+                FileInfo fi = new FileInfo(Path.Combine(di.FullName, $"{ReplaceSlash(name)}.con"));
                 if (fi.Exists)
                 {
                     fi.Delete();
@@ -147,10 +150,10 @@ namespace gView.Framework.IO
 
             try
             {
-                FileInfo fi = new FileInfo(di.FullName + @"/" + ReplaceSlash(oldName) + ".con");
+                FileInfo fi = new FileInfo(Path.Combine(di.FullName, $"{ReplaceSlash(oldName)}.con"));
                 if (fi.Exists)
                 {
-                    fi.MoveTo(di.FullName + @"/" + ReplaceSlash(newName) + ".con");
+                    fi.MoveTo(Path.Combine(di.FullName, $"{ReplaceSlash(newName)}.con"));
                 }
 
                 return true;

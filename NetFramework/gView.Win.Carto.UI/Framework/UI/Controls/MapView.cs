@@ -162,8 +162,8 @@ namespace gView.Framework.UI.Controls
                 _map = (Map)value;
                 if (_map != null)
                 {
-                    _map.Display.iWidth = this.Width;
-                    _map.Display.iHeight = this.Height;
+                    _map.Display.ImageWidth = this.Width;
+                    _map.Display.ImageHeight = this.Height;
                     this.BackColor = _map.Display.BackgroundColor.ToGdiColor();
                     _map.NewBitmap += NewBitmapCreated;
                     _map.DoRefreshMapView += MakeMapViewRefresh;
@@ -458,8 +458,8 @@ namespace gView.Framework.UI.Controls
 
                 BeforeRefreshMap?.Invoke();
 
-                _map.Display.iWidth = this.Width;
-                _map.Display.iHeight = this.Height;
+                _map.Display.ImageWidth = this.Width;
+                _map.Display.ImageHeight = this.Height;
 
                 _phase = phase;
                 _canceled = false;
@@ -1541,19 +1541,19 @@ namespace gView.Framework.UI.Controls
                 return;
             }
 
-            if (this.Width == _map.Display.iWidth &&
-                this.Height == _map.Display.iHeight)
+            if (this.Width == _map.Display.ImageWidth &&
+                this.Height == _map.Display.ImageHeight)
             {
                 // Is eh gleich
                 return;
             }
 
-            _map.Display.iWidth = this.Width;
-            _map.Display.iHeight = this.Height;
+            _map.Display.ImageWidth = this.Width;
+            _map.Display.ImageHeight = this.Height;
 
             if (_resizeMode == ResizeMode.SameScale)
             {
-                _map.Display.mapScale = _map.Display.mapScale;
+                _map.Display.MapScale = _map.Display.MapScale;
             }
             else
             {

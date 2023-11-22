@@ -20,7 +20,6 @@
 
   <ItemGroup>
     <Folder Include="Dataset\" />
-    <Folder Include="Request\" />
     <Folder Include="xsl\" />
   </ItemGroup>
 

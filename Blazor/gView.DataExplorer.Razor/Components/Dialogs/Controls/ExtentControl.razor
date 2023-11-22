@@ -1,0 +1,63 @@
+<GvCard Title="Extent">
+    <GvCardContent>
+        <GvGrid ColumnCount="12">
+            <GvGridItem Span="4"></GvGridItem>
+            <GvGridItem Span="4">
+                <MudTextField Label="Top" 
+                               @bind-Value_="Extent.maxy"
+                               Value="Extent.maxy"
+                               ValueChanged="async (maxy) => { Extent.maxy = maxy; await OnExtentChanged(); }"
+                               Format="#.00000" Culture="@_en" T="double" Immediate="false"
+                               InputType="InputType.Number" Step="0.1"
+                               Variant="Variant.Text"></MudTextField>
+            </GvGridItem>
+            <GvGridItem Span="4"></GvGridItem>
+
+            <GvGridItem Span="1"></GvGridItem>
+            <GvGridItem Span="4">
+                    <MudTextField Label="Left"
+                                  @bind-Value_="Extent.minx"
+                                  Value="Extent.minx"
+                                  ValueChanged="async (minx) => { Extent.minx = minx; await OnExtentChanged(); }"
+                                  Format="#.00000" Culture="@_en" T="double" Immediate="false"
+                                  InputType="InputType.Number" Step="0.1"
+                                  Variant="Variant.Text"></MudTextField>
+                </GvGridItem>
+            <GvGridItem Span="2"></GvGridItem>
+            <GvGridItem Span="4">
+                    <MudTextField Label="Right" 
+                                  @bind-Value_="Extent.maxx"
+                                  Value="Extent.maxx"
+                                  ValueChanged="async (maxx) => { Extent.maxx = maxx; await OnExtentChanged(); }"
+                                  Format="#.00000" Culture="@_en" T="double" Immediate="false"
+                                  InputType="InputType.Number" Step="0.1"
+                                  Variant="Variant.Text"></MudTextField>
+                </GvGridItem>
+            <GvGridItem Span="1"></GvGridItem>
+
+            <GvGridItem Span="4"></GvGridItem>
+            <GvGridItem Span="4">
+                <MudTextField Label="Bottom"
+                              @bind-Value_="Extent.miny" 
+                              Value="Extent.miny"
+                              ValueChanged="async (miny) => { Extent.miny = miny; await OnExtentChanged(); }"
+                              Format="#.00000" Culture="@_en" T="double" Immediate="false"
+                              InputType="InputType.Number" Step="0.000001"
+                              Variant="Variant.Text"></MudTextField>
+            </GvGridItem>
+            <GvGridItem Span="4"></GvGridItem>
+        </GvGrid>
+    </GvCardContent>
+</GvCard>
+
+@code {
+    [Parameter] public IEnvelope Extent { get; set; } = Envelope.Null();
+    [Parameter] public EventCallback<IEnvelope> ExtentChanged { get; set; }
+
+    private System.Globalization.CultureInfo _en = System.Globalization.CultureInfo.GetCultureInfo("en-US");
+
+    async private Task OnExtentChanged()
+    {
+        await ExtentChanged.InvokeAsync(this.Extent);
+    }
+}

@@ -8,63 +8,61 @@ using System.Threading.Tasks;
 namespace gView.Framework.Metadata
 {
     [gView.Framework.system.RegisterPlugIn("32C9CDB8-5A2D-4fc1-87AD-2AE960D1E31A")]
-    public class GeneralMetadata : IMetadataProvider, IPropertyPage
+    public class GeneralMetadata : IMetadataProvider, IPropertyPage, IPropertyModel
     {
-        private string _abstract = "", _purpose = "", _language = "", _subl_info = "";
-        private string _access_constraints = "", _use_constraints = "";
-        private string _credits = "", _contact = "";
+        private PropertyModel _properties;
 
         public GeneralMetadata()
         {
-            _abstract = String.Empty;
+            _properties = new PropertyModel();
         }
 
         #region Properties
         public string Abstract
         {
-            get { return _abstract; }
-            set { _abstract = value; }
+            get { return _properties.Abstract; }
+            set { _properties.Abstract = value; }
         }
         public string Purpose
         {
-            get { return _purpose; }
-            set { _purpose = value; }
+            get { return _properties.Purpose; }
+            set { _properties.Purpose = value; }
         }
         public string Language
         {
-            get { return _language; }
-            set { _language = value; }
+            get { return _properties.Language; }
+            set { _properties.Language = value; }
         }
         public string Supplemental_Information
         {
-            get { return _subl_info; }
-            set { _subl_info = value; }
+            get { return _properties.SupplementalInformation; }
+            set { _properties.SupplementalInformation = value; }
         }
         public string Access_Constraints
         {
-            get { return _access_constraints; }
-            set { _access_constraints = value; }
+            get { return _properties.AccessConstraints; }
+            set { _properties.AccessConstraints = value; }
         }
         public string Use_Constraints
         {
-            get { return _use_constraints; }
-            set { _use_constraints = value; }
+            get { return _properties.UseConstraints; }
+            set { _properties.UseConstraints = value; }
         }
         public string Contact
         {
-            get { return _contact; }
-            set { _contact = value; }
+            get { return _properties.Contact; }
+            set { _properties.Contact = value; }
         }
         public string Credits
         {
-            get { return _credits; }
-            set { _credits = value; }
+            get { return _properties.Credits; }
+            set { _properties.Credits = value; }
         }
         #endregion
 
         #region IMetadataProvider Member
 
-        public Task<bool> ApplyTo(object Object)
+        public Task<bool> ApplyTo(object Object, bool setDefaults = false)
         {
             return Task.FromResult(true);
         }
@@ -74,32 +72,33 @@ namespace gView.Framework.Metadata
             get { return "General"; }
         }
 
+
         #endregion
 
         #region IPersistable Member
 
         public void Load(IPersistStream stream)
         {
-            _abstract = (string)stream.Load("Abstract", String.Empty);
-            _purpose = (string)stream.Load("Purpose", String.Empty);
-            _language = (string)stream.Load("Language", String.Empty);
-            _subl_info = (string)stream.Load("Supplemental_Information", String.Empty);
-            _access_constraints = (string)stream.Load("Access_Constraints", String.Empty);
-            _use_constraints = (string)stream.Load("Use_Constraints", String.Empty);
-            _contact = (string)stream.Load("Contact", String.Empty);
-            _credits = (string)stream.Load("Credits", String.Empty);
+            _properties.Abstract = (string)stream.Load("Abstract", String.Empty);
+            _properties.Purpose = (string)stream.Load("Purpose", String.Empty);
+            _properties.Language = (string)stream.Load("Language", String.Empty);
+            _properties.SupplementalInformation = (string)stream.Load("Supplemental_Information", String.Empty);
+            _properties.AccessConstraints = (string)stream.Load("Access_Constraints", String.Empty);
+            _properties.UseConstraints = (string)stream.Load("Use_Constraints", String.Empty);
+            _properties.Contact = (string)stream.Load("Contact", String.Empty);
+            _properties.Credits = (string)stream.Load("Credits", String.Empty);
         }
 
         public void Save(IPersistStream stream)
         {
-            stream.Save("Abstract", _abstract);
-            stream.Save("Purpose", _purpose);
-            stream.Save("Language", _language);
-            stream.Save("Supplemental_Information", _subl_info);
-            stream.Save("Access_Constraints", _access_constraints);
-            stream.Save("Use_Constraints", _use_constraints);
-            stream.Save("Contact", _contact);
-            stream.Save("Credits", _credits);
+            stream.Save("Abstract", _properties.Abstract);
+            stream.Save("Purpose", _properties.Purpose);
+            stream.Save("Language", _properties.Language);
+            stream.Save("Supplemental_Information", _properties.SupplementalInformation);
+            stream.Save("Access_Constraints", _properties.AccessConstraints);
+            stream.Save("Use_Constraints", _properties.UseConstraints);
+            stream.Save("Contact", _properties.Contact);
+            stream.Save("Credits", _properties.Credits);
         }
 
         #endregion
@@ -126,39 +125,37 @@ namespace gView.Framework.Metadata
         }
 
         #endregion
+
+        #region IPropertyModel
+
+        public Type PropertyModelType => typeof(PropertyModel);
+
+        public object GetPropertyModel()
+        {
+            return _properties;
+        }
+
+        public void SetPropertyModel(object propertyModel)
+        {
+            _properties = propertyModel as PropertyModel ?? new PropertyModel();
+        }
+
+        #endregion
+
+        #region Classes
+
+        private class PropertyModel
+        {
+            public string Abstract { get; set; } = "";
+            public string Purpose { get; set; } = "";
+            public string Language { get; set; } = "";
+            public string SupplementalInformation { get; set; } = "";
+            public string AccessConstraints { get; set; } = "";
+            public string UseConstraints { get; set; } = "";
+            public string Credits { get; set; } = "";
+            public string Contact { get; set; } = "";
+        }
+
+        #endregion
     }
-
-    //[gView.Framework.system.RegisterPlugIn("2C1EA3BA-92E6-4B0D-B3C2-2802A1264683")]
-    //public class AdvancedMetadata : IMetadataProvider
-    //{
-    //    static private List<Uri> _servers = new List<Uri>();
-
-    //    #region IMetadataProvider Member
-
-    //    public bool ApplyTo(object Object)
-    //    {
-    //        return true;
-    //    }
-
-    //    public string Name
-    //    {
-    //        get { return "Advanced"; }
-    //    }
-
-    //    #endregion
-
-    //    #region IPersistable Member
-
-    //    public void Load(IPersistStream stream)
-    //    {
-
-    //    }
-
-    //    public void Save(IPersistStream stream)
-    //    {
-
-    //    }
-
-    //    #endregion
-    //}
 }

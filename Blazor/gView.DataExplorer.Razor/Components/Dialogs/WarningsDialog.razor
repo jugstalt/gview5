@@ -1,0 +1,19 @@
+@inherits ModalDialogFormBase<WarningsDialogModel>
+
+
+<ModalDialogFormBase T="WarningsDialogModel"
+                       OnDialogClose="base.OnDialogClose"
+                       Model="base.Model">
+    <FormContent>
+        <div style="overflow: auto; max-height:400px">
+            @foreach (var warning in Model.Warnings)
+            {
+                <div style="white-space: nowrap; border-bottom:1px solid #ccc; padding: 8px">
+                    <MudText Typo="Typo.body2">
+                        @warning
+                    </MudText>
+                </div>
+            }
+        </div>
+    </FormContent>
+</ModalDialogFormBase>

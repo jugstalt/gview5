@@ -9,6 +9,7 @@ using gView.Interoperability.GeoServices.Rest.Json.FeatureServer;
 using gView.Interoperability.GeoServices.Rest.Json.Renderers.SimpleRenderers;
 using gView.Interoperability.GeoServices.Rest.Json.Request;
 using gView.Interoperability.GeoServices.Rest.Reflection;
+using gView.Interoperability.OGC;
 using gView.MapServer;
 using gView.Server.AppCode;
 using gView.Server.AppCode.Extensions;
@@ -274,69 +275,66 @@ namespace gView.Server.Controllers
 
         #region MapServer
 
-        async public Task<IActionResult> ExportMap(string id, string folder = "")
+        public Task<IActionResult> ExportMap(string id, string folder = "")
+            => SecureMethodHandler(async (identity) =>
         {
+            var interpreter = _mapServerService.GetInterpreter(typeof(GeoServicesRestInterperter));
 
-            return await SecureMethodHandler(async (identity) =>
+            #region Request
+
+            JsonExportMap exportMap = Deserialize<JsonExportMap>(
+                Request.HasFormContentType ?
+                Request.Form :
+                (IEnumerable<KeyValuePair<string, StringValues>>)Request.Query);
+
+            ServiceRequest serviceRequest = new ServiceRequest(id, folder, JsonConvert.SerializeObject(exportMap))
             {
-                var interpreter = _mapServerService.GetInterpreter(typeof(GeoServicesRestInterperter));
+                OnlineResource = _mapServerService.Options.OnlineResource,
+                OutputUrl = _mapServerService.Options.OutputUrl,
+                Method = "export",
+                Identity = identity
+            };
 
-                #region Request
+            #endregion
 
-                JsonExportMap exportMap = Deserialize<JsonExportMap>(
-                    Request.HasFormContentType ?
-                    Request.Form :
-                    (IEnumerable<KeyValuePair<string, StringValues>>)Request.Query);
+            #region Queue & Wait
 
-                ServiceRequest serviceRequest = new ServiceRequest(id, folder, JsonConvert.SerializeObject(exportMap))
+            IServiceRequestContext context = await ServiceRequestContext.TryCreate(
+                _mapServerService.Instance,
+                interpreter,
+                serviceRequest);
+
+            string format = ResultFormat();
+            if (String.IsNullOrWhiteSpace(format))
+            {
+                using (var serviceMap = await context.CreateServiceMapInstance())
                 {
-                    OnlineResource = _mapServerService.Options.OnlineResource,
-                    OutputUrl = _mapServerService.Options.OutputUrl,
-                    Method = "export",
-                    Identity = identity
-                };
-
-                #endregion
-
-                #region Queue & Wait
-
-                IServiceRequestContext context = await ServiceRequestContext.TryCreate(
-                    _mapServerService.Instance,
-                    interpreter,
-                    serviceRequest);
-
-                string format = ResultFormat();
-                if (String.IsNullOrWhiteSpace(format))
-                {
-                    using (var serviceMap = await context.CreateServiceMapInstance())
-                    {
-                        exportMap.InitForm(serviceMap);
-                        return FormResult(exportMap);
-                    }
+                    exportMap.InitForm(serviceMap);
+                    return FormResult(exportMap);
                 }
+            }
 
-                await _mapServerService.TaskQueue.AwaitRequest(interpreter.Request, context);
+            await _mapServerService.TaskQueue.AwaitRequest(interpreter.Request, context);
 
-                #endregion
+            #endregion
 
-                if (serviceRequest.Succeeded)
+            if (serviceRequest.Succeeded)
+            {
+                if (ResultFormat() == "image" && serviceRequest.Response is byte[])
                 {
-                    if (ResultFormat() == "image" && serviceRequest.Response is byte[])
-                    {
-                        return Result((byte[])serviceRequest.Response, serviceRequest.ResponseContentType);
-                    }
-                    else
-                    {
-                        return Result(serviceRequest.Response, folder, id, "ExportMap");
-                        //return Result(JsonConvert.DeserializeObject<JsonExportResponse>(serviceRequest.ResponseAsString), folder, id, "ExportMap");
-                    }
+                    return Result((byte[])serviceRequest.Response, serviceRequest.ResponseContentType);
                 }
                 else
                 {
-                    return Result(serviceRequest.Response);
+                    return Result(serviceRequest.Response, folder, id, "ExportMap");
+                    //return Result(JsonConvert.DeserializeObject<JsonExportResponse>(serviceRequest.ResponseAsString), folder, id, "ExportMap");
                 }
-            });
-        }
+            }
+            else
+            {
+                return Result(serviceRequest.Response);
+            }
+        });
 
         async public Task<IActionResult> Query(string id, int layerId, string folder = "")
         {
@@ -478,6 +476,72 @@ namespace gView.Server.Controllers
 
             });
         }
+
+        #endregion
+
+        #region WmsServer 
+
+        public Task<IActionResult> WmsServer(string id, string folder = "") 
+            => SecureMethodHandler(async (identity) =>
+        {
+            try
+            {
+                var interpreter = _mapServerService.GetInterpreter(typeof(WMSRequest));
+
+                #region Request
+
+                string requestString = Request.QueryString.ToString();
+                if (Request.Method.ToLower() == "post" && Request.Body.CanRead)
+                {
+                    string body = await Request.GetBody();
+
+                    if (!String.IsNullOrWhiteSpace(body))
+                    {
+                        requestString = body;
+                    }
+                }
+
+                while (requestString.StartsWith("?"))
+                {
+                    requestString = requestString.Substring(1);
+                }
+
+                ServiceRequest serviceRequest = new ServiceRequest(id, folder, requestString)
+                {
+                    OnlineResource = _mapServerService.Options.OnlineResource.AppendWmsServerPath(this.Request, id, folder),
+                    OutputUrl = _mapServerService.Options.OutputUrl,
+                    Identity = identity
+                };
+
+                #endregion
+
+                #region Queue & Wait
+
+                IServiceRequestContext context = await ServiceRequestContext.TryCreate(
+                       _mapServerService.Instance,
+                       interpreter,
+                       serviceRequest);
+
+
+                await _mapServerService.TaskQueue.AwaitRequest(interpreter.Request, context);
+
+                #endregion
+
+                var response = serviceRequest.Response;
+
+                if (response is byte[])
+                {
+                    return WmsResult((byte[])response, serviceRequest.ResponseContentType);
+                }
+
+                return WmsResult(response?.ToString() ?? String.Empty, serviceRequest.ResponseContentType);
+            }
+            catch (Exception ex)
+            {
+                // ToDo: OgcXmlExcpetion
+                return WmsResult(ex.Message, "text/plain");
+            }
+        });
 
         #endregion
 
@@ -1214,6 +1278,31 @@ namespace gView.Server.Controllers
             AddNavigation();
             ViewData["htmlBody"] = ToHtmlForm(obj);
             return View("_htmlbody");
+        }
+
+        private IActionResult WmsResult(string response, string contentType)
+        {
+            byte[] data = null;
+            if (response.StartsWith("base64:"))
+            {
+                response = response.Substring("base64:".Length);
+                data = Convert.FromBase64String(response);
+            }
+            else
+            {
+                data = Encoding.UTF8.GetBytes(response);
+            }
+            return WmsResult(data, contentType);
+        }
+
+        private IActionResult WmsResult(byte[] data, string contentType)
+        {
+            if (String.IsNullOrEmpty(contentType))
+            {
+                contentType = "text/plain";
+            }
+
+            return File(data, contentType);
         }
 
         private void AddNavigation()

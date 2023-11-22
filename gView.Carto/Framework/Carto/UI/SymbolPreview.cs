@@ -73,11 +73,11 @@ namespace gView.Framework.Carto.UI
             }
 
             Display display = new gView.Framework.Carto.Display(_map);
-            display.dpi = GraphicsEngine.Current.Engine.ScreenDpi; //96f; // canvas.DpiX;
+            display.Dpi = GraphicsEngine.Current.Engine.ScreenDpi; //96f; // canvas.DpiX;
 
             IEnvelope env = display.Limit = new Envelope(0, rectangle.Top + rectangle.Height, rectangle.Left + rectangle.Width, 0);
-            display.iWidth = (int)env.maxx;
-            display.iHeight = (int)env.maxy;
+            display.ImageWidth = (int)env.maxx;
+            display.ImageHeight = (int)env.maxy;
             display.ZoomTo(env.minx, env.miny, env.maxx, env.maxy);
 
             IGeometry geometry = GeometryFromSymbol(symbol, new Envelope(rectangle.Left,

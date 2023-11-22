@@ -1,0 +1,56 @@
+@inherits ModalDialogFormBase<GeoJsonConnectionModel>
+@inject IApplicationScope AppScope
+
+<ModalDialogFormBase T="GeoJsonConnectionModel"
+                       OnDialogClose="base.OnDialogClose"
+                       Model="base.Model">
+    <FormContent>
+        <GvGrid ColumnCount="1">
+            <GvGridItem>
+                <GvCard Title="Service">
+                    <GvCardContent>
+                        <MudTextField @bind-Value="Model.Name"
+                                      Label="Name (any)" />
+                        <MudTextField @bind-Value="Model.Uri"
+                                      Label="Service Url/File" />
+                    </GvCardContent>
+                </GvCard>
+            </GvGridItem>
+
+            <GvGridItem>
+                <GvCard Title="Credentials (optional)">
+                    <GvCardContent>
+                        <MudTextField @bind-Value="Model.Credentials.Username"
+                                      Label="Username" />
+
+                        <MudTextField @bind-Value="Model.Credentials.Password"
+                                      InputType="InputType.Password"
+                                      Label="Password" />
+
+                        <MudSelect Variant="Variant.Filled"
+                                    T="gView.Web.Framework.Web.Authorization.AuthorizationType"
+                                    @bind-Value="Model.Credentials.AuthType">
+                            @foreach (var val in Enum.GetValues<gView.Web.Framework.Web.Authorization.AuthorizationType>())
+                            {
+                                <MudSelectItem Value="val">@val.ToString()</MudSelectItem>
+                            }
+                        </MudSelect>
+
+                        @if (Model.Credentials.AuthType != gView.Web.Framework.Web.Authorization.AuthorizationType.Basic)
+                        {
+                            <MudTextField @bind-Value="Model.Credentials.AccessTokenTokenServiceUrl"
+                                          Label="Bearer Token Service Url" />
+
+                            <MudTextField @bind-Value="Model.Credentials.GrantType"
+                                          Label="Grant Type" />
+
+                            <MudTextField @bind-Value="Model.Credentials.Scope"
+                                          Label="Scopes" />
+                        }
+                    </GvCardContent>
+                </GvCard>
+            </GvGridItem>
+        </GvGrid>
+    </FormContent>
+
+</ModalDialogFormBase>

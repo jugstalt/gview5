@@ -331,7 +331,7 @@ namespace gView.Framework.Carto.Rendering
                     return null;
                 }
 
-                double r = disp.mapScale / disp.dpm * _size / 2D;
+                double r = disp.MapScale / disp.Dpm * _size / 2D;
                 switch (_sizeType)
                 {
                     case sizeType.ValueOfEquatesToSize:
@@ -348,8 +348,8 @@ namespace gView.Framework.Carto.Rendering
             {
                 #region Draw Bars
 
-                double height = disp.mapScale / disp.dpm * _size;
-                double width = disp.mapScale / disp.dpm * _size / 4D;
+                double height = disp.MapScale / disp.Dpm * _size;
+                double width = disp.MapScale / disp.Dpm * _size / 4D;
                 double heightVal = _valueEquatesToSize;
 
                 switch (_sizeType)
@@ -364,11 +364,11 @@ namespace gView.Framework.Carto.Rendering
                         break;
                 }
 
-                double left = -(_symbolTable.Keys.Count * width / 2.0) - (_symbolTable.Keys.Count - 1) * (disp.mapScale / disp.dpm) / 2.0;
+                double left = -(_symbolTable.Keys.Count * width / 2.0) - (_symbolTable.Keys.Count - 1) * (disp.MapScale / disp.Dpm) / 2.0;
 
                 chartEnvelope = new Envelope(point.X + left,
                     point.Y,
-                    point.X + left + (width + (disp.mapScale / disp.dpm)) * _symbolTable.Keys.Count,
+                    point.X + left + (width + (disp.MapScale / disp.Dpm)) * _symbolTable.Keys.Count,
                     point.Y + height * (valMax / heightVal));
 
                 #endregion
@@ -377,8 +377,8 @@ namespace gView.Framework.Carto.Rendering
             {
                 #region Draw Stack
 
-                double height = disp.mapScale / disp.dpm * _size;
-                double width = disp.mapScale / disp.dpm * _size / 4D;
+                double height = disp.MapScale / disp.Dpm * _size;
+                double width = disp.MapScale / disp.Dpm * _size / 4D;
                 double heightVal = _valueEquatesToSize;
 
                 Path outerPath = new Path();
@@ -446,7 +446,7 @@ namespace gView.Framework.Carto.Rendering
                         return;
                     }
 
-                    double r = disp.mapScale / disp.dpm * _size / 2D;
+                    double r = disp.MapScale / disp.Dpm * _size / 2D;
                     switch (_sizeType)
                     {
                         case sizeType.ValueOfEquatesToSize:
@@ -497,8 +497,8 @@ namespace gView.Framework.Carto.Rendering
                 {
                     #region Draw Bars
 
-                    double height = disp.mapScale / disp.dpm * _size;
-                    double width = disp.mapScale / disp.dpm * _size / 4D;
+                    double height = disp.MapScale / disp.Dpm * _size;
+                    double width = disp.MapScale / disp.Dpm * _size / 4D;
                     double heightVal = _valueEquatesToSize;
 
                     switch (_sizeType)
@@ -514,15 +514,15 @@ namespace gView.Framework.Carto.Rendering
                     }
 
                     i = 0;
-                    double left = -(_symbolTable.Keys.Count * width / 2.0) - (_symbolTable.Keys.Count - 1) * (disp.mapScale / disp.dpm) / 2.0;
+                    double left = -(_symbolTable.Keys.Count * width / 2.0) - (_symbolTable.Keys.Count - 1) * (disp.MapScale / disp.Dpm) / 2.0;
                     foreach (string fieldname in _symbolTable.Keys)
                     {
                         ISymbol symbol = _symbolTable[fieldname];
 
                         double h = height * (values[i++] / heightVal);
-                        if (Math.Abs(h) < disp.mapScale / disp.dpm)
+                        if (Math.Abs(h) < disp.MapScale / disp.Dpm)
                         {
-                            h = disp.mapScale / disp.dpm;
+                            h = disp.MapScale / disp.Dpm;
                         }
 
                         Polygon poly = new Polygon();
@@ -540,7 +540,7 @@ namespace gView.Framework.Carto.Rendering
                             ring.AddPoint(new Point(point.X + left, point.Y));
                             _outlineSymbol.Draw(disp, new Polyline(ring));
                         }
-                        left += width + (disp.mapScale / disp.dpm);
+                        left += width + (disp.MapScale / disp.Dpm);
                     }
 
                     #endregion
@@ -548,8 +548,8 @@ namespace gView.Framework.Carto.Rendering
                 else if (_type == chartType.Stack)
                 {
                     #region Draw Stack
-                    double height = disp.mapScale / disp.dpm * _size;
-                    double width = disp.mapScale / disp.dpm * _size / 4D;
+                    double height = disp.MapScale / disp.Dpm * _size;
+                    double width = disp.MapScale / disp.Dpm * _size / 4D;
                     double heightVal = _valueEquatesToSize;
 
                     Path outerPath = new Path();
@@ -573,9 +573,9 @@ namespace gView.Framework.Carto.Rendering
                         ISymbol symbol = _symbolTable[fieldname];
 
                         double h = height * (values[i++] / heightVal);
-                        if (Math.Abs(h) < disp.mapScale / disp.dpm)
+                        if (Math.Abs(h) < disp.MapScale / disp.Dpm)
                         {
-                            h = disp.mapScale / disp.dpm;
+                            h = disp.MapScale / disp.Dpm;
                         }
 
                         Polygon poly = new Polygon();
@@ -694,9 +694,9 @@ namespace gView.Framework.Carto.Rendering
 
             var display = options?.Display;
 
-            if (display != null && display.refScale > 1)
+            if (display != null && display.ReferenceScale > 1)
             {
-                fac = display.refScale / Math.Max(display.mapScale, 1D);
+                fac = display.ReferenceScale / Math.Max(display.MapScale, 1D);
             }
 
             clone._size = Math.Max(_size * fac, 1D);

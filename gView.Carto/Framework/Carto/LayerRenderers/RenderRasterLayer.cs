@@ -25,7 +25,7 @@ namespace gView.Framework.Carto.LayerRenderers
             if (rLayer != null)
             {
                 _interpolMethod = rLayer.InterpolationMethod;
-                _transparency = rLayer.Transparency;
+                _transparency = rLayer.Opacity;
                 _transColor = rLayer.TransparentColor;
                 _filter = rLayer.FilterImplementation;
             }
@@ -57,8 +57,8 @@ namespace gView.Framework.Carto.LayerRenderers
                 int iWidth = 0, iHeight = 0;
                 int min_x = Math.Max(0, (int)Math.Min(minx, maxx) - 1);
                 int min_y = Math.Max(0, (int)Math.Min(miny, maxy) - 1);
-                int max_x = Math.Min(iWidth = _map.iWidth, (int)Math.Max(minx, maxx) + 1);
-                int max_y = Math.Min(iHeight = _map.iHeight, (int)Math.Max(miny, maxy) + 1);
+                int max_x = Math.Min(iWidth = _map.ImageWidth, (int)Math.Max(minx, maxx) + 1);
+                int max_y = Math.Min(iHeight = _map.ImageHeight, (int)Math.Max(miny, maxy) + 1);
 
 
                 using (var paintContext = await _layer.RasterClass.BeginPaint(_map.Display, _cancelTracker))

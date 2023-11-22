@@ -6,27 +6,16 @@ using gView.Framework.system;
 using gView.Framework.UI;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
 
 namespace gView.Framework.Metadata
 {
     [RegisterPlugInAttribute("D33D3DD2-DD63-4a47-9F84-F840FE0D01C0")]
-    public class TileServiceMetadata : IMetadataProvider, IPropertyPage
+    public class TileServiceMetadata : IMetadataProvider, IPropertyPage, IPropertyModel
     {
-        private bool _use = false;
-        private DoubleScales _scales = new DoubleScales();
-        private List<int> _epsgs = new List<int>();
-        private Dictionary<int, IEnvelope> _extents = new Dictionary<int, IEnvelope>();
-        private Dictionary<int, IPoint> _originsUL = new Dictionary<int, IPoint>();
-        private Dictionary<int, IPoint> _originsLL = new Dictionary<int, IPoint>();
-        private int _tileWidth = 256, _tileHeight = 256;
-        private bool _upperLeft = true, _lowerLeft = true;
-        private bool _upperLeftCacheTiles = true;
-        private bool _lowerLeftCacheTiles = true;
-        private bool _formatPng = true;
-        private bool _formatJpg = true;
-        private double _dpi = Const.TilesDpi;
+        private PropertyObject _properties = new PropertyObject();
 
         public TileServiceMetadata()
         {
@@ -34,24 +23,25 @@ namespace gView.Framework.Metadata
         }
 
         #region Properties
+
         public bool Use
         {
-            get { return _use; }
-            set { _use = value; }
+            get { return _properties.Use; }
+            set { _properties.Use = value; }
         }
 
         public List<int> EPSGCodes
         {
-            get { return _epsgs; }
+            get { return _properties.EpsgCodes; }
         }
         public IEnvelope GetEPSGEnvelope(int epsg)
         {
-            if (!_extents.ContainsKey(epsg))
+            if (!_properties.Extents.ContainsKey(epsg))
             {
                 return null;
             }
 
-            return _extents[epsg];
+            return _properties.Extents[epsg].ToEnvelope();
         }
         public void SetEPSGEnvelope(int epsg, IEnvelope envelope)
         {
@@ -60,21 +50,21 @@ namespace gView.Framework.Metadata
                 envelope = new Envelope();
             }
 
-            if (_extents.ContainsKey(epsg))
+            if (_properties.Extents.ContainsKey(epsg))
             {
-                _extents[epsg] = envelope;
+                _properties.Extents[epsg] = new PropertyObject.EnvelopeModel(envelope);
             }
             else
             {
-                _extents.Add(epsg, envelope);
+                _properties.Extents.Add(epsg, new PropertyObject.EnvelopeModel(envelope));
             }
         }
 
         public IPoint GetOriginUpperLeft(int epsg)
         {
-            if (_originsUL.ContainsKey(epsg))
+            if (_properties.OriginUpperLeft.ContainsKey(epsg))
             {
-                return _originsUL[epsg];
+                return _properties.OriginUpperLeft[epsg].ToPoint();
             }
 
             var envelope = GetEPSGEnvelope(epsg);
@@ -87,9 +77,9 @@ namespace gView.Framework.Metadata
         }
         public IPoint GetOriginLowerLeft(int epsg)
         {
-            if (_originsLL.ContainsKey(epsg))
+            if (_properties.OriginLowerLeft.ContainsKey(epsg))
             {
-                return _originsLL[epsg];
+                return _properties.OriginLowerLeft[epsg].ToPoint();
             }
 
             var envelope = GetEPSGEnvelope(epsg);
@@ -102,24 +92,24 @@ namespace gView.Framework.Metadata
         }
         public void SetOriginUpperLeft(int epsg, IPoint upperLeft)
         {
-            if (_originsUL.ContainsKey(epsg))
+            if (_properties.OriginUpperLeft.ContainsKey(epsg))
             {
-                _originsUL[epsg] = upperLeft;
+                _properties.OriginUpperLeft[epsg] = new PropertyObject.PointModel(upperLeft);
             }
             else
             {
-                _originsUL.Add(epsg, upperLeft);
+                _properties.OriginUpperLeft.Add(epsg, new PropertyObject.PointModel(upperLeft));
             }
         }
         public void SetOriginLowerLeft(int epsg, IPoint lowerLeft)
         {
-            if (_originsLL.ContainsKey(epsg))
+            if (_properties.OriginLowerLeft.ContainsKey(epsg))
             {
-                _originsLL[epsg] = lowerLeft;
+                _properties.OriginLowerLeft[epsg] = new PropertyObject.PointModel(lowerLeft);
             }
             else
             {
-                _originsLL.Add(epsg, lowerLeft);
+                _properties.OriginLowerLeft.Add(epsg, new PropertyObject.PointModel(lowerLeft));
             }
         }
 
@@ -127,76 +117,84 @@ namespace gView.Framework.Metadata
         {
             get
             {
-                return _dpi;
+                return _properties.Dpi;
             }
             set
             {
-                _dpi = value;
+                _properties.Dpi = value;
             }
         }
 
+        private DoubleScales _doubleScales = null;
         public DoubleScales Scales
         {
-            get { return _scales; }
+            get
+            {
+                if (_doubleScales == null)
+                {
+                    _doubleScales = new DoubleScales(_properties.Scales);
+                }
+
+                return _doubleScales;
+            }
             set
             {
+                _properties.Scales.Clear();
+
                 if (value == null)
                 {
-                    _scales = new DoubleScales();
+                    _doubleScales = null;
                 }
                 else
                 {
-                    _scales = value;
-                    if (_scales != null)
-                    {
-                        _scales.Order();
-                    }
+                    _properties.Scales.AddRange(_doubleScales.InnerList);
+                    _doubleScales = new DoubleScales(_properties.Scales);
+                    _doubleScales.Order();
                 }
-
             }
         }
         public int TileWidth
         {
-            get { return _tileWidth; }
-            set { _tileWidth = value; }
+            get { return _properties.TileWidth; }
+            set { _properties.TileWidth = value; }
         }
         public int TileHeight
         {
-            get { return _tileHeight; }
-            set { _tileHeight = value; }
+            get { return _properties.TileHeight; }
+            set { _properties.TileHeight = value; }
         }
 
         public bool UpperLeft
         {
-            get { return _upperLeft; }
-            set { _upperLeft = value; }
+            get { return _properties.UseUpperLeft; }
+            set { _properties.UseUpperLeft = value; }
         }
         public bool LowerLeft
         {
-            get { return _lowerLeft; }
-            set { _lowerLeft = value; }
+            get { return _properties.UseLowerLeft; }
+            set { _properties.UseLowerLeft = value; }
         }
 
         public bool UpperLeftCacheTiles
         {
-            get { return _upperLeftCacheTiles; }
-            set { _upperLeftCacheTiles = value; }
+            get { return _properties.CacheUpperLeftTiles; }
+            set { _properties.CacheUpperLeftTiles = value; }
         }
         public bool LowerLeftCacheTiles
         {
-            get { return _lowerLeftCacheTiles; }
-            set { _lowerLeftCacheTiles = value; }
+            get { return _properties.CacheLowerLeftTiles; }
+            set { _properties.CacheLowerLeftTiles = value; }
         }
 
         public bool FormatPng
         {
-            get { return _formatPng; }
-            set { _formatPng = value; }
+            get { return _properties.SupportPng; }
+            set { _properties.SupportPng = value; }
         }
         public bool FormatJpg
         {
-            get { return _formatJpg; }
-            set { _formatJpg = value; }
+            get { return _properties.SupportJpg; }
+            set { _properties.SupportJpg = value; }
         }
 
         public bool MakeTransparentPng { get; set; }
@@ -207,11 +205,35 @@ namespace gView.Framework.Metadata
 
         #region IMetadataProvider Member
 
-        public Task<bool> ApplyTo(object Object)
+        public Task<bool> ApplyTo(object Object, bool setDefaults = false)
         {
             if (Object == null)
             {
                 return Task.FromResult(false);
+            }
+
+            if (setDefaults)
+            {
+                if (_properties.Scales?.Count == 0)
+                {
+                    _properties.Scales.Add(0);
+                }
+                if (_properties.EpsgCodes?.Count == 0)
+                {
+                    _properties.EpsgCodes.Add(0);
+                }
+                if (_properties.Extents?.Count == 0)
+                {
+                    _properties.Extents.Add(0, new PropertyObject.EnvelopeModel());
+                }
+                if (_properties.OriginLowerLeft?.Count == 0)
+                {
+                    _properties.OriginLowerLeft.Add(0, new PropertyObject.PointModel());
+                }
+                if (_properties.OriginUpperLeft?.Count == 0)
+                {
+                    _properties.OriginUpperLeft.Add(0, new PropertyObject.PointModel());
+                }
             }
 
             return Task.FromResult(Object is IMap);
@@ -229,25 +251,25 @@ namespace gView.Framework.Metadata
 
         public void Load(IPersistStream stream)
         {
-            _use = (bool)stream.Load("use", false);
+            _properties.Use = (bool)stream.Load("use", false);
 
-            _tileWidth = (int)stream.Load("tile_width", 256);
-            _tileHeight = (int)stream.Load("tile_height", 256);
+            _properties.TileWidth = (int)stream.Load("tile_width", 256);
+            _properties.TileHeight = (int)stream.Load("tile_height", 256);
 
-            _upperLeft = (bool)stream.Load("upperleft", true);
-            _lowerLeft = (bool)stream.Load("lowerleft", true);
-            _upperLeftCacheTiles = (bool)stream.Load("upperleftcachetiles", true);
-            _lowerLeftCacheTiles = (bool)stream.Load("lowerleftcachetiles", true);
+            _properties.UseUpperLeft = (bool)stream.Load("upperleft", true);
+            _properties.UseLowerLeft = (bool)stream.Load("lowerleft", true);
+            _properties.CacheUpperLeftTiles = (bool)stream.Load("upperleftcachetiles", true);
+            _properties.CacheLowerLeftTiles = (bool)stream.Load("lowerleftcachetiles", true);
 
-            _formatPng = (bool)stream.Load("formatpng", true);
-            _formatJpg = (bool)stream.Load("formatjpg", true);
+            _properties.SupportPng = (bool)stream.Load("formatpng", true);
+            _properties.SupportJpg = (bool)stream.Load("formatjpg", true);
             this.MakeTransparentPng = (bool)stream.Load("maketransparentpng", false);
 
-            _dpi = (double)stream.Load("dpi", Const.TilesDpi);
+            _properties.Dpi = (double)stream.Load("dpi", Const.TilesDpi);
 
             this.RenderTilesOnTheFly = (bool)stream.Load("rendertilesonthefly", false);
 
-            _scales.Clear();
+            _properties.Scales.Clear();
             int scales_count = (int)stream.Load("scales_count", 0);
             for (int i = 0; i < scales_count; i++)
             {
@@ -257,66 +279,66 @@ namespace gView.Framework.Metadata
                     continue;
                 }
 
-                _scales.Add(scale);
+                _properties.Scales.Add(scale);
             }
 
-            _extents.Clear();
-            _epsgs.Clear();
-            _originsUL.Clear();
-            _originsLL.Clear();
+            _properties.Extents.Clear();
+            _properties.EpsgCodes.Clear();
+            _properties.OriginUpperLeft.Clear();
+            _properties.OriginLowerLeft.Clear();
             int epsg_count = (int)stream.Load("epsg_count", 0);
             for (int i = 0; i < epsg_count; i++)
             {
                 int epsg = (int)stream.Load("epsg" + i, 0);
-                if (epsg == 0 || _extents.ContainsKey(epsg))
+                if (epsg == 0 || _properties.Extents.ContainsKey(epsg))
                 {
                     continue;
                 }
 
-                _epsgs.Add((int)stream.Load("epsg" + i, epsg));
-                _extents.Add(epsg,
-                             new Envelope(
+                _properties.EpsgCodes.Add((int)stream.Load("epsg" + i, epsg));
+                _properties.Extents.Add(epsg,
+                             new PropertyObject.EnvelopeModel(new Envelope(
                     (double)stream.Load("extent_minx" + i, 0.0),
                     (double)stream.Load("extent_miny" + i, 0.0),
                     (double)stream.Load("extent_maxx" + i, 0.0),
-                    (double)stream.Load("extent_maxy" + i, 0.0)));
+                    (double)stream.Load("extent_maxy" + i, 0.0))));
 
-                _originsUL.Add(epsg, new Point(
+                _properties.OriginUpperLeft.Add(epsg, new PropertyObject.PointModel(new Point(
                     (double)stream.Load("origin_ul_x" + i, GetOriginUpperLeft(epsg)?.X ?? 0D),
                     (double)stream.Load("origin_ul_y" + i, GetOriginUpperLeft(epsg)?.Y ?? 0D)
-                    ));
+                    )));
 
-                _originsLL.Add(epsg, new Point(
+                _properties.OriginLowerLeft.Add(epsg, new PropertyObject.PointModel(new Point(
                     (double)stream.Load("origin_ll_x" + i, GetOriginLowerLeft(epsg)?.X ?? 0D),
                     (double)stream.Load("origin_ll_y" + i, GetOriginLowerLeft(epsg)?.Y ?? 0D)
-                    ));
+                    )));
             }
         }
 
         public void Save(IPersistStream stream)
         {
-            stream.Save("use", _use);
+            stream.Save("use", _properties.Use);
 
-            stream.Save("tile_width", _tileWidth);
-            stream.Save("tile_height", _tileHeight);
+            stream.Save("tile_width", _properties.TileWidth);
+            stream.Save("tile_height", _properties.TileHeight);
 
-            stream.Save("upperleft", _upperLeft);
-            stream.Save("lowerleft", _lowerLeft);
-            stream.Save("upperleftcachetiles", _upperLeftCacheTiles);
-            stream.Save("lowerleftcachetiles", _lowerLeftCacheTiles);
+            stream.Save("upperleft", _properties.UseUpperLeft);
+            stream.Save("lowerleft", _properties.UseLowerLeft);
+            stream.Save("upperleftcachetiles", _properties.CacheUpperLeftTiles);
+            stream.Save("lowerleftcachetiles", _properties.CacheLowerLeftTiles);
 
-            stream.Save("formatpng", _formatPng);
-            stream.Save("formatjpg", _formatJpg);
+            stream.Save("formatpng", _properties.SupportPng);
+            stream.Save("formatjpg", _properties.SupportJpg);
             stream.Save("maketransparentpng", this.MakeTransparentPng);
 
             stream.Save("rendertilesonthefly", this.RenderTilesOnTheFly);
 
-            stream.Save("dpi", _dpi);
+            stream.Save("dpi", _properties.Dpi);
 
-            _scales.Order();
-            stream.Save("scales_count", _scales.Count);
+            this.Scales.Order();
+            stream.Save("scales_count", this.Scales.InnerList.Count);
             int counter = 0;
-            foreach (double scale in _scales)
+            foreach (double scale in _properties.Scales)
             {
                 if (scale <= 0.0)
                 {
@@ -327,11 +349,11 @@ namespace gView.Framework.Metadata
                 counter++;
             }
 
-            stream.Save("epsg_count", _epsgs.Count);
+            stream.Save("epsg_count", _properties.EpsgCodes.Count);
             counter = 0;
-            for (int i = 0; i < _epsgs.Count; i++)
+            for (int i = 0; i < _properties.EpsgCodes.Count; i++)
             {
-                int epsg = _epsgs[i];
+                int epsg = _properties.EpsgCodes[i];
                 if (epsg <= 0)
                 {
                     continue;
@@ -339,7 +361,7 @@ namespace gView.Framework.Metadata
 
                 stream.Save("epsg" + counter, epsg);
 
-                IEnvelope extent = _extents.ContainsKey(epsg) ? _extents[epsg] : new Envelope();
+                IEnvelope extent = _properties.Extents.ContainsKey(epsg) ? _properties.Extents[epsg].ToEnvelope() : new Envelope();
                 stream.Save("extent_minx" + counter, extent.minx);
                 stream.Save("extent_miny" + counter, extent.miny);
                 stream.Save("extent_maxx" + counter, extent.maxx);
@@ -407,15 +429,43 @@ namespace gView.Framework.Metadata
 
         #endregion
 
-        #region HelperClasses
-        public class DoubleScales : List<double>
+        #region IPropertyModel
+
+        public Type PropertyModelType => typeof(PropertyObject);
+
+        public object GetPropertyModel()
         {
-            new public bool Contains(double scale)
+            return _properties;
+        }
+
+        public void SetPropertyModel(object propertyObject)
+        {
+            if (propertyObject is PropertyObject)
+            {
+                _properties = (PropertyObject)propertyObject;
+            }
+        }
+
+        #endregion
+
+        #region Classes
+
+        public class DoubleScales
+        {
+            private readonly List<double> _scales;
+            public DoubleScales(List<double> scales)
+            {
+                _scales = scales;
+            }
+
+            public List<double> InnerList => _scales;
+
+            public bool Contains(double scale)
             {
                 double scaleR = Math.Round(scale);
                 double scaleF = Math.Floor(scale);
 
-                foreach (double s in this)
+                foreach (double s in _scales)
                 {
                     if (Math.Round(s) == scaleR ||
                         Math.Floor(s) == scaleF)
@@ -431,7 +481,7 @@ namespace gView.Framework.Metadata
                 double scaleR = Math.Round(scale);
                 double scaleF = Math.Floor(scale);
 
-                foreach (double s in this)
+                foreach (double s in _scales)
                 {
                     if (Math.Round(s) == scaleR ||
                         Math.Floor(s) == scaleF)
@@ -441,18 +491,82 @@ namespace gView.Framework.Metadata
                 }
                 return -1.0;
             }
+
             public void Order()
             {
-                this.Sort();
-                List<double> scales = ListOperations<double>.Swap((List<double>)this);
+                _scales.Sort();
+                List<double> scales = ListOperations<double>.Swap(_scales);
 
-                this.Clear();
+                _scales.Clear();
                 foreach (double s in scales)
                 {
-                    this.Add(s);
+                    _scales.Add(s);
                 }
             }
         }
+
+        private class PropertyObject
+        {
+            public PropertyObject()
+            {
+                // default values
+                this.Scales.Add(0);
+                this.EpsgCodes.Add(0);
+                this.Extents.Add(0, new EnvelopeModel());
+                this.OriginUpperLeft.Add(0, new PointModel());
+                this.OriginLowerLeft.Add(0, new PointModel());
+            }
+
+            public bool Use { get; set; } = false;
+            public List<double> Scales { get; set; } = new List<double>();
+            public List<int> EpsgCodes { get; set; } = new List<int>();
+            public Dictionary<int, EnvelopeModel> Extents { get; set; } = new Dictionary<int, EnvelopeModel>();
+            public Dictionary<int, PointModel> OriginUpperLeft { get; set; } = new Dictionary<int, PointModel>();
+            public Dictionary<int, PointModel> OriginLowerLeft { get; set; } = new Dictionary<int, PointModel>();
+            public int TileWidth { get; set; } = 256;
+            public int TileHeight { get; set; } = 256;
+            public bool UseUpperLeft { get; set; } = true;
+            public bool UseLowerLeft { get; set; } = true;
+            public bool CacheUpperLeftTiles { get; set; } = true;
+            public bool CacheLowerLeftTiles { get; set; } = true;
+            public bool SupportPng { get; set; } = true;
+            public bool SupportJpg { get; set; } = true;
+            public double Dpi { get; set; } = Const.TilesDpi;
+
+            public class EnvelopeModel
+            {
+                public EnvelopeModel() { }
+                public EnvelopeModel(IEnvelope envelope)
+                {
+                    this.MinX = envelope.minx;
+                    this.MinY = envelope.miny;
+                    this.MaxX = envelope.maxx;
+                    this.MaxY = envelope.maxy;
+                }
+                public double MinX { get; set; }
+                public double MinY { get; set; }
+                public double MaxX { get; set; }
+                public double MaxY { get; set; }
+
+                public IEnvelope ToEnvelope() => new Envelope(MinX, MinY, MaxX, MaxY);
+            }
+
+            public class PointModel
+            {
+                public PointModel() { }
+                public PointModel(IPoint point)
+                {
+                    this.X = point.X;
+                    this.Y = point.Y;
+                }
+
+                public double X { get; set; }
+                public double Y { get; set; }
+
+                public IPoint ToPoint() => new Point(X, Y);
+            }
+        }
+
         #endregion
     }
 }

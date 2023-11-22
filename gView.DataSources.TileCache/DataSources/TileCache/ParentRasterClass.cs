@@ -117,9 +117,15 @@ namespace gView.DataSources.TileCache
             double dpi = 96.0;  // gView Default... //25.4D / 0.28D;   // wmts 0.28mm -> 1 Pixel in WebMercator;
 
             // !!!! Only correct, if diplay unit is meter !!!! 
-            double displayResolution = display.mapScale / (display.dpi / 0.0254);
+            double displayResolution = display.MapScale / (display.Dpi / 0.0254);
 
-            Grid grid = new Grid(new Point(_dataset.Extent.minx, _dataset.Extent.maxx), _dataset.TileWidth, _dataset.TileHeight, dpi, _dataset.Origin);
+            Grid grid = new Grid(
+                _dataset.OriginPoint == null ? new Point(_dataset.Extent.minx, _dataset.Extent.maxy) : new Point(_dataset.OriginPoint),
+                _dataset.TileWidth,
+                _dataset.TileHeight,
+                dpi,
+                _dataset.OriginOrientation);
+
             for (int i = 0, to = _dataset.Scales.Length; i < to; i++)
             {
                 grid.AddLevel(i, _dataset.Scales[i] / (dpi / 0.0254));
@@ -139,8 +145,10 @@ namespace gView.DataSources.TileCache
             int col1 = grid.TileColumn(dispEnvelope.maxx, res);
             int row1 = grid.TileRow(dispEnvelope.miny, res);
 
-            int col_from = Math.Max(0, Math.Min(col0, col1)), col_to = Math.Min((int)Math.Round(_dataset.Extent.Width / (_dataset.TileWidth * res), 0) - 1, Math.Max(col0, col1));
-            int row_from = Math.Max(0, Math.Min(row0, row1)), row_to = Math.Min((int)Math.Round(_dataset.Extent.Height / (_dataset.TileHeight * res), 0) - 1, Math.Max(row0, row1));
+            int col_from = Math.Max(grid.TileColumn(_dataset.Extent.minx, res) , Math.Min(col0, col1)),
+                col_to = Math.Min(grid.TileColumn(_dataset.Extent.maxx, res), Math.Max(col0, col1));
+            int row_from = Math.Max(grid.TileRow(_dataset.Extent.maxy, res), Math.Min(row0, row1)),
+                row_to = Math.Min(grid.TileRow(_dataset.Extent.miny, res), Math.Max(row0, row1));
 
             LayerCursor cursor = new LayerCursor();
             for (int r = row_from; r <= row_to; r++)

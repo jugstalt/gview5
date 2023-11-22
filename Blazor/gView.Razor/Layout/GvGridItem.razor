@@ -1,0 +1,14 @@
+<MudItem xs="12" sm="12" md="@CalcSpan()" lg="@CalcSpan()">
+    @if (ChildContent != null)
+    {
+        @ChildContent
+    }
+</MudItem>
+
+@code {
+    [CascadingParameter] public int ColumnCount { get; set; }
+    [Parameter] public int Span { get; set; } = 1;
+    [Parameter] public RenderFragment? ChildContent { get; set; }
+
+    private int CalcSpan() => 12 * Span / Math.Max(ColumnCount, 1);
+}

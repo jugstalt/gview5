@@ -119,10 +119,14 @@
   </resheader>
   <assembly alias="System.Drawing" name="System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a" />
   <data name="richTextBox1.Location" type="System.Drawing.Point, System.Drawing">
-    <value>7, 20</value>
+    <value>10, 31</value>
+  </data>
+  <assembly alias="System.Windows.Forms" name="System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
+  <data name="richTextBox1.Margin" type="System.Windows.Forms.Padding, System.Windows.Forms">
+    <value>4, 5, 4, 5</value>
   </data>
   <data name="richTextBox1.Size" type="System.Drawing.Size, System.Drawing">
-    <value>388, 144</value>
+    <value>580, 219</value>
   </data>
   <assembly alias="mscorlib" name="mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
   <data name="richTextBox1.TabIndex" type="System.Int32, mscorlib">
@@ -150,10 +154,16 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
     <value>0</value>
   </data>
   <data name="groupID.Location" type="System.Drawing.Point, System.Drawing">
-    <value>12, 12</value>
+    <value>18, 18</value>
+  </data>
+  <data name="groupID.Margin" type="System.Windows.Forms.Padding, System.Windows.Forms">
+    <value>4, 5, 4, 5</value>
+  </data>
+  <data name="groupID.Padding" type="System.Windows.Forms.Padding, System.Windows.Forms">
+    <value>4, 5, 4, 5</value>
   </data>
   <data name="groupID.Size" type="System.Drawing.Size, System.Drawing">
-    <value>402, 170</value>
+    <value>603, 262</value>
   </data>
   <data name="groupID.TabIndex" type="System.Int32, mscorlib">
     <value>0</value>
@@ -173,7 +183,6 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
   <data name="&gt;&gt;groupID.ZOrder" xml:space="preserve">
     <value>6</value>
   </data>
-  <assembly alias="System.Windows.Forms" name="System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
   <data name="btnOK.Anchor" type="System.Windows.Forms.AnchorStyles, System.Windows.Forms">
     <value>Bottom, Right</value>
   </data>
@@ -181,10 +190,13 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
     <value>NoControl</value>
   </data>
   <data name="btnOK.Location" type="System.Drawing.Point, System.Drawing">
-    <value>307, 411</value>
+    <value>460, 632</value>
+  </data>
+  <data name="btnOK.Margin" type="System.Windows.Forms.Padding, System.Windows.Forms">
+    <value>4, 5, 4, 5</value>
   </data>
   <data name="btnOK.Size" type="System.Drawing.Size, System.Drawing">
-    <value>104, 34</value>
+    <value>156, 52</value>
   </data>
   <data name="btnOK.TabIndex" type="System.Int32, mscorlib">
     <value>1</value>
@@ -214,10 +226,16 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
     <value>Load License File</value>
   </data>
   <data name="gpCredits.Location" type="System.Drawing.Point, System.Drawing">
-    <value>12, 188</value>
+    <value>18, 289</value>
+  </data>
+  <data name="gpCredits.Margin" type="System.Windows.Forms.Padding, System.Windows.Forms">
+    <value>4, 5, 4, 5</value>
+  </data>
+  <data name="gpCredits.Padding" type="System.Windows.Forms.Padding, System.Windows.Forms">
+    <value>4, 5, 4, 5</value>
   </data>
   <data name="gpCredits.Size" type="System.Drawing.Size, System.Drawing">
-    <value>402, 111</value>
+    <value>603, 171</value>
   </data>
   <data name="gpCredits.TabIndex" type="System.Int32, mscorlib">
     <value>4</value>
@@ -247,10 +265,13 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
     <value>NoControl</value>
   </data>
   <data name="lblVersion.Location" type="System.Drawing.Point, System.Drawing">
-    <value>12, 302</value>
+    <value>18, 465</value>
+  </data>
+  <data name="lblVersion.Margin" type="System.Windows.Forms.Padding, System.Windows.Forms">
+    <value>4, 0, 4, 0</value>
   </data>
   <data name="lblVersion.Size" type="System.Drawing.Size, System.Drawing">
-    <value>45, 13</value>
+    <value>60, 17</value>
   </data>
   <data name="lblVersion.TabIndex" type="System.Int32, mscorlib">
     <value>5</value>
@@ -280,10 +301,13 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
     <value>NoControl</value>
   </data>
   <data name="lblBit.Location" type="System.Drawing.Point, System.Drawing">
-    <value>373, 302</value>
+    <value>560, 465</value>
+  </data>
+  <data name="lblBit.Margin" type="System.Windows.Forms.Padding, System.Windows.Forms">
+    <value>4, 0, 4, 0</value>
   </data>
   <data name="lblBit.Size" type="System.Drawing.Size, System.Drawing">
-    <value>34, 13</value>
+    <value>44, 17</value>
   </data>
   <data name="lblBit.TabIndex" type="System.Int32, mscorlib">
     <value>8</value>
@@ -307,10 +331,13 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
     <value>NoControl</value>
   </data>
   <data name="pictureBox1.Location" type="System.Drawing.Point, System.Drawing">
-    <value>-1, 349</value>
+    <value>-2, 537</value>
+  </data>
+  <data name="pictureBox1.Margin" type="System.Windows.Forms.Padding, System.Windows.Forms">
+    <value>4, 5, 4, 5</value>
   </data>
   <data name="pictureBox1.Size" type="System.Drawing.Size, System.Drawing">
-    <value>426, 108</value>
+    <value>639, 166</value>
   </data>
   <data name="pictureBox1.TabIndex" type="System.Int32, mscorlib">
     <value>2</value>
@@ -337,10 +364,13 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
     <value>NoControl</value>
   </data>
   <data name="lbPath.Location" type="System.Drawing.Point, System.Drawing">
-    <value>12, 324</value>
+    <value>18, 498</value>
+  </data>
+  <data name="lbPath.Margin" type="System.Windows.Forms.Padding, System.Windows.Forms">
+    <value>4, 0, 4, 0</value>
   </data>
   <data name="lbPath.Size" type="System.Drawing.Size, System.Drawing">
-    <value>84, 13</value>
+    <value>111, 17</value>
   </data>
   <data name="lbPath.TabIndex" type="System.Int32, mscorlib">
     <value>9</value>
@@ -370,10 +400,13 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
     <value>NoControl</value>
   </data>
   <data name="label1.Location" type="System.Drawing.Point, System.Drawing">
-    <value>102, 360</value>
+    <value>153, 554</value>
+  </data>
+  <data name="label1.Margin" type="System.Windows.Forms.Padding, System.Windows.Forms">
+    <value>4, 0, 4, 0</value>
   </data>
   <data name="label1.Size" type="System.Drawing.Size, System.Drawing">
-    <value>198, 44</value>
+    <value>297, 65</value>
   </data>
   <data name="label1.TabIndex" type="System.Int32, mscorlib">
     <value>10</value>
@@ -397,10 +430,13 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
     <value>True</value>
   </metadata>
   <data name="$this.AutoScaleDimensions" type="System.Drawing.SizeF, System.Drawing">
-    <value>6, 13</value>
+    <value>9, 20</value>
   </data>
   <data name="$this.ClientSize" type="System.Drawing.Size, System.Drawing">
-    <value>423, 457</value>
+    <value>634, 703</value>
+  </data>
+  <data name="$this.Margin" type="System.Windows.Forms.Padding, System.Windows.Forms">
+    <value>4, 5, 4, 5</value>
   </data>
   <data name="$this.StartPosition" type="System.Windows.Forms.FormStartPosition, System.Windows.Forms">
     <value>CenterScreen</value>

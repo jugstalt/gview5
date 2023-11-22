@@ -7,45 +7,43 @@ using System.Threading.Tasks;
 
 namespace gView.Framework.UI
 {
-    public interface ITOC : IClone, IClone3, IPersistableLoadAsync
+    public interface IToc : IClone, IClone3, IPersistableLoadAsync
     {
         event EventHandler TocChanged;
 
         void Reset();
 
-        ITOCElement NextVisibleElement { get; }
+        ITocElement NextVisibleElement { get; }
 
-        List<ITOCElement> GroupedElements(ITOCElement group);
+        List<ITocElement> GroupedElements(ITocElement group);
 
         /*
 		void AddGroup(string GroupName,ITOCElement parent);
          * */
-        void Add2Group(ITOCElement element, ITOCElement Group);
+        void Add2Group(ITocElement element, ITocElement Group);
 
-        ITOCElement GetTOCElement(string name, ITOCElement parent);
-        ITOCElement GetTOCElement(ILayer element);
-        ITOCElement GetTOCElementByLayerId(int layerId);
+        ITocElement GetTOCElement(string name, ITocElement parent);
+        ITocElement GetTOCElement(ILayer element);
+        ITocElement GetTocElementByLayerId(int layerId);
         //ITOCElement GetTOCElement(IClass element);
 
-        List<ITOCElement> GroupElements { get; }
+        List<ITocElement> GroupElements { get; }
 
-        void RenameElement(ITOCElement element, string newName);
-        void MoveElement(ITOCElement element, ITOCElement refElement, bool insertAfter);
+        void RenameElement(ITocElement element, string newName);
+        void MoveElement(ITocElement element, ITocElement refElement, bool insertAfter);
 
-        void SplitMultiLayer(ITOCElement element);
-        int CountGroupLayers(ITOCElement Group, bool subGroups);
-        int CountVisibleGroupLayers(ITOCElement Group, bool subGroups);
+        void SplitMultiLayer(ITocElement element);
+        int CountGroupLayers(ITocElement Group, bool subGroups);
+        int CountVisibleGroupLayers(ITocElement Group, bool subGroups);
 
         List<ILayer> Layers { get; }
         List<ILayer> VisibleLayers { get; }
-        List<ITOCElement> Elements { get; }
+        List<ITocElement> Elements { get; }
         List<IWebServiceLayer> VisibleWebServiceLayers { get; }
 
         Task<GraphicsEngine.Abstraction.IBitmap> Legend();
-        Task<GraphicsEngine.Abstraction.IBitmap> Legend(ITOCElement element);
-        Task<GraphicsEngine.Abstraction.IBitmap> Legend(List<ITOCElement> elements);
-        Task<TocLegendItems> LegendSymbol(ITOCElement element);
+        Task<GraphicsEngine.Abstraction.IBitmap> Legend(ITocElement element);
+        Task<GraphicsEngine.Abstraction.IBitmap> Legend(List<ITocElement> elements);
+        Task<TocLegendItems> LegendSymbol(ITocElement element);
     }
-
-
 }

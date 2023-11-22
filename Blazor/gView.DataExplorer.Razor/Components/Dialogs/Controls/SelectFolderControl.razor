@@ -1,0 +1,39 @@
+@inject IApplicationScope AppScope
+
+<GvGrid ColumnCount="6">
+    <GvGridItem Span="5">
+        <MudTextField Label="@Label"
+                        @bind-Value="Folder"
+                        Variant="Variant.Text"></MudTextField>
+    </GvGridItem>
+    <GvGridItem>
+        <MudFab Color="Color.Primary" 
+                 OnClick="SelectFolder"
+                 StartIcon="@Icons.Material.Filled.FolderOpen" />
+    </GvGridItem>
+</GvGrid>
+
+@code {
+    [Parameter] public string Label { get; set; } = "Folder";
+    [Parameter] public string Folder { get; set; } = string.Empty;
+    [Parameter] public EventCallback<string> FolderChanged { get; set; }
+
+    async private Task SelectFolder()
+    {
+        var model = await AppScope.ShowKnownDialog(Framework.Blazor.KnownDialogs.ExplorerDialog,
+                                                        model: new ExplorerDialogModel()
+                                                        {
+                                                                Filters = new List<ExplorerDialogFilter> {
+                                                                                    new OpenFolderFilter()
+                                                                },
+                                                                Mode = ExploerDialogMode.Open
+                                                        });
+
+        if (model != null && model.Result.ExplorerObjects.Count() == 1)
+        {
+            Folder = model.Result.ExplorerObjects.First().FullName;
+
+            await FolderChanged.InvokeAsync(Folder);
+        }
+    }
+}

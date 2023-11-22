@@ -1,0 +1,51 @@
+@typeparam T where T : class
+
+@if (SelectableItems != null)
+{
+    <table>
+        <tr>
+            <td></td>
+            @foreach (string property in ItemProperties)
+            {
+                <td>@property</td>
+            }
+        </tr>
+        @foreach(var selectable in SelectableItems)
+        {
+            <tr>
+                <td>
+                    <MudCheckBox T="bool" 
+                                 Checked="selectable.Selected"
+                                 CheckedChanged="(isChecked) => ItemChecked(selectable, isChecked)" />
+                </td>
+                @foreach(string property in ItemProperties)
+                {
+                    <td>@GetPropertyValue(selectable.Item, property)</td>
+                }
+            </tr>
+        }
+    </table>    
+}
+
+@code{
+    [Parameter] public string[] ItemProperties { get; set; } = Array.Empty<string>();
+    [Parameter] public SelectableEnumerable<T>? SelectableItems { get; set; }
+    [Parameter] public EventCallback SelectionChanged{ get; set; }
+
+    private string GetPropertyValue(T item, string propertyName)
+    {
+        var propertyInfo = item.GetType().GetProperty(propertyName);
+        if(propertyInfo == null)
+        {
+            return String.Empty;
+        }
+
+        return propertyInfo.GetValue(item)?.ToString() ?? String.Empty;
+    }
+
+    async private Task ItemChecked(SelectableItem<T> selectable, bool select)
+    {
+        selectable.Selected = select;
+        await SelectionChanged.InvokeAsync();
+    }
+}

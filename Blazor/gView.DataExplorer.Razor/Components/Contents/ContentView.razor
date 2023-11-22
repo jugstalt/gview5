@@ -1,0 +1,82 @@
+@inherits BaseHandler
+@implements IDisposable
+@inject PluginManagerService PluginManager
+@inject IconService Icons
+@inject ExplorerEventBusService EventBus
+
+@if (_visibleTabPages != null)
+{
+    <MudTabs Elevation="1" Rounded="true" ActivePanelIndexChanged="async (index) => await OnShowTabPage(index)">
+        @foreach (var tabPage in _visibleTabPages)
+        {
+            <MudTabPanel Text="@tabPage.Title"
+                           Activated="async () => await OnShowTabPage(tabPage)"
+                           ToolTip=""
+                           Style="">
+                <DynamicComponent Type="@(tabPage.RazorComponent)"
+                                   Parameters="@(new Dictionary<string, object?>() { ["FrameworkElement"] = tabPage, ["CurrentExplorerObject"] = CurrentExplorerObject })" />
+            </MudTabPanel>
+        }
+    </MudTabs>
+}
+
+@code {
+    private IExplorerObject? CurrentExplorerObject { get; set; }
+
+    private IEnumerable<IExplorerTabPage>? _tabPages;
+    private IExplorerTabPage[]? _visibleTabPages;
+    private int _currentTabPageIndex = 0;
+
+    protected override void OnInitialized()
+    {
+        base.Handle(() =>
+        {
+            _tabPages = PluginManager.GetPlugins<IExplorerTabPage>(Framework.system.Plugins.Type.IExplorerTabPage);
+            DetermineVisibleTabs();
+            EventBus.OnCurrentExplorerObjectChanged += OnTreeItemClickAsync;
+        });
+    }
+
+    private Task OnTreeItemClickAsync(IExplorerObject? exObject)
+    {
+        base.Handle(() =>
+        {
+            CurrentExplorerObject = exObject;
+            DetermineVisibleTabs();
+            StateHasChanged();
+        });
+
+        return Task.CompletedTask;
+    }
+
+    private void DetermineVisibleTabs()
+    {
+        _visibleTabPages = _tabPages?
+                              .Where(t => t.ShowWith(CurrentExplorerObject).Result)
+                              .OrderBy(t => t.SortOrder)
+                              .ToArray();
+    }
+
+    private Task OnShowTabPage(int index)
+        => HandleAsync(async () => {
+            if (_visibleTabPages != null) 
+            {
+                var oldTabPage = _currentTabPageIndex >= 0 && _currentTabPageIndex < _visibleTabPages.Length ?
+                                _visibleTabPages[_currentTabPageIndex] :
+                                null;
+
+                var newTabPage = index >= 0 && index < _visibleTabPages.Length ?
+                                _visibleTabPages[index] :
+                                null;
+
+                _currentTabPageIndex = index;
+
+                await EventBus.FireExplorerTabPageChanged(newTabPage, oldTabPage);
+            }
+        });
+
+    public void Dispose()
+    {
+        EventBus.OnCurrentExplorerObjectChanged -= OnTreeItemClickAsync;
+    }
+}

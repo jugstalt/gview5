@@ -1,0 +1,84 @@
+@if (Layer != null)
+{
+    <GvCard Title="Feature Rendering">
+        <GvCardContent>
+            <MudSelect T="bool" @bind-Value="RenderAtAllScales">
+                <MudSelectItem Value="true">Render layer at all scales</MudSelectItem>
+                <MudSelectItem Value="false">Render layer between scales</MudSelectItem>
+            </MudSelect>
+            @if(RenderAtAllScales == false) {
+                Layer.MinimumScale = Math.Abs(Layer.MinimumScale);
+                Layer.MaximumScale = Math.Abs(Layer.MaximumScale);
+
+                <MudNumericField Label="Minimun Scale 1:  (higher scale dominator)"
+                                 @bind-Value="Layer.MaximumScale"/>
+                <MudNumericField Label="Maximum Scale 1:  (lower scale dominator)"
+                                 @bind-Value="Layer.MinimumScale"/>
+                @GvUtilities.InfoText("<=0 means: ignore this scale level")
+            } 
+            else {
+                Layer.MinimumScale = -Math.Abs(Layer.MinimumScale);
+                Layer.MaximumScale = -Math.Abs(Layer.MaximumScale);
+            }
+        </GvCardContent>
+    </GvCard>
+
+    @if((Layer is IFeatureLayer fLayer && fLayer.LabelRenderer is not null) || Layer is IGroupLayer) {
+        <GvCard Title="Labelling">
+            <GvCardContent>
+                <MudSelect T="bool" @bind-Value="LabelAtAllScales">
+                    <MudSelectItem Value="true">Label layer at all scales</MudSelectItem>
+                    <MudSelectItem Value="false">Label layer between scales</MudSelectItem>
+                </MudSelect>
+                @if(LabelAtAllScales == false) {
+                    Layer.MinimumLabelScale = Math.Abs(Layer.MinimumLabelScale);
+                    Layer.MaximumLabelScale = Math.Abs(Layer.MaximumLabelScale);
+
+                    <MudNumericField Label="Minimun Scale 1:   (higher scale dominator)"
+                                     @bind-Value="Layer.MaximumLabelScale" />
+                    <MudNumericField Label="Maximum Scale 1:   (lower scale dominator)"
+                                     @bind-Value="Layer.MinimumLabelScale" />
+                    @GvUtilities.InfoText("<=0 means: ignore this scale level")
+                } 
+                else {
+                    Layer.MinimumLabelScale = -Math.Abs(Layer.MinimumLabelScale);
+                    Layer.MaximumLabelScale = -Math.Abs(Layer.MaximumLabelScale);
+                }
+            </GvCardContent>
+        </GvCard>
+    }
+
+    <GvCard Title="Advanced">
+        <GvCardContent>
+            <MudNumericField Label="Maximum scale after zooming to this layers features 1:"
+                             @bind-Value="Layer.MaximumZoomToFeatureScale" />
+            @GvUtilities.InfoText("<=0 means: ignore this value")
+
+            @if (Layer.Class is IFeatureClass fClass)
+            {
+                <MudSelect T="GeometryType" Value="fClass.GeometryType" ReadOnly="true" Label="Geometry Type">
+                    @(GvUtilities.EnumToSelectItems<GeometryType>())
+                </MudSelect>
+            }
+        </GvCardContent>
+    </GvCard> 
+}
+
+@code {
+    [Parameter] 
+    public ILayer? Layer { get; set; }
+
+    private bool RenderAtAllScales { get; set; }
+    private bool LabelAtAllScales { get; set; }
+
+    protected override void OnParametersSet()
+    {
+        base.OnParametersSet();
+
+        if (Layer != null)
+        {
+            RenderAtAllScales = Layer.MinimumScale <= 0 && Layer.MaximumScale <= 0;
+            LabelAtAllScales = Layer.MinimumLabelScale <= 0 && Layer.MaximumLabelScale <= 0;
+        }
+    }
+}

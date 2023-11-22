@@ -1,0 +1,40 @@
+@inherits ModalDialogFormBase<MapNetworkFolderModel>
+
+<ModalDialogFormBase T="MapNetworkFolderModel" 
+                      OnDialogClose="base.OnDialogClose"
+                      Model="base.Model">
+    <FormContent>
+        <MudTextField @bind-Value="Model!.FolderPath"
+                      Label="Path"
+                      HelperText="Please enter a path"
+                      Required="true"
+                      Validation="@(new Func<string, IEnumerable<string>>(ValidatePath))" />
+    </FormContent>
+
+    <InfoContent>
+        <MudText Typo="Typo.body1">Examples for input:</MudText>
+        <MudText Typo="Typo.body2">Local path: C:\Geodata (windows), /usr/home/geodata (linux)</MudText>
+        <MudText Typo="Typo.body2">Windows UNC path: \\Server\Share</MudText>
+    </InfoContent>
+</ModalDialogFormBase>
+
+@code {
+    private IEnumerable<string> ValidatePath(string path)
+    {
+        if (string.IsNullOrEmpty(path))
+        {
+            yield return "Path is required.";
+            yield break;
+        }
+
+        if (!path.StartsWith(@"\\") && !path.Contains(@":\") && !path.StartsWith(@"/"))
+        {
+            yield return "Path must start with a backslash or contain :\\ for local paths.";
+        }
+
+        if(!System.IO.Directory.Exists(path))
+        {
+            yield return "Path does not exists on system";
+        }
+    }
+}

@@ -1,0 +1,70 @@
+@using gView.Server.Clients;
+@inherits ModalDialogFormBase<SelectMapServerServiceModel>
+
+<ModalDialogFormBase T="SelectMapServerServiceModel"
+                     OnDialogClose="base.OnDialogClose"
+                     Model="base.Model">
+    <FormContent>
+        <MudTextField @bind-Value="Model.Server"
+                      Label="Map Server"
+                      HelperText="Please enter server url, eg. https://my-server/gview-server"
+                      Required="true" />
+
+        
+            <MudCheckBox @bind-Checked="Model.UseAuthentication"
+                         Label="Use Authentication" />
+
+            @if(Model.UseAuthentication)
+            {
+                <MudTextField @bind-Value="Model.Client"
+                              Label="Client" />
+
+                <MudTextField @bind-Value="Model.Secret" InputType="InputType.Password"
+                              Label="Secret" />
+            }
+
+            <MudButton Variant="Variant.Filled"
+                        Color="Color.Default" 
+                        OnClick="RefreshServices">Load Services...</MudButton>
+
+        @if(!String.IsNullOrEmpty(_lastErrorMessage))
+        {
+            <div style="color:red">@_lastErrorMessage</div>
+        }
+        else if (_serviceNames.Count > 0)
+        {
+            <MudSelect @bind-Value="Model.Service" T="string" Label="Service" Variant="Variant.Text">
+                @foreach (var serviceName in _serviceNames)
+                {
+                    <MudSelectItem Value="@serviceName">@serviceName</MudSelectItem>
+                }
+            </MudSelect>
+        }
+    </FormContent>
+</ModalDialogFormBase>
+
+@code{
+    private List<string> _serviceNames = new List<string>();
+    private string _lastErrorMessage = "";
+
+    async private Task RefreshServices()
+    {
+        try
+        {
+            _lastErrorMessage = "";
+
+            var mapServerClient = new MapServerClient(Model.Server);
+            var mapServices = await mapServerClient.GetServices(Model.Client, Model.Secret);
+
+            _serviceNames.Clear();
+            if (mapServices?.Services != null)
+            {
+                _serviceNames.AddRange(mapServices.Services.Select(s => s.Name));
+            }
+        } 
+        catch(Exception ex)
+        {
+            _lastErrorMessage = ex.Message;
+        }
+    }
+}

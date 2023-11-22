@@ -5,6 +5,11 @@
     {
       "library": "bootbox.js@4.4.0",
       "destination": "wwwroot/lib/bootbox.js/"
+    },
+    {
+      "provider": "cdnjs",
+      "library": "monaco-editor@0.41.0",
+      "destination": "wwwroot/lib/monaco-editor/"
     }
   ]
 }

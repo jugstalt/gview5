@@ -1,0 +1,18 @@
+@inherits ModalDialogFormBase<BaseDialogModel<ISpatialReference>>
+@inject IApplicationScope AppScope
+
+<ModalDialogFormBase T="BaseDialogModel<ISpatialReference>"
+                       OnDialogClose="base.OnDialogClose"
+                       Model="base.Model">
+    <FormContent>
+        <SpatialReferenceControl SpatialReference="Model.Value" SRefChanged="OnSRefChanged"/>
+    </FormContent>
+
+</ModalDialogFormBase>
+
+@code {
+    private void OnSRefChanged(ISpatialReference sRef)
+    {
+        Model.Value = sRef;
+    }
+}

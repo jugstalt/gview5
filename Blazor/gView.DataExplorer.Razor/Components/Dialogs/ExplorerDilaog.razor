@@ -1,0 +1,274 @@
+@inherits ModalDialogFormBase<ExplorerDialogModel>
+@inject IconService Icons
+@inject IExplorerApplicationService ExplorerApplication
+
+<ModalDialogFormBase T="ExplorerDialogModel"
+                      OnDialogClose="base.OnDialogClose"
+                      Model="base.Model">
+    <DialogBody>
+        @if(_isSubmitting)
+        {
+            <div>Submitting...</div>
+        }
+        else if (selectedRoot != null)
+        {
+            currentListExplorerObjects.Clear();
+            currentListExplorerObjects.AddRange(selectedRoot is IExplorerParentObject ?
+                    ((IExplorerParentObject)selectedRoot).ChildObjects().Result :
+                    Array.Empty<IExplorerObject>());
+
+            if(selectedFilter != null)
+            {
+                currentListExplorerObjects = selectedFilter.FilterExplorerObjects(currentListExplorerObjects).ToList();
+            }
+
+            @foreach (var childObject in currentListExplorerObjects.ToArray().Reverse())
+            {
+                if (!rootExplorerObjects.Contains(childObject)) {
+                    rootExplorerObjects.Insert(rootExplorerObjects.IndexOf(selectedRoot) + 1, childObject);
+                    levels[childObject] = levels[selectedRoot] + 1;
+                }
+            }
+
+            if (Model.Mode == ExploerDialogMode.Save)
+            {
+                placeToSave = (selectedFilter != null && selectedRoot != null && selectedFilter.Match(selectedRoot).Result == true);
+                Model.Result.ExplorerObjects.ReplaceItems(placeToSave && selectedRoot != null ? 
+                        new[] { selectedRoot } : 
+                        Array.Empty<IExplorerObject>());
+            }
+
+            <MudSelect @bind-Value="@selectedRoot"
+                            Label="Folder/Path"
+                            Class="explorer-dialog-root-select"
+                            Variant="Variant.Outlined"
+                            Dense="true">
+                @foreach (var rootExplorerObject in rootExplorerObjects)
+                {
+                    if (rootExplorerObject != ExplorerApplication.RootExplorerObject)
+                    {
+                        if(!(rootExplorerObject is IExplorerParentObject))
+                        {
+                            continue;
+                        }
+                        if (selectedFilter != null && selectedFilter.FilterExplorerObjects(new[] { rootExplorerObject }).Any() == false)
+                        {
+                            continue;
+                        }
+                    }
+                    <MudSelectItem Value="@rootExplorerObject">
+                        <div class="explorer-dialog-root-select-item" style="display: flex; align-items: center; padding-left:@(levels[rootExplorerObject]*24)px">
+                            <MudIcon Icon="@Icons.FromString(rootExplorerObject.Icon)" Style="margin-right: 6px;" />
+                            <MudText>@rootExplorerObject.Name</MudText>
+                        </div>
+                    </MudSelectItem>
+                }
+            </MudSelect>
+
+            <MudPaper Elevation="2">
+                    <MudList Clickable="true" Style="width:900px;max-width:100%;height:420px;overflow:auto" Dense="true">
+                        @if (selectedRoot != null && levels[selectedRoot] > 0)
+                        {
+                            <MudListItem OnClick="MoveUp">
+                                <div style="display: flex; align-items: center;">
+                                    <MudIcon Icon="@Icons.FromString("basic:triangle-left-up")" Style="margin-right: 6px;" />
+                                    <MudText>..</MudText>
+                                </div>
+                            </MudListItem>
+                        }
+                        @foreach (var exObject in currentListExplorerObjects)
+                        {
+                            <MudListItem @ondblclick="() => ListItemDoubleClick(exObject)"
+                                         Class="@($"explorer-dialog-item {(Model.Result.ExplorerObjects.Contains(exObject) ? "selected" : "")}")"
+                                         OnClick="async (mEvent) => await ListItemClick(mEvent, exObject)">
+                                <div style="display: flex; align-items: center;" >
+                                    <MudIcon Icon="@Icons.FromString(exObject.Icon)" Style="margin-right: 6px;" />
+                                    <MudText>@exObject.Name</MudText>
+                                </div>
+                            </MudListItem>
+                        }
+                    </MudList>
+            </MudPaper>
+
+            @if(Model.Mode == ExploerDialogMode.Open) 
+            {
+                    <MudTextField Value="@String.Join(", ",Model.Result.ExplorerObjects.Select(e=>e.Name))" 
+                                  Label="Selected"
+                                  Required="true"
+                                  ReadOnly="true" 
+                                  Variant="Variant.Filled" />
+            } 
+            else if(Model.Mode == ExploerDialogMode.Save)
+            {
+                    <MudTextField @bind-Value = "Model.Result.Name" 
+                                  Required = "true"
+                                  Label = "Name"
+                                  Disabled = "@(!placeToSave)"
+                                  Variant = "Variant.Outlined" />
+            }
+
+            @if (Model.Filters != null && Model.Filters.Any())
+            {
+                <MudSelect T="ExplorerDialogFilter" 
+                           Value="selectedFilter"
+                           Variant="Variant.Outlined" 
+                           Label="Filter" 
+                           ValueChanged="(value) => FilterSelectionChanged(value)">
+                    @foreach (var filter in Model.Filters)
+                    {
+                        <MudSelectItem Value="@filter" />
+                    }
+                </MudSelect>
+            }
+        }
+    </DialogBody>
+    <DialogButtons>
+        <MudButton Variant="Variant.Filled"
+                   Color="Color.Default"
+                   OnClick="Close">Cancel</MudButton>
+        @if(Model.Mode == ExploerDialogMode.Save)
+        {
+            <MudButton Variant="Variant.Filled"
+                       Disabled="!placeToSave"
+                       Color="Color.Primary"
+                       OnClick="Apply">@(_isSubmitting ? "Creating..." : "Create")</MudButton>
+        } 
+        else 
+        {
+            <MudButton Variant="Variant.Filled"
+                        Disabled="Model.Result.ExplorerObjects.Count == 0"
+                        Color="Color.Primary"
+                        OnClick="Apply">@(_isSubmitting ? "Loading..." : "Open")</MudButton>
+        }
+    </DialogButtons>
+</ModalDialogFormBase>
+
+@code {
+    private List<IExplorerObject> rootExplorerObjects = new();
+    private List<IExplorerObject> currentListExplorerObjects = new();
+    private Dictionary<IExplorerObject, int> levels = new();
+    private IExplorerObject? selectedRoot;
+    private ExplorerDialogFilter? selectedFilter;
+
+    private bool placeToSave = false;
+    private bool _isSubmitting = true;
+
+    protected override Task OnInitializedAsync()
+        => HandleAsync(async () =>
+        {
+            //await Task.Delay(2000);
+            _isSubmitting = false;
+
+            #region Initialize Select
+
+            selectedRoot = ExplorerApplication.RootExplorerObject;
+            rootExplorerObjects.Add(selectedRoot);
+            levels[selectedRoot] = 0;
+
+            if (selectedRoot is IExplorerParentObject)
+            {
+                foreach (var exObject in await ((IExplorerParentObject)selectedRoot).ChildObjects())
+                {
+                    rootExplorerObjects.Add(exObject);
+                    levels[exObject] = 1;
+                }
+            }
+
+            selectedFilter = Model.Filters.FirstOrDefault();
+
+            #endregion
+        });
+
+    private void ListItemDoubleClick(IExplorerObject exObject)
+        => Handle(() =>
+        {
+            if (exObject is IExplorerParentObject)
+            {
+                selectedRoot = exObject;
+                Model.Result.ExplorerObjects.Clear();
+            }
+        });
+
+    private Task ListItemClick(MouseEventArgs mEvent, IExplorerObject exObject)
+    {
+        return HandleAsync(async () =>
+        {
+            if (Model.Mode == ExploerDialogMode.Open)
+            {
+                List<IExplorerObject> matchingExplorerObjects = new();
+
+                #region Collect filter matching list items
+
+                if (selectedFilter != null)
+                {
+                    foreach (var item in currentListExplorerObjects)
+                    {
+                        if (await selectedFilter.Match(exObject))
+                        {
+                            matchingExplorerObjects.Add(item);
+                        }
+                    }
+                }
+
+                #endregion
+
+                if (matchingExplorerObjects.Contains(exObject))
+                {
+                    Model.Result.ExplorerObjects.ReplaceItems(
+                        exObject.AddToSelection(Model.Result.ExplorerObjects,
+                                                matchingExplorerObjects,
+                                                mEvent switch
+                                                {
+                                                    { ShiftKey: true } => GenericAddToStrategy.AddAllBetweenLastItem,
+                                                    { CtrlKey: true } => GenericAddToStrategy.AddOrRemoveIfExists,
+                                                    _ => GenericAddToStrategy.RemoveOthers
+                                                }));
+                }
+                else
+                {
+                    Model.Result.ExplorerObjects.Clear();
+                }
+            }
+        });
+    }
+
+    private void MoveUp() => Handle(() =>
+    {
+        if (selectedRoot != null)
+        {
+            var currentLevel = levels[selectedRoot];
+            var currentIndex = rootExplorerObjects.IndexOf(selectedRoot);
+
+            for (int i = currentIndex - 1; i >= 0; i--)
+            {
+                if (levels[rootExplorerObjects[i]] < currentLevel)
+                {
+                    selectedRoot = rootExplorerObjects[i];
+                    break;
+                }
+            }
+        }
+
+        Model.Result.ExplorerObjects.Clear();
+    });
+
+    private void FilterSelectionChanged(ExplorerDialogFilter filter)
+    {
+        selectedFilter = filter;
+        Model.Result.ExplorerObjects.Clear();
+    }
+
+    async private Task Apply()
+    {
+        if (_isSubmitting) 
+        {
+            return;
+        }
+
+        _isSubmitting = true;
+
+        await ForceRenderComponent();
+
+        await base.Submit();
+    }
+}

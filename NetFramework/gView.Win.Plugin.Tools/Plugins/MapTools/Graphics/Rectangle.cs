@@ -334,8 +334,8 @@ namespace gView.Plugins.MapTools.Graphics
             sym.Angle = (float)this.Rotation;
 
             var size = display.Canvas.MeasureText(_text, sym.Font);
-            double dx = size.Width * display.mapScale / (display.dpi / 0.0254);  // [m]
-            double dy = size.Height * display.mapScale / (display.dpi / 0.0254);  // [m]
+            double dx = size.Width * display.MapScale / (display.Dpi / 0.0254);  // [m]
+            double dy = size.Height * display.MapScale / (display.Dpi / 0.0254);  // [m]
             base.Scale(dx, dy);
 
             IGeometry geometry = TransformGeometry();

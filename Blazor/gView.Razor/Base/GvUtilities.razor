@@ -1,0 +1,71 @@
+@using System.Reflection
+@code {
+    public static RenderFragment AppName()
+        =>@<MudText Typo="Typo.h1">gView</MudText>;
+
+    public static RenderFragment EnumToSelectItems<TEnum>() 
+        where TEnum : struct, Enum
+        => builder =>
+        {
+            var values = Enum.GetValues(typeof(TEnum));
+            int seq = 0;
+
+            foreach (var value in values)
+            {
+                builder.OpenComponent<MudSelectItem<TEnum>>(seq++);
+                builder.AddAttribute(seq++, "Value", value);
+                builder.AddAttribute(seq++, "ChildContent", new RenderFragment((innerBuilder) =>
+                {
+                    innerBuilder.AddContent(seq++, value.ToString());
+                }));
+                builder.CloseComponent();
+            }
+        };
+
+    public static RenderFragment EnumTypeToSelectItems(Type enumType)
+    {
+        if (!enumType.IsEnum)
+        {
+            throw new ArgumentException("Type is not an enum:", nameof(enumType));
+        }
+
+        MethodInfo genericMethod = typeof(GvUtilities).GetMethod(nameof(EnumToSelectItems), BindingFlags.Static | BindingFlags.Public)!;
+        MethodInfo genericMethodInstance = genericMethod.MakeGenericMethod(enumType);
+
+        return (RenderFragment)genericMethodInstance.Invoke(null, null)!;
+    }
+
+
+    public static RenderFragment StringsToSelectItems(IEnumerable<string> values)
+        => builder =>
+        {
+            int seq = 0;
+
+            foreach (var value in values)
+            {
+                builder.OpenComponent<MudSelectItem<string>>(seq++);
+                builder.AddAttribute(seq++, "Value", value);
+                builder.AddAttribute(seq++, "ChildContent", new RenderFragment((innerBuilder) =>
+                {
+                    innerBuilder.AddContent(seq++, value);
+                }));
+                builder.CloseComponent();
+            }
+        };
+
+
+    public static RenderFragment InfoTextHeader(string text)
+       =>@<MudText Typo="Typo.h6"
+                   Color="Color.Primary"
+                   Style="margin-bottom:8px">@text</MudText>;
+
+    public static RenderFragment InfoText(string text)
+        =>@<MudText Typo="Typo.body2" 
+                    Color="Color.Primary"
+                    Style="margin-bottom:8px">@text</MudText>;
+
+    public static RenderFragment InfoTextStringBold(string text)
+        =>@<MudText Typo="Typo.body2"
+                    Color="Color.Primary"
+                    Style="margin-bottom:8px;font-weight:bold">@text</MudText>;
+}

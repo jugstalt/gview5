@@ -420,12 +420,12 @@ namespace gView.Framework.Carto.Rendering
                     return;
                 }
 
-                if (this.MinimumScale > 1 && this.MinimumScale > disp.mapScale)
+                if (this.MinimumScale > 1 && this.MinimumScale > disp.MapScale)
                 {
                     return;
                 }
 
-                if (this.MaximumScale > 1 && this.MaximumScale < disp.mapScale)
+                if (this.MaximumScale > 1 && this.MaximumScale < disp.MapScale)
                 {
                     return;
                 }

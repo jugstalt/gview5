@@ -12,23 +12,23 @@ namespace gView.Framework.UI.Controls
 
     internal class GroupMenuItem : ToolStripMenuItem
     {
-        ITOCElement _element;
+        ITocElement _element;
 
-        public GroupMenuItem(ITOCElement elem, System.EventHandler evHander)
+        public GroupMenuItem(ITocElement elem, System.EventHandler evHander)
         {
             _element = elem;
 
             string path = "<root>";
             if (_element != null)
             {
-                if (_element.ElementType != TOCElementType.ClosedGroup &&
-                    _element.ElementType != TOCElementType.OpenedGroup)
+                if (_element.ElementType != TocElementType.ClosedGroup &&
+                    _element.ElementType != TocElementType.OpenedGroup)
                 {
                     return;
                 }
 
                 path = _element.Name;
-                ITOCElement parent = _element;
+                ITocElement parent = _element;
                 while ((parent = parent.ParentGroup) != null)
                 {
                     path = parent.Name + "/" + path;
@@ -41,7 +41,7 @@ namespace gView.Framework.UI.Controls
                 base.Click += evHander;
             }
         }
-        public ITOCElement TOCElement
+        public ITocElement TOCElement
         {
             get { return _element; }
         }
@@ -186,9 +186,9 @@ namespace gView.Framework.UI.Controls
 
     internal class LayerItem : IRenamable, IContextType
     {
-        ITOCElement _element;
+        ITocElement _element;
 
-        public LayerItem(ITOCElement element)
+        public LayerItem(ITocElement element)
         {
             _element = element;
         }
@@ -201,7 +201,7 @@ namespace gView.Framework.UI.Controls
                     return 0;
                 }
 
-                ITOCElement parent = _element.ParentGroup;
+                ITocElement parent = _element.ParentGroup;
                 int l = 0;
                 while (parent != null)
                 {
@@ -232,7 +232,7 @@ namespace gView.Framework.UI.Controls
                 _element.LayerVisible = value;
             }
         }
-        public ITOCElement TOCElement
+        public ITocElement TOCElement
         {
             get { return _element; }
         }
@@ -454,9 +454,9 @@ namespace gView.Framework.UI.Controls
     }
     internal class GroupItem : IRenamable
     {
-        ITOCElement _element;
+        ITocElement _element;
 
-        public GroupItem(ITOCElement element)
+        public GroupItem(ITocElement element)
         {
             _element = element;
         }
@@ -469,7 +469,7 @@ namespace gView.Framework.UI.Controls
                     return false;
                 }
 
-                return _element.ElementType == TOCElementType.OpenedGroup;
+                return _element.ElementType == TocElementType.OpenedGroup;
             }
         }
         public int level
@@ -481,7 +481,7 @@ namespace gView.Framework.UI.Controls
                     return 0;
                 }
 
-                ITOCElement parent = _element.ParentGroup;
+                ITocElement parent = _element.ParentGroup;
                 int l = 0;
                 while (parent != null)
                 {
@@ -512,7 +512,7 @@ namespace gView.Framework.UI.Controls
                 _element.LayerVisible = value;
             }
         }
-        public ITOCElement TOCElement
+        public ITocElement TOCElement
         {
             get { return _element; }
         }
@@ -597,9 +597,9 @@ namespace gView.Framework.UI.Controls
 
     internal class UnlockLayerMenuItem : ToolStripMenuItem
     {
-        ITOCElement _element;
+        ITocElement _element;
         TOCControl _control;
-        public UnlockLayerMenuItem(TOCControl control, ITOCElement element, Image image)
+        public UnlockLayerMenuItem(TOCControl control, ITocElement element, Image image)
         {
             _control = control;
             _element = element;

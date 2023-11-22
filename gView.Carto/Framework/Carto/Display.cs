@@ -50,7 +50,7 @@ namespace gView.Framework.Carto
             _screen = new DisplayScreen();
             _screen.RefreshSettings();
 
-            this.dpi = GraphicsEngine.Current.Engine.ScreenDpi;
+            this.Dpi = GraphicsEngine.Current.Engine.ScreenDpi;
         }
 
         internal Display(IMap map, bool createLabelEngine)
@@ -176,7 +176,7 @@ namespace gView.Framework.Carto
             GraphicsEngine.Abstraction.IBitmap bm = null;
             try
             {
-                bm = GraphicsEngine.Current.Engine.CreateBitmap(iWidth, iHeight);
+                bm = GraphicsEngine.Current.Engine.CreateBitmap(ImageWidth, ImageHeight);
                 bm.MakeTransparent();
 
                 _canvas = bm.CreateCanvas();
@@ -227,12 +227,12 @@ namespace gView.Framework.Carto
         }
 
         #region Eigenschaften
-        public int iWidth
+        public int ImageWidth
         {
             get { return m_iWidth; }
             set { m_iWidth = value; }
         }
-        public int iHeight
+        public int ImageHeight
         {
             get { return m_iHeight; }
             set { m_iHeight = value; }
@@ -271,7 +271,7 @@ namespace gView.Framework.Carto
                 }
             }
         }
-        public double refScale
+        public double ReferenceScale
         {
             get
             {
@@ -291,13 +291,13 @@ namespace gView.Framework.Carto
             }
         }
 
-        public double dpm
+        public double Dpm
         {
             get { return m_dpm; }
         }
-        public double dpi
+        public double Dpi
         {
-            get { return dpm * 0.0254; }
+            get { return Dpm * 0.0254; }
             set { m_dpm = value / 0.0254; }
         }
         public IEnvelope Envelope
@@ -353,9 +353,9 @@ namespace gView.Framework.Carto
             GeoUnitConverter converter = new GeoUnitConverter();
             double dpu = converter.Convert(1.0, GeoUnits.Meters, _mapUnits, 1, phi);
 
-            double s1 = iWidth > 0 ? Math.Abs(w) / iWidth * dpm : 1; s1 /= dpu;
-            double s2 = iHeight > 0 ? Math.Abs(h) / iHeight * dpm : 1; s2 /= dpu;
-            double scale = iWidth > 0 && iHeight > 0 ? Math.Max(s1, s2) : Math.Max(mapScale, 1);
+            double s1 = ImageWidth > 0 ? Math.Abs(w) / ImageWidth * Dpm : 1; s1 /= dpu;
+            double s2 = ImageHeight > 0 ? Math.Abs(h) / ImageHeight * Dpm : 1; s2 /= dpu;
+            double scale = ImageWidth > 0 && ImageHeight > 0 ? Math.Max(s1, s2) : Math.Max(MapScale, 1);
 
             return scale;
 
@@ -395,8 +395,8 @@ namespace gView.Framework.Carto
             GeoUnitConverter converter = new GeoUnitConverter();
             double dpu = converter.Convert(1.0, GeoUnits.Meters, _mapUnits, 1, phi);
 
-            double w = (iWidth / dpm) * scale; w *= dpu;
-            double h = (iHeight / dpm) * scale; h *= dpu;
+            double w = (ImageWidth / Dpm) * scale; w *= dpu;
+            double h = (ImageHeight / Dpm) * scale; h *= dpu;
 
             m_actMinX = cx - w * 0.5;
             m_actMaxX = cx + w * 0.5;
@@ -502,7 +502,7 @@ namespace gView.Framework.Carto
             setScale(scale, cx, cy);
         }
 
-        public double mapScale
+        public double MapScale
         {
             get { return m_scale; }
             set
@@ -520,13 +520,13 @@ namespace gView.Framework.Carto
 
             if (dx < dy)
             {
-                double W = Math.Max((double)iWidth, 1) * dy / Math.Max((double)iHeight, 1);
+                double W = Math.Max((double)ImageWidth, 1) * dy / Math.Max((double)ImageHeight, 1);
                 minx = mx - W / 2.0;
                 maxx = mx + W / 2.0;
             }
             else
             {
-                double H = Math.Max((double)iHeight, 1) * dx / Math.Max((double)iWidth, 1);
+                double H = Math.Max((double)ImageHeight, 1) * dx / Math.Max((double)ImageWidth, 1);
                 miny = my - H / 2.0;
                 maxy = my + H / 2.0;
             }

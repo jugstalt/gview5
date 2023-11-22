@@ -1,0 +1,18 @@
+@inherits ModalDialogFormBase<InputBoxModel>
+@inject IconService Icons
+
+<ModalDialogFormBase T="InputBoxModel"
+                      OnDialogClose="base.OnDialogClose"
+                      Model="base.Model">
+    <FormContent>
+        <div style="display: flex; align-items: center;">
+            <MudIcon Icon="@Icons.FromString(Model.Icon)" Style="margin-right: 6px;" />
+            <MudText>@Model.Name</MudText>
+        </div>
+
+        <MudTextField @bind-Value="Model.Value"
+                      Label="@Model.Label"
+                      HelperText="@Model.Prompt"
+                      Required="true" />
+    </FormContent>
+</ModalDialogFormBase>

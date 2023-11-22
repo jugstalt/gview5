@@ -304,7 +304,7 @@ namespace gView.DataSources.Fdb.MSAccess
         }
 
         public string LastErrorMessage { get { return _errMsg; } set { _errMsg = value; } }
-        public Exception LastException { get { return (_conn != null ? _conn.lastException : null); } }
+        public Exception LastException { get { return (_conn != null ? _conn.LastException : null); } }
 
         virtual public Task<int> CreateDataset(string name, ISpatialReference sRef)
         {
@@ -586,7 +586,9 @@ namespace gView.DataSources.Fdb.MSAccess
 
                 foreach (IField f in FieldsCopy.ToEnumerable())
                 {
-                    if (f.type == FieldType.ID || ColumnName(f.name) == ColumnName("FDB_OID"))
+                    if (f.type == FieldType.ID || ColumnName(f.name) == ColumnName("FDB_OID") || 
+                        f.name.Contains("(")  // Function like Shape.STArea(), ...
+                        )
                     {
                         fields.Remove(f);
                     }
@@ -2589,6 +2591,7 @@ namespace gView.DataSources.Fdb.MSAccess
                 if (tree == null)
                 {
                     _errMsg = "Can't get determine tree for featureclass '" + fcName + "'!";
+                    return false;
                 }
 
                 IFeatureClass fc = await this.GetFeatureclass(fcName);
@@ -2694,6 +2697,7 @@ namespace gView.DataSources.Fdb.MSAccess
             fields.Add(new Field(ColumnName("CELLX"), FieldType.Double));
             fields.Add(new Field(ColumnName("CELLY"), FieldType.Double));
             fields.Add(new Field(ColumnName("LEVELS"), FieldType.integer));
+            
             if (additionalFields != null)
             {
                 foreach (IField field in additionalFields.ToEnumerable())

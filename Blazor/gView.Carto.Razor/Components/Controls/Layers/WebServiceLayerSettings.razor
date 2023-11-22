@@ -1,0 +1,22 @@
+@if(Layer?.WebServiceClass is not null)
+{
+    <GvCard Title="Web Service Themes">
+        <GvCardContent>
+            
+            @GvUtilities.InfoText("Lock Themes for this map my unchecking them:")
+
+            @foreach(var theme in Layer.WebServiceClass.Themes)
+            {
+                <MudCheckBox T="bool" 
+                             Checked="@(theme.Locked == false)"
+                             Label="@theme.Title"
+                             CheckedChanged="(visible) => theme.Locked = !visible" />
+            }
+
+        </GvCardContent>
+    </GvCard>
+}
+
+@code {
+    [Parameter] public IWebServiceLayer? Layer { get; set; }
+}

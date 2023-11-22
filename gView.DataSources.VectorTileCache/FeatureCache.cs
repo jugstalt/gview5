@@ -29,7 +29,7 @@ namespace gView.DataSources.VectorTileCache
 
         async public Task LoadAsync(IDisplay display)
         {
-            double displayResolution = display.mapScale / (/*display.dpi*/96.0 / 0.0254);
+            double displayResolution = display.MapScale / (/*display.dpi*/96.0 / 0.0254);
 
             int level = _grid.GetBestLevel(displayResolution, 90D);
 

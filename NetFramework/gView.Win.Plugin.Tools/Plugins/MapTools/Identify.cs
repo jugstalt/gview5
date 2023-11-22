@@ -129,7 +129,7 @@ namespace gView.Plugins.MapTools
             // 3 Pixel Toleranz
             if (map is IDisplay)
             {
-                tol = _tolerance * ((IDisplay)map).mapScale / (96 / 0.0254);  // [m]
+                tol = _tolerance * ((IDisplay)map).MapScale / (96 / 0.0254);  // [m]
                 if (map.Display.SpatialReference != null &&
                     map.Display.SpatialReference.SpatialParameters.IsGeographic)
                 {
@@ -295,7 +295,7 @@ namespace gView.Plugins.MapTools
 
                     if (map.TOC != null)
                     {
-                        ITOCElement tocElement = map.TOC.GetTOCElement(layer);
+                        ITocElement tocElement = map.TOC.GetTOCElement(layer);
                         if (tocElement != null)
                         {
                             title = tocElement.Name;
@@ -417,7 +417,7 @@ namespace gView.Plugins.MapTools
 
                             if (map.TOC != null)
                             {
-                                ITOCElement tocElement = map.TOC.GetTOCElement(layer);
+                                ITocElement tocElement = map.TOC.GetTOCElement(layer);
                                 if (tocElement != null)
                                 {
                                     title = tocElement.Name;

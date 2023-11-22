@@ -1,0 +1,121 @@
+@inherits ModalDialogFormBase<RasterTileCacheConnectionModel>
+@inject IApplicationScope AppScope
+
+<ModalDialogFormBase T="RasterTileCacheConnectionModel"
+                     OnDialogClose="base.OnDialogClose"
+                     Model="base.Model">
+    <DialogBody>
+        <div style="max-width:800px">
+        <GvGrid ColumnCount="1">
+            <GvGridItem>
+                <GvCard Title="Service">
+                    <GvCardContent>
+
+                        <MudTextField @bind-Value="Model.Name"
+                                       Label="Name (any)" />
+
+                    </GvCardContent>
+                </GvCard>
+            </GvGridItem>
+
+            <GvGridItem>
+                <MudTabs Outlined="true" Rounded="true" PanelClass="pa-6" ApplyEffectsToContainer="true">
+                    <MudTabPanel Text="Cache Extent/Origin">
+                         <GvGrid ColumnCount="1">
+                                <GvGridItem>
+                                    <ExtentControl Extent="Model.Extent" />
+                                </GvGridItem>
+                                <GvGridItem>
+                                    <TileOriginControl Model="Model.TileOrigin" />
+                                </GvGridItem>
+                            </GvGrid>
+                    </MudTabPanel>
+
+                    <MudTabPanel Text="Spatial Reference">
+                            <GvGrid ColumnCount="1">
+                                <GvGridItem>
+                                    <SpatialReferenceControl SpatialReference="Model.SpatialReference" SRefChanged="OnSRefChanged" />
+                                </GvGridItem>
+                            </GvGrid>
+                    </MudTabPanel>
+
+                    <MudTabPanel Text="Scales/Levels">
+                            <GvGrid ColumnCount="1">
+                                <GvGridItem>
+                                   <TileScalesControl Model="Model.TileScales" />
+                                </GvGridItem>
+                            </GvGrid>
+                    </MudTabPanel>
+
+                    <MudTabPanel Text="Tile Size/Url">
+                            <GvCard Title="Tile Size">
+                                <GvCardContent>
+                                    <GvGrid ColumnCount="2">
+                                        <GvGridItem>
+                                            <MudTextField Label="Width"
+                                                           @bind-Value="Model.TileWidth"
+                                                           T="int" Immediate="true"
+                                                           InputType="InputType.Number" Step="1"
+                                                           Variant="Variant.Text"></MudTextField>
+                                        </GvGridItem>
+                                        <GvGridItem>
+                                            <MudTextField Label="Height" 
+                                                           @bind-Value="Model.TileHeight"
+                                                           T="int" Immediate="true"
+                                                           InputType="InputType.Number" Step="1"
+                                                           Variant="Variant.Text"></MudTextField>
+                                        </GvGridItem>
+                                     </GvGrid>
+                                </GvCardContent>
+                            </GvCard>
+                            <GvCard Title="Tile Url">
+                                        <GvCardContent>
+                                             <GvGrid ColumnCount="1">
+                                                    <GvGridItem>
+                                                        <MudTextField Label="Url"
+                                                                      @bind-Value="Model.TileUrl"
+                                                                      T="string" Immediate="true"
+                                                                      InputType="InputType.Text" Step="1"
+                                                                      Variant="Variant.Text"></MudTextField>
+                                                    </GvGridItem>
+                                                    <GvGridItem>
+                                                        <MudAlert Severity="Severity.Info" Dense="true">
+                                                            <div>Use the following placeholders:</div>
+                                                            <div>{0},{1} ... integer number of column, row</div>
+                                                            <div>{2} ... integer number of level</div>
+                                                            <div>{3} ... Bing Maps Quadkey (optional)</div>
+                                                        </MudAlert>
+                                                    </GvGridItem>
+                                             </GvGrid>
+                                        </GvCardContent>
+                            </GvCard>
+                     </MudTabPanel>
+
+                        <MudTabPanel Text="Copyright Info">
+                            <GvCard Title="Copyright Infofmation">
+                                <GvCardContent>
+                                    <GvGrid ColumnCount="1">
+                                        <GvGridItem>
+                                            <MudTextField Label="Text"
+                                                            @bind-Value="Model.CopyrightInformation"
+                                                           T="string" Immediate="true"
+                                                           InputType="InputType.Text" Step="1"
+                                                           Variant="Variant.Text"></MudTextField>
+                                        </GvGridItem>
+                                    </GvGrid>
+                                </GvCardContent>
+                            </GvCard>
+                        </MudTabPanel>
+                </MudTabs>
+            </GvGridItem>
+        </GvGrid>
+        </div>
+    </DialogBody>
+</ModalDialogFormBase>
+
+@code{
+    private void OnSRefChanged(ISpatialReference sRef)
+    {
+        Model.SpatialReference = sRef;
+    }
+}

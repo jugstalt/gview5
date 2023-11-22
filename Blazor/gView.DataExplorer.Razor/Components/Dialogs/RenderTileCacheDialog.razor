@@ -1,0 +1,86 @@
+@using gView.Framework.Geometry.Tiling;
+@inherits ModalDialogFormBase<RenderTileCacheModel>
+
+<ModalDialogFormBase T="RenderTileCacheModel"
+                      OnDialogClose="base.OnDialogClose"
+                      Model="base.Model">
+    <FormContent>
+            @if(Model.Metadata!=null) {
+                <GvGrid ColumnCount="2">
+                    <GvGridItem>
+                        <GvCard Title="General">
+                            <GvCardContent>
+                                <MudSelect T="int" @bind-Value="Model.EpsgCode" Label="EPSG Code" Variant="Variant.Text" >
+                                    @if (Model.Metadata.EPSGCodes != null)
+                                    {
+                                        foreach(var epsgCode in Model.Metadata.EPSGCodes)
+                                        {
+                                            <MudSelectItem Value="epsgCode">@epsgCode</MudSelectItem>
+                                        }
+                                    }
+                                </MudSelect>
+                                <MudCheckBox @bind-Checked="Model.Compact" Label="Create Compact Tilecache" />
+                                <MudSelect T="GridOrientation" @bind-Value="Model.GridOrientation" Label="Orientation" Variant="Variant.Text">
+                                    @if(Model.Metadata.UpperLeft)
+                                    {
+                                        <MudSelectItem Value="GridOrientation.UpperLeft">Upper Left</MudSelectItem>
+                                    }
+                                    @if (Model.Metadata.LowerLeft)
+                                    {
+                                        <MudSelectItem Value="GridOrientation.LowerLeft">Lower Left</MudSelectItem>
+                                    }
+                                </MudSelect>
+                                <MudSelect T="TileImageFormat" @bind-Value="Model.ImageFormat" Label="Image Format" Variant="Variant.Text">
+                                    @if (Model.Metadata.FormatPng)
+                                    {
+                                        <MudSelectItem Value="TileImageFormat.png">Png</MudSelectItem>
+                                    }
+                                    @if (Model.Metadata.FormatJpg)
+                                    {
+                                        <MudSelectItem Value="TileImageFormat.jpg">Jpg</MudSelectItem>
+                                    }
+                                </MudSelect>
+                                <MudTextField T="int" InputType="InputType.Number"
+                                               @bind-Value="Model.ThreadCount"
+                                               Label="Maximum parallel threads" />
+                            </GvCardContent>
+                        </GvCard>
+                        <GvCard Title="Bounding Box">
+                            <GvCardContent>        
+                                
+                            </GvCardContent>
+                        </GvCard>
+                    </GvGridItem>
+                    <GvGridItem>
+                        <GvCard Title="Scales">
+                            <GvCardContent MaxHeight="400px">
+                                @if(Model.Metadata.Scales != null)
+                                {
+                                    foreach(var scale in Model.Metadata.Scales.InnerList)
+                                    {
+                                        <MudCheckBox Checked="Model.Scales.Contains(scale)" T="bool"
+                                                      CheckedChanged="(add) => ScaleChecked(scale, add)" 
+                                                      Label="@($"1:{String.Format("{0:0,0}", @scale)}")" /> 
+                                    }
+                                }
+                            </GvCardContent>
+                        </GvCard>
+                    </GvGridItem>
+                </GvGrid>
+            }
+    </FormContent>
+</ModalDialogFormBase>
+
+@code{
+    private void ScaleChecked(double scale, bool add)
+    {
+        if (add && !Model.Scales.Contains(scale))
+        {
+            Model.Scales.Add(scale);
+        }
+        if(!add && Model.Scales.Contains(scale))
+        {
+            Model.Scales.Remove(scale);
+        }
+    }
+}

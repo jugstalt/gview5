@@ -66,7 +66,7 @@ namespace gView.Framework.Carto
             _toc = new TOC(this);
             _selectionEnv = new SelectionEnvironment();
 
-            this.refScale = 500;
+            this.ReferenceScale = 500;
         }
 
         public Map(Map original, bool writeNamespace)
@@ -76,7 +76,8 @@ namespace gView.Framework.Carto
             this.Display.MapUnits = original.Display.MapUnits;
             this.Display.DisplayUnits = original.Display.DisplayUnits;
             this.Display.DisplayTransformation.DisplayRotation = original.Display.DisplayTransformation.DisplayRotation;
-            this.refScale = original.Display.refScale;
+            this.Display.BackgroundColor = original.Display.BackgroundColor;
+            this.ReferenceScale = original.Display.ReferenceScale;
             this.Display.SpatialReference = original.Display.SpatialReference != null ? original.SpatialReference.Clone() as ISpatialReference : null;
             this.LayerDefaultSpatialReference = original.LayerDefaultSpatialReference != null ? original.LayerDefaultSpatialReference.Clone() as ISpatialReference : null;
 
@@ -85,8 +86,11 @@ namespace gView.Framework.Carto
             _datasets = ListOperations<IDataset>.Clone(original._datasets);
             _layers = new List<ILayer>();
 
+            this.Title = original.Title;
             this._layerDescriptions = original._layerDescriptions;
             this._layerCopyrightTexts = original._layerCopyrightTexts;
+
+            this.SetResourceContainer(original.ResourceContainer);
 
             //if (modifyLayerTitles)
             {
@@ -139,7 +143,7 @@ namespace gView.Framework.Carto
                         layer = LayerFactory.Create(wClass, element as ILayer);
                         layer.ID = _layerIDSequece.Number;
 
-                        ITOCElement tocElement = _toc.GetTOCElement(element as ILayer);
+                        ITocElement tocElement = _toc.GetTOCElement(element as ILayer);
                         if (tocElement != null)
                         {
                             tocElement.RemoveLayer(element as ILayer);
@@ -177,7 +181,7 @@ namespace gView.Framework.Carto
 
                         layer.ID = _layerIDSequece.Number;
 
-                        ITOCElement tocElement = _toc.GetTOCElement(element as ILayer);
+                        ITocElement tocElement = _toc.GetTOCElement(element as ILayer);
                         if (tocElement != null)
                         {
                             tocElement.RemoveLayer(element as ILayer);
@@ -204,8 +208,8 @@ namespace gView.Framework.Carto
                         continue;
                     }
 
-                    ITOCElement newTocElement = _toc.GetTOCElement(layer);
-                    ITOCElement oriTocElement = map.TOC.GetTOCElement(element as ILayer);
+                    ITocElement newTocElement = _toc.GetTOCElement(layer);
+                    ITocElement oriTocElement = map.TOC.GetTOCElement(element as ILayer);
                     if (newTocElement != null && oriTocElement != null)
                     {
                         _toc.RenameElement(newTocElement, oriTocElement.Name);
@@ -218,7 +222,7 @@ namespace gView.Framework.Carto
                             IGroupLayer newGroupLayer;
                             if (groupLayers.TryGetValue(oriTocElement.ParentGroup.Layers[0] as IGroupLayer, out newGroupLayer))
                             {
-                                ITOCElement newGroupElement = _toc.GetTOCElement(newGroupLayer);
+                                ITocElement newGroupElement = _toc.GetTOCElement(newGroupLayer);
                                 if (newGroupLayer != null)
                                 {
                                     _toc.Add2Group(newTocElement, newGroupElement);
@@ -771,10 +775,10 @@ namespace gView.Framework.Carto
 
             if (layer.GroupLayer != null)
             {
-                TOCElement parent = _toc.GetTOCElement(layer.GroupLayer) as TOCElement;
+                TocElement parent = _toc.GetTOCElement(layer.GroupLayer) as TocElement;
                 if (parent != null)
                 {
-                    TOCElement tocElement = _toc.GetTOCElement(layer) as TOCElement;
+                    TocElement tocElement = _toc.GetTOCElement(layer) as TocElement;
                     if (tocElement != null)
                     {
                         tocElement.ParentGroup = parent;
@@ -980,7 +984,7 @@ namespace gView.Framework.Carto
             mapRenderInstance.HighlightGeometry(geometry, milliseconds);
         }
 
-        public ITOC TOC
+        public IToc TOC
         {
             get
             {
@@ -1152,7 +1156,7 @@ namespace gView.Framework.Carto
                             {
                                 if (rLayer is ILayer)
                                 {
-                                    DrawingLayer?.BeginInvoke(((ILayer)rLayer).Title, new AsyncCallback(AsyncInvoke.RunAndForget), null);
+                                    DrawingLayer?.Invoke(((ILayer)rLayer).Title);
                                 }
                             }
 
@@ -1439,7 +1443,7 @@ namespace gView.Framework.Carto
             }
 
             stream.Load("IClasses", null, new PersistableClasses(_layers));
-            _toc = (TOC)await stream.LoadAsync<ITOC>("ITOC", new TOC(this));
+            _toc = (TOC)await stream.LoadAsync<IToc>("ITOC", new TOC(this));
 
             stream.Load("IGraphicsContainer", null, this.GraphicsContainer);
 
@@ -1531,8 +1535,8 @@ namespace gView.Framework.Carto
 
             stream.Save("refScale", m_refScale);
 
-            stream.Save("iwidth", iWidth);
-            stream.Save("iheight", iHeight);
+            stream.Save("iwidth", ImageWidth);
+            stream.Save("iheight", ImageHeight);
 
             stream.Save("background", _backgroundColor.ToArgb());
 
@@ -1752,7 +1756,7 @@ namespace gView.Framework.Carto
                 }
             }
         }
-        public ITOC PublicTOC
+        public IToc PublicTOC
         {
             get { return _toc; }
         }
@@ -1870,7 +1874,7 @@ namespace gView.Framework.Carto
                 using (var textBrush = GraphicsEngine.Current.Engine.CreateSolidBrush(GraphicsEngine.ArgbColor.Red))
                 {
                     var sizeF = this.Display.Canvas.MeasureText(sb.ToString().ToString(), font);
-                    int mx = this.Display.iWidth / 2 - (int)sizeF.Width / 2, my = this.Display.iHeight / 2 - (int)sizeF.Height / 2;
+                    int mx = this.Display.ImageWidth / 2 - (int)sizeF.Width / 2, my = this.Display.ImageHeight / 2 - (int)sizeF.Height / 2;
                     this.Display.Canvas.FillRectangle(backgroundBrush, new GraphicsEngine.CanvasRectangle(mx - 30, my - 30, (int)sizeF.Width + 60, (int)sizeF.Height + 60));
                     this.Display.Canvas.DrawRectangle(borderPen, new GraphicsEngine.CanvasRectangle(mx - 30, my - 30, (int)sizeF.Width + 60, (int)sizeF.Height + 60));
                     this.Display.Canvas.DrawText(sb.ToString(), font, textBrush, new GraphicsEngine.CanvasPoint(mx, my));
@@ -1905,14 +1909,16 @@ namespace gView.Framework.Carto
 
         #endregion
 
+
         internal void FireOnUserInterface(bool lockUI)
         {
-            this.OnUserInterface?.BeginInvoke(this, lockUI, new AsyncCallback(AsyncInvoke.RunAndForget), null);
+            this.OnUserInterface?.Invoke(this, lockUI);
+
         }
 
         internal void FireDrawingLayer(string layername)
         {
-            this.DrawingLayer?.BeginInvoke(layername, new AsyncCallback(AsyncInvoke.RunAndForget), null);
+            this.DrawingLayer?.Invoke(layername);
         }
 
         protected void SetResourceContainer(IResourceContainer resourceContainer)

@@ -408,12 +408,12 @@ namespace gView.Interoperability.OGC.Dataset.WMS
                     continue;
                 }
 
-                if (theme.MinimumScale > 1 && theme.MinimumScale > display.mapScale)
+                if (theme.MinimumScale > 1 && theme.MinimumScale > display.MapScale)
                 {
                     continue;
                 }
 
-                if (theme.MaximumScale > 1 && theme.MaximumScale < display.mapScale)
+                if (theme.MaximumScale > 1 && theme.MaximumScale < display.MapScale)
                 {
                     continue;
                 }
@@ -433,8 +433,8 @@ namespace gView.Interoperability.OGC.Dataset.WMS
 
             #endregion Check for visible Layers
 
-            int iWidth = display.iWidth;
-            int iHeight = display.iHeight;
+            int iWidth = display.ImageWidth;
+            int iHeight = display.ImageHeight;
 
             IEnvelope displayEnv = display.Envelope;
 

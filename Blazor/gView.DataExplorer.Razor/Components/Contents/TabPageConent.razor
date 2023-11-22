@@ -1,0 +1,142 @@
+@inherits BaseHandler
+@implements IDisposable
+@inject IconService Icons
+@inject ExplorerEventBusService EventBus 
+@inject IApplicationScope AppScope
+
+@if (table != null)
+{
+    <MudTable Items="@table.Rows" Hover="true" Dense="true"
+              T="RowItem">
+        <HeaderContent>
+            @foreach(var column in table.Columns) 
+            {
+                <MudTh Class="table-column-icon">@column</MudTh>
+            }
+        </HeaderContent>
+        <RowTemplate>
+            @{
+                var first = true;
+                foreach (var column in table.Columns)
+                {
+                    <MudTd Class="@(selectedExplorerObjects?.Contains(context.ExplorerObject) == true ? "context-selected" : "")">
+                       <div style="vertical-align:top;display:inline-flex;width:100%;cursor:pointer"
+                            @onclick="@((mEvent) => OnRowClickAsync(mEvent, context))" @onclick:stopPropagation="true"
+                            @ondblclick="@(() => OnRowDoubleCLick(context))">
+                            @if (first == true && !String.IsNullOrEmpty(context.Icon))
+                            {
+                                <MudIcon Icon="@Icons.FromString(context.Icon)" />
+                                { first = false; }
+                            }
+                            <span>&nbsp;@context[column]</span>
+                       </div>
+                    </MudTd>
+                }
+            }
+        </RowTemplate>
+    </MudTable>
+}
+
+@code{
+    [Parameter] public IExplorerTabPage? FrameworkElement { get; set; }
+    [Parameter] public IExplorerObject? CurrentExplorerObject { get; set; }
+
+    private IEnumerable<IExplorerObject>? selectedExplorerObjects = null;
+    private TableItem? table;
+
+    protected override void OnInitialized()
+    {
+        EventBus.OnRefreshContentAsync += OnRefreshContentAsync;
+    } 
+
+    async protected override Task OnParametersSetAsync()
+    {
+        await base.OnParametersSetAsync();
+
+        await base.HandleAsync(async () =>
+        {
+            if (FrameworkElement == null)
+            {
+                return;
+            }
+
+            await FrameworkElement.SetExplorerObjectAsync(CurrentExplorerObject);
+            await RefreshContentAsync();
+            await EventBus.FireContextExplorerObjectsChanged(null);
+        });
+    }
+
+    private Task OnRefreshContentAsync() => base.HandleAsync(async () =>
+    {
+        await RefreshContentAsync();
+        StateHasChanged();
+    });
+
+
+    private Task OnRowClickAsync(MouseEventArgs mEvent, RowItem row) => HandleAsync(async () =>
+    {
+        if (table == null || row.ExplorerObject == null)
+        {
+            return;
+        }
+
+        selectedExplorerObjects = row.ExplorerObject switch
+        {
+            IExplorerObjectDoubleClick => Array.Empty<IExplorerObject>(),
+            _ => row.ExplorerObject.AddToSelection(
+                    selectedExplorerObjects ?? Array.Empty<IExplorerObject>(),
+                    table.Rows.Where(r => r.ExplorerObject != null).Select(r => r.ExplorerObject!),
+                    mEvent switch
+                    {
+                        { ShiftKey: true } => GenericAddToStrategy.AddAllBetweenLastItem,
+                        { CtrlKey: true } => GenericAddToStrategy.AddOrRemoveIfExists,
+                        _ => GenericAddToStrategy.RemoveOthers
+                    })
+        };
+
+        await EventBus.FireContextExplorerObjectsChanged(selectedExplorerObjects);
+    });
+
+    private Task OnRowDoubleCLick(RowItem row) => HandleAsync(async () =>
+    {
+        if (row.ExplorerObject != null)
+        {
+            if (row.ExplorerObject is IExplorerObjectDoubleClick)
+            {
+                var args = new Framework.DataExplorer.Events.ExplorerObjectEventArgs();
+
+                await ((IExplorerObjectDoubleClick)row.ExplorerObject).ExplorerObjectDoubleClick(AppScope, args);
+                if (args.NewExplorerObject != null)
+                {
+                    if (CurrentExplorerObject is IExplorerParentObject)
+                    {
+                        await ((IExplorerParentObject)CurrentExplorerObject).DiposeChildObjects();  // remove all children => Force refresh
+                    }
+                    await EventBus.FireSoftRefreshContentAsync();
+                }
+            }
+            else
+            {
+                await EventBus.SetCurrentExplorerObjectAsync(row.ExplorerObject);
+            }
+        }
+    });
+
+    private Task RefreshContentAsync() => base.HandleAsync(async () =>
+    {
+        await using (var busy = await AppScope.RegisterBusyTaskAsync($"Refresh content"))
+        {
+            if (FrameworkElement?.GetExplorerObject() != null /*&&
+                await FrameworkElement.GetExplorerObject()!.SecureRefresh() == true*/)
+            {
+                var result = await FrameworkElement.RefreshContents();
+                table = result.Item as TableItem;
+            }
+        }
+    });
+
+    public void Dispose()
+    {
+        EventBus.OnRefreshContentAsync -= OnRefreshContentAsync;
+    }
+}

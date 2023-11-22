@@ -447,7 +447,7 @@ namespace gView.Plugins.MapTools.Graphics
 
                 IEnvelope envelope = _rubberband.Envelope;
                 IPoint point = null;
-                double tol = 3.0 * display.mapScale / (display.dpi / 0.0254);  // [m]
+                double tol = 3.0 * display.MapScale / (display.Dpi / 0.0254);  // [m]
                 if (envelope.Width < tol && envelope.Height < tol)
                 {
                     point = new Point(0.5 * envelope.minx + 0.5 * envelope.maxx, 0.5 * envelope.miny + 0.5 * envelope.maxy);

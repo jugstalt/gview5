@@ -1,0 +1,246 @@
+@using Microsoft.AspNetCore.Components.Forms
+@using Microsoft.AspNetCore.Components.Routing
+@using MudBlazor.Utilities
+@using gView.Razor
+
+@inherits ModalDialogFormBase<MapSettingsModel>
+@inject IconService IconService
+
+@if(Model.Map is not null) {
+<ModalDialogFormBase T="MapSettingsModel"
+                     OnDialogClose="base.OnDialogClose"
+                     Model="base.Model">
+    <DialogBody>
+        <MudDrawerContainer Class="mud-height-full">
+            <MudDrawer Variant="@DrawerVariant.Mini" Anchor="Anchor.Left"
+                       Elevation="1" 
+                       @bind-Open="@_drawerIsOpen"  
+                       OpenMiniOnHover="true" 
+                       Fixed="false">
+                    <MudList Clickable="true" @bind-SelectedValue="@_currentTab">
+                    <MudListItem Icon="@IconService.FromString("basic:settings")" Style="white-space:nowrap"
+                                 Value="Page.General" Text="Map / Display" 
+                                 OnClick="() => _drawerIsOpen = false" />
+                    <MudListItem Icon="@IconService.FromString("basic:globe-table")" Style="white-space:nowrap"
+                                 Value="Page.SpatialReference" Text="Spatial Reference" 
+                                 OnClick="() => _drawerIsOpen = false" />
+                    <MudListItem Icon="@IconService.FromString("basic:globe")" Style="white-space:nowrap"
+                                 Value="Page.DefaultLayerSpatialReference" Text="Default Layer SRef" 
+                                 OnClick="() => _drawerIsOpen = false" />
+                    <MudListItem Icon="@IconService.FromString("basic:copyright")" Style="white-space:nowrap"
+                                 Value="Page.Description" Text="Description & (c)" 
+                                 OnClick="() => _drawerIsOpen = false" />
+                    <MudListItem Icon="@IconService.FromString("basic:package")" Style="white-space:nowrap"
+                                 Value="Page.Resources" Text="Resources" 
+                                 OnClick="() => _drawerIsOpen = false" />
+                    @*<MudListItem Icon="@IconService.FromString("basic:cloud-connect")" Style="white-space:nowrap"
+                    Value="Page.MapService" Text="Map Service" />*@
+                </MudList>
+            </MudDrawer>
+        </MudDrawerContainer>
+        
+        <MudContainer Style="padding-left:50px;padding-right:10px">
+            @if (Page.General.Equals(_currentTab))
+            {
+                <GvCard Title="Map">
+                    <GvCardContent>
+                        <MudTextField Label="Name"
+                                      @bind-Value="Model.Map.Name" />
+                    </GvCardContent>
+                </GvCard>
+                
+                <GvCard Title="Display">
+                    <GvCardContent>
+                        <MudNumericField Label="Reference Scale 1:"
+                                         @bind-Value="Model.Map.ReferenceScale" />
+
+                        <MudSelect Label="Map Units" T="GeoUnits"
+                                   @bind-Value="Model.Map.Display.MapUnits">
+                            @(GvUtilities.EnumToSelectItems<GeoUnits>())
+                        </MudSelect>
+                        <MudSelect Label="Display Units" T="GeoUnits"
+                                   @bind-Value="Model.Map.Display.DisplayUnits">
+                            @(GvUtilities.EnumToSelectItems<GeoUnits>())
+                        </MudSelect>
+
+                        <MudInputLabel>Background Color</MudInputLabel>
+                        <ColorSelectorButton ArgbColor="Model.Map.BackgroundColor"
+                                             ArgbColorChanged="(color) => Model.Map.BackgroundColor = color" />
+                    </GvCardContent>
+                    
+                </GvCard>
+                
+                <GvCard Title="Current">
+                    <GvCardContent>
+                        <MudTextField Label="BBox" ReadOnly="true"
+                                      Value="Model.Map.Display.Envelope.ToBBoxString()" />
+                        <MudTextField Label="Image Size" ReadOnly="true"
+                                      Value="@($"{Model.Map.Display.ImageHeight},{Model.Map.Display.ImageWidth}")" />
+                    </GvCardContent>
+                </GvCard>               
+            }
+            else if (Page.SpatialReference.Equals(_currentTab))
+            {
+                <GvCard Title="Map Spatial Reference System">
+                    <GvCardContent>
+                            @GvUtilities.InfoText("The Spatial Reference System of this map")
+                            <SpatialReferenceControl SpatialReference="Model.Map.SpatialReference"
+                                                     SRefChanged="(sRef) => Model.Map.SpatialReference = sRef" />
+                    </GvCardContent>
+                </GvCard>
+                
+            }
+            else if(Page.DefaultLayerSpatialReference.Equals(_currentTab))
+            {
+                <GvCard Title="Default Layer Spatial Reference System">
+                    <GvCardContent>
+                            @GvUtilities.InfoText("This Spatial Reference System is applied for all spatial data in the map, that do not have any spatial reference.")
+                            <SpatialReferenceControl SpatialReference="Model.Map.LayerDefaultSpatialReference"
+                                                     SRefChanged="(sRef) => Model.Map.LayerDefaultSpatialReference = sRef" />
+                    </GvCardContent>
+                </GvCard>
+            }
+            else if(Page.Description.Equals(_currentTab))
+            {
+                <GvCard Title="Description & Copyright">
+                    <GvCardContent>
+                            <MudTextField Label="Title" T="string" @bind-Value="Model.Map.Title" />
+                            <MudTextField Label="Decription" T="string" Lines="5" @ref="description"
+                                          Text="@Model.Map.GetLayerDescription(Map.MapDescriptionId)"
+                                          OnBlur="()=>Model.Map.SetLayerDescription(Map.MapDescriptionId, description!.Value)" />
+                            <MudTextField Label="Copyright" T="string" Lines="5" @ref="copyright"
+                                          Text="@Model.Map.GetLayerCopyrightText(Map.MapCopyrightTextId)"
+                                          OnBlur="()=>Model.Map.SetLayerCopyrightText(Map.MapCopyrightTextId, copyright!.Value)" />
+                    </GvCardContent>
+                </GvCard>
+                
+            }
+            else if(Page.Resources.Equals(_currentTab))
+            {
+                <GvCard Title="Map (Biniary) Resources">
+                    <GvCardContent>
+                            @GvUtilities.InfoText("Resources are binary data added to to the map. This can e.g uses image-symbols for layer renderers. The resources are stored inside the map-document. Do not add large files, to avoid large map-documents!")
+
+                            <MudFileUpload T="IReadOnlyList<IBrowserFile>" FilesChanged="UploadMapResourceFiles">
+                                <ButtonTemplate>
+                                    <MudButton HtmlTag="label"
+                                               Variant="Variant.Filled"
+                                               Color="Color.Primary"
+                                               StartIcon="@Icons.Material.Filled.CloudUpload"
+                                               for="@context">
+                                        Upload Resource
+                                    </MudButton>
+                                </ButtonTemplate>
+                            </MudFileUpload>
+
+                            @if (Model.Map.ResourceContainer.HasResources)
+                            {
+                                <table style="width:100%">
+                                    <tr>
+                                        <th>Name</th>
+                                        <th>Size</th>
+                                        <th></th>
+                                    </tr>
+
+                                    @foreach (var resourceName in Model.Map.ResourceContainer.Names)
+                                    {
+                                        <tr>
+                                            <td>@resourceName</td>
+                                            <td>@((int)((Model.Map.ResourceContainer[resourceName]?.Length ?? 0) / 1024)) KB</td>
+                                            <td>
+                                                <MudButton Color="Color.Secondary"
+                                                           OnClick="() => RemoveMapResource(resourceName)">Remove</MudButton>
+                                            </td>
+                                        </tr>
+                                    }
+                                </table>
+                            }
+                    </GvCardContent>
+                </GvCard>
+                
+            }
+            else if(Page.MapService.Equals(_currentTab))
+            {
+                <MudText Typo="Typo.h1">TODO: MapService</MudText>
+            }
+        </MudContainer>
+    </DialogBody>
+
+    <DialogButtons>
+            <MudButton Variant="Variant.Filled"
+                       Color="Color.Default"
+                       OnClick="()=>base.Close()">Cancel</MudButton>
+            <MudButton Variant="Variant.Filled"
+                       Color="Color.Primary"
+                       OnClick="Apply">Apply</MudButton>
+    </DialogButtons>
+    
+</ModalDialogFormBase>
+}
+@code
+{
+    private enum Page
+    {
+        General = 0,
+        SpatialReference = 1,
+        DefaultLayerSpatialReference = 2,
+        Description = 3,
+        Resources = 4,
+        MapService = 5
+    }
+    private bool _drawerIsOpen = false;
+    private object _currentTab = Page.General;
+
+    private MudTextField<string>? description, copyright;
+
+    protected override void OnInitialized()
+    {
+        base.OnInitialized();
+    }
+
+    protected Task Apply()
+    {
+        if(Model.Map != null)
+        {
+            // nothing to do here...
+        }
+
+        return base.Submit();
+    }
+
+    private Task UploadMapResourceFiles(IReadOnlyList<IBrowserFile> files) => HandleAsync(async () =>
+    {
+        if (Model.Map is null)
+        {
+            return;
+        }
+
+        foreach (var file in files)
+        {
+            using (var dataStream = file.OpenReadStream(10 * 1024 * 1024))
+            {
+                var data = new byte[file.Size];
+
+                int offset = 0, len = 0;
+
+                while (offset < data.Length &&
+                      (len = await dataStream.ReadAsync(data, offset, data.Length - offset)) > 0)
+                {
+                    offset += len;
+                }
+
+                Model.Map.ResourceContainer[file.Name] = data;
+            }
+        }
+    });
+
+    private void RemoveMapResource(string resourceName) => Handle(() =>
+    {
+        if (Model.Map is null)
+        {
+            return;
+        }
+
+        Model.Map.ResourceContainer[resourceName] = null;
+    });
+}

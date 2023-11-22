@@ -99,7 +99,9 @@ namespace gView.DataSources.EventTable
                 //            _tab.Columns.Contains(_etcon.YFieldName);
 
                 var limits = conn.LimitResults(filter, fc);
-                var dataReaderResult = await conn.DataReaderAsync("select " + limits.top + fields + " from " + etconn.TableName + (String.IsNullOrEmpty(where) ? String.Empty : " WHERE " + where) + limits.limit);
+                string commandText = $"select {limits.top} {fields} from {etconn.TableName} {(String.IsNullOrEmpty(where) ? String.Empty : " WHERE " + where)} {limits.limit}";
+                
+                var dataReaderResult = await conn.DataReaderAsync(commandText);
 
                 cursor._dbReader = dataReaderResult.reader;
                 cursor._dbConnection = dataReaderResult.connection;

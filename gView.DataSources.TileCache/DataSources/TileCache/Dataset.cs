@@ -58,7 +58,20 @@ namespace gView.DataSources.TileCache
             string origin = ConfigTextStream.ExtractValue(value, "origin");
             if (!String.IsNullOrEmpty(origin))
             {
-                this.Origin = (GridOrientation)int.Parse(origin);
+                this.OriginOrientation = (GridOrientation)int.Parse(origin);
+            }
+
+            if (!String.IsNullOrEmpty(ConfigTextStream.ExtractValue(value, "origin_x")) &&
+                !String.IsNullOrEmpty(ConfigTextStream.ExtractValue(value, "origin_y")))
+            {
+                this.OriginPoint = new Point(
+                    double.Parse(ConfigTextStream.ExtractValue(value, "origin_x"), Numbers.Nhi),
+                    double.Parse(ConfigTextStream.ExtractValue(value, "origin_y"), Numbers.Nhi));
+            } 
+            else
+            {
+                this.OriginPoint = new Point(
+                    this.Extent.minx, this.OriginOrientation == GridOrientation.LowerLeft ? this.Extent.miny : this.Extent.maxy);
             }
 
             string sref64 = ConfigTextStream.ExtractValue(value, "sref64");
@@ -185,7 +198,8 @@ namespace gView.DataSources.TileCache
 
         public IEnvelope Extent { get; private set; }
 
-        public GridOrientation Origin { get; private set; }
+        public GridOrientation OriginOrientation { get; private set; }
+        public IPoint OriginPoint { get; private set; }
 
         public ISpatialReference SpatialReference { get; private set; }
 

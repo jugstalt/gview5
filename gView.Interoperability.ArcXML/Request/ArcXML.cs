@@ -316,9 +316,9 @@ namespace gView.Interoperability.ArcXML
 
             AXL response = new AXL("ARCXML", "1.1");
 
-            map.Display.dpi = Dpi;
-            map.Display.iWidth = iWidth;
-            map.Display.iHeight = iHeight;
+            map.Display.Dpi = Dpi;
+            map.Display.ImageWidth = iWidth;
+            map.Display.ImageHeight = iHeight;
             map.Display.Limit = Envelope;
             map.Display.ZoomTo(Envelope);
             //map.Display.drawScaleBar = false;
@@ -364,8 +364,8 @@ namespace gView.Interoperability.ArcXML
                 AXL response = new AXL("ARCXML", "1.1");
                 _useTOC = useTOC;
 
-                map.Display.iWidth = iWidth;
-                map.Display.iHeight = iHeight;
+                map.Display.ImageWidth = iWidth;
+                map.Display.ImageHeight = iHeight;
                 map.Display.Limit = Envelope;
                 map.Display.ZoomTo(Envelope);
                 map.BeforeRenderLayers += new BeforeRenderLayersEvent(map_BeforeRenderLayers);
@@ -387,7 +387,7 @@ namespace gView.Interoperability.ArcXML
                 // Besser layer als layer.Class verwendenden, weil Class von mehrerenen Layern
                 // verwendet werden kann zB bei gesplitteten Layern...
                 //ITOCElement tocElement = map.TOC.GetTOCElement(layer.Class);
-                ITOCElement tocElement = map.TOC.GetTOCElement(layer);
+                ITocElement tocElement = map.TOC.GetTOCElement(layer);
                 if (tocElement != null)
                 {
                     return tocElement.Name;
@@ -439,7 +439,7 @@ namespace gView.Interoperability.ArcXML
                         {
                             layer.Visible = Convert.ToBoolean(layerDef.Attributes["visible"].Value);
 
-                            if (sender.Display.refScale > 0D && layer is IFeatureLayer)
+                            if (sender.Display.ReferenceScale > 0D && layer is IFeatureLayer)
                             {
                                 if (layerDef.Attributes["applyRefScale"] != null &&
                                     layerDef.Attributes["applyRefScale"].Value.ToLower() == "false")

@@ -153,7 +153,7 @@ namespace gView.Framework.Carto
         {
             foreach (var georefBitmap in _picList)
             {
-                georefBitmap.Dispose();
+                georefBitmap?.Dispose();
             }
 
             _picList.Clear();
@@ -246,8 +246,8 @@ namespace gView.Framework.Carto
                                     /////////////////////////////////////////////////////////
                                     Display d = new Display(display.Map, false);
                                     d.Limit = d.Envelope = geoBmp.Envelope;
-                                    d.iWidth = geoBmp.Bitmap.Width;
-                                    d.iHeight = geoBmp.Bitmap.Height;
+                                    d.ImageWidth = geoBmp.Bitmap.Width;
+                                    d.ImageHeight = geoBmp.Bitmap.Height;
                                     d.SpatialReference = geoBmp.SpatialReference;
                                     Resample(bitmap, display, geoBmp.Bitmap, d);
                                     continue;

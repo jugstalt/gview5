@@ -127,7 +127,7 @@ namespace gView.MapServer.Lib.UI
                 dpu = converter.Convert(1.0, GeoUnits.Meters, GeoUnits.DecimalDegrees);
             }
 
-            foreach (double scale in _metadata.Scales)
+            foreach (double scale in _metadata.Scales.InnerList)
             {
                 double tileWidth = (double)_metadata.TileWidth * (double)scale / (96.0 / 0.0254);
                 double tileHeight = (double)_metadata.TileHeight * (double)scale / (96.0 / 0.0254);
@@ -268,7 +268,7 @@ namespace gView.MapServer.Lib.UI
                 _orientation);
 
             int level = 0;
-            foreach (double scale in _metadata.Scales)
+            foreach (double scale in _metadata.Scales.InnerList)
             {
                 double res = scale / (96.0 / 0.0254) * dpu;
                 grid.AddLevel(level++, res);

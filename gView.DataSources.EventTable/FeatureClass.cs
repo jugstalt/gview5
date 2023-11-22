@@ -40,6 +40,12 @@ namespace gView.DataSources.EventTable
                     }
                 }
                 DataTable tab = await conn.Select("MIN(" + fc._etcon.XFieldName + ") as minx,MAX(" + fc._etcon.XFieldName + ") as maxx,MIN(" + fc._etcon.YFieldName + ") as miny,MAX(" + fc._etcon.YFieldName + ") as maxy", fc._etcon.TableName);
+
+                if (conn.LastException != null)
+                {
+                    throw conn.LastException;
+                }
+                
                 if (tab != null && tab.Rows.Count == 1)
                 {
                     try

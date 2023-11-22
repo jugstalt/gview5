@@ -1,0 +1,26 @@
+@inherits ModalDialogFormBase<VectorTileCacheConnectionModel>
+@inject IApplicationScope AppScope
+
+<ModalDialogFormBase T="VectorTileCacheConnectionModel"
+                     OnDialogClose="base.OnDialogClose"
+                     Model="base.Model">
+    <FormContent>
+        <GvGrid ColumnCount="1">
+            <GvGridItem>
+                <GvCard Title="Service">
+                    <GvCardContent>
+
+
+                        <MudTextField @bind-Value="Model.Name"
+                                      Label="Name (any)" />
+                        <MudTextField @bind-Value="Model.Source"
+                                      Label="Url or path to Vector-Tile-Cache Capabilities JSON" />
+
+                    </GvCardContent>
+                </GvCard>
+            </GvGridItem>
+
+        </GvGrid>
+    </FormContent>
+
+</ModalDialogFormBase>

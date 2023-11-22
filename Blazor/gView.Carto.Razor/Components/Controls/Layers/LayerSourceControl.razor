@@ -1,0 +1,80 @@
+@using System.Text
+@using gView.Framework.IO
+@GvUtilities.InfoText("All values here are for information only. You can not change this values on this page.")
+
+@if(_dataset is not null)
+{
+    <GvCard Title="Dataset">
+        <GvCardContent>
+            <MudTextField Label="Dataset Type" ReadOnly="true"
+                          Value="_dataset.GetType().ToString()" />
+            <MudTextField Label="Dataset Name" ReadOnly="true"
+                          Value="_dataset.DatasetName" />
+            <MudTextField Label="Connection String" ReadOnly="true" Lines="5"
+                          Value="PrepareConnectionString(_dataset.ConnectionString)" />
+        </GvCardContent>
+    </GvCard>
+}
+
+@if(Layer is not null)
+{
+    <GvCard Title="Layer">
+        <GvCardContent>
+            <MudNumericField Label="Layer ID" Value="Layer.ID" ReadOnly="true" />
+        </GvCardContent>
+    </GvCard>
+}
+
+@code {
+    [Parameter] public IMap? Map { get; set; }
+    [Parameter] public ILayer? Layer { get; set; }
+
+    private IDataset? _dataset;
+
+
+    protected override void OnParametersSet()
+    {
+        base.OnParametersSet();
+
+        if (Map is not null && Layer is not null)
+        {
+            var datasets = Map.Datasets.ToArray();
+
+            if (Layer.DatasetID >= 0 && Layer.DatasetID < datasets.Length)
+            {
+                _dataset = datasets[Layer.DatasetID];
+            }
+        }
+    }
+
+    // Hide Password etc
+    private string PrepareConnectionString(string str)
+    {
+        Dictionary<string, string> dic = ConfigTextStream.Extract(str);
+
+        StringBuilder sb = new StringBuilder();
+        foreach (string key in dic.Keys)
+        {
+            if (String.IsNullOrEmpty(dic[key]))
+            {
+                sb.Append(key);
+            }
+            else
+            {
+                switch (key.ToLower())
+                {
+                    case "password":
+                    case "pwd":
+                        sb.Append(key + "=*****");
+                        break;
+                    default:
+                        sb.Append(key + "=" + dic[key]);
+                        break;
+                }
+            }
+            sb.Append("\r\n");
+        }
+
+        return sb.ToString();
+    }
+}

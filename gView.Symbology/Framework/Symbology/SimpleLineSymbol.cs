@@ -307,7 +307,7 @@ namespace gView.Framework.Symbology
             }
             else if (_widthUnit != DrawingUnit.Pixel && _pen.Width > 0)
             {
-                float pix = (float)(display.mapScale / (display.dpi / 0.0254));
+                float pix = (float)(display.MapScale / (display.Dpi / 0.0254));
                 if (pix == 0f)
                 {
                     fac = 0;

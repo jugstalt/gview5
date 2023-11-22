@@ -1,0 +1,9 @@
+@inherits ModalDialogFormBase<PropertyGridDialogModel>
+
+<ModalDialogFormBase T="PropertyGridDialogModel"
+                     OnDialogClose="base.OnDialogClose"
+                     Model="base.Model">
+    <FormContent>
+        <PropertyGridControl Instance="Model.Instance" />
+    </FormContent>
+</ModalDialogFormBase>

@@ -19,14 +19,14 @@ namespace gView.Framework.Carto
         }
         void ZoomTo(IEnvelope envelope);
 
-        double refScale { get; set; }
-        double mapScale { get; set; }
+        double ReferenceScale { get; set; }
+        double MapScale { get; set; }
 
-        int iWidth { get; set; }
-        int iHeight { get; set; }
+        int ImageWidth { get; set; }
+        int ImageHeight { get; set; }
 
-        double dpm { get; }
-        double dpi { get; set; }
+        double Dpm { get; }
+        double Dpi { get; set; }
 
         gView.GraphicsEngine.Abstraction.IBitmap Bitmap { get; }
         gView.GraphicsEngine.Abstraction.ICanvas Canvas { get; }

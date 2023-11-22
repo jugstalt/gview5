@@ -97,9 +97,9 @@ public class MapServerInstance : IMapServer
                 return await FindServiceMap(name, alias, context);
             }
         }
-        catch (MapServerException mse)
+        catch (MapServerException/* mse*/)
         {
-            throw mse;
+            throw;
         }
         catch (Exception ex)
         {
@@ -130,9 +130,9 @@ public class MapServerInstance : IMapServer
 
             return services;
         }
-        catch (MapServerException mse)
+        catch (MapServerException/* mse*/)
         {
-            throw mse;
+            throw;
         }
         catch (Exception ex)
         {
@@ -172,9 +172,9 @@ public class MapServerInstance : IMapServer
 
             return map;
         }
-        catch (MapServerException mse)
+        catch (MapServerException/* mse*/)
         {
-            throw mse;
+            throw;
         }
         catch (Exception ex)
         {
@@ -374,7 +374,7 @@ public class MapServerInstance : IMapServer
                 // alle webServiceThemes im TOC vereinigen...
                 if (newMap.TOC != null)
                 {
-                    foreach (ITOCElement tocElement in newMap.TOC.Elements)
+                    foreach (ITocElement tocElement in newMap.TOC.Elements)
                     {
                         if (tocElement == null ||
                             tocElement.Layers == null)

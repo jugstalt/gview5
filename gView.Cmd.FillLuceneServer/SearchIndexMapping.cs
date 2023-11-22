@@ -10,6 +10,7 @@ namespace gView.Cmd.FillLuceneServer
             this.AddField(new IndexField("id", FieldTypes.StringType));
             this.AddField(new IndexField("suggested_text", FieldTypes.TextType));
             this.AddField(new IndexField("subtext", FieldTypes.TextType));
+            //this.AddField(new IndexField("category", FieldTypes.StringType));
             this.AddField(new IndexField("category", FieldTypes.TextType));
 
             //this.AddField(new IndexField("longitude", FieldTypes.DoubleType));

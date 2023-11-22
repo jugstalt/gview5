@@ -1,0 +1,38 @@
+<div class="dataexplorer-main @(_isDarkMode ? "dark": "light")">
+    <MudThemeProvider @bind-IsDarkMode="@_isDarkMode" Theme="_theme" />
+    
+    <MudPaper Class="toolbar" Elevation="2">
+        <ToolRibbon ToggleDarkmode="ToggleDarkmode" />
+    </MudPaper>
+
+    <MudPaper Class="navigation-bar" Elevation="2">
+        <NavBar />
+    </MudPaper>
+
+    <MudPaper Class="tree" Elevation="2">
+        <NavTree />
+    </MudPaper>
+
+    <div class="tree-content-splitter"></div>
+
+    <MudPaper Class="content" Elevation="2">
+        <ContentView />
+    </MudPaper>
+
+    <MudPaper Class="status-bar" Elevation="2">
+        <StatusBar />
+    </MudPaper>
+
+</div>
+
+<script src="_content/gView.DataExplorer.Razor/js/dataexplorer.js"></script>
+
+@code{
+    private MudTheme _theme = new();
+    private bool _isDarkMode = true;
+
+    private void ToggleDarkmode()
+    {
+        _isDarkMode = !_isDarkMode;
+    }
+}

@@ -120,8 +120,8 @@ namespace gView.Interoperability.OGC.Dataset.WMS
             //request.Append("&LAYERS=" + this.Name);
             request.Append("&EXCEPTIONS=" + _exceptions.Formats[0]);
             request.Append("&SRS=" + _srs.Srs[_srs.SRSIndex]);
-            request.Append("&WIDTH=" + display.iWidth);
-            request.Append("&HEIGHT=" + display.iHeight);
+            request.Append("&WIDTH=" + display.ImageWidth);
+            request.Append("&HEIGHT=" + display.ImageHeight);
             request.Append("&INFOFORMAT=" + _getFeatureInfo.Formats[_getFeatureInfo.FormatIndex]);
             request.Append("&INFO_FORMAT=" + _getFeatureInfo.Formats[_getFeatureInfo.FormatIndex]);
             request.Append("&BBOX=" + dispEnvelope.minx.ToString(_nhi) + "," +

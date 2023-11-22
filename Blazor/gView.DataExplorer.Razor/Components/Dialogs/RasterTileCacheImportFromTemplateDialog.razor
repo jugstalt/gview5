@@ -1,0 +1,46 @@
+@inherits ModalDialogFormBase<RasterTileCacheImportFromTemplateModel>
+@inject IApplicationScope AppScope
+
+<ModalDialogFormBase T="RasterTileCacheImportFromTemplateModel"
+                     OnDialogClose="base.OnDialogClose"
+                     Model="base.Model">
+    <DialogBody>
+        <GvGrid ColumnCount="1">
+            <GvGridItem>
+                <GvCard Title="Service">
+                    <GvCardContent>
+
+                        <MudTextField @bind-Value="Model.Name"
+                                       Label="Name (any)" />
+
+
+                        <MudSelect T="string"
+                                   @bind-Value="Model.TemplatePath"
+                                   Variant="Variant.Outlined"
+                                   Dense=true>
+                            @foreach (var file in TemplateFiles)
+                            {
+                                <MudSelectItem Value="file.Key">@file.Value</MudSelectItem>
+                            }
+                        </MudSelect>
+                        
+                    </GvCardContent>
+                </GvCard>
+            </GvGridItem>
+        </GvGrid>
+    </DialogBody>
+</ModalDialogFormBase>
+
+@code {
+    private Dictionary<string, string> TemplateFiles = new Dictionary<string, string>();
+
+    protected override void OnInitialized() => Handle(() =>
+    {
+        base.OnInitialized();
+
+        foreach (var fi in new System.IO.DirectoryInfo(Model.RootPath).GetFiles("*.xml"))
+        {
+            TemplateFiles.Add(fi.FullName, fi.Name);
+        }
+    });
+}

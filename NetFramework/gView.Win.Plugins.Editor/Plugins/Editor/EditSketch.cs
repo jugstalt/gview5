@@ -338,7 +338,7 @@ namespace gView.Plugins.Editor
                 return null;
             }
 
-            double tol = 5.0 * display.mapScale / (display.dpi / 0.0254);  // [m]
+            double tol = 5.0 * display.MapScale / (display.Dpi / 0.0254);  // [m]
             if (display.SpatialReference != null &&
                 display.SpatialReference.SpatialParameters.IsGeographic)
             {

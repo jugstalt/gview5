@@ -221,15 +221,15 @@ namespace gView.Framework.UI
             //    if (!(element is ILayer)) continue;
             //    _childs.Add(new FeatureLayerExplorerObject(this, (ILayer)element));
             //}
-            foreach (ITOCElement element in _map.TOC.Elements)
+            foreach (ITocElement element in _map.TOC.Elements)
             {
                 if (element.ParentGroup != null)
                 {
                     continue;
                 }
 
-                if (element.ElementType == TOCElementType.ClosedGroup ||
-                    element.ElementType == TOCElementType.OpenedGroup)
+                if (element.ElementType == TocElementType.ClosedGroup ||
+                    element.ElementType == TocElementType.OpenedGroup)
                 {
                     base.AddChildObject(new TOCGroupElementExplorerObject(this, element));
                 }
@@ -383,12 +383,12 @@ namespace gView.Framework.UI
     public class TOCElementExplorerObject : ExplorerObjectCls, IExplorerObject
     {
         protected IExplorerObject _parent;
-        protected ITOCElement _element;
+        protected ITocElement _element;
         protected IExplorerIcon _icon;
 
-        public TOCElementExplorerObject() : base(null, typeof(ITOCElement), 2) { }
-        internal TOCElementExplorerObject(IExplorerObject parent, ITOCElement element)
-            : base(parent, typeof(ITOCElement), 2)
+        public TOCElementExplorerObject() : base(null, typeof(ITocElement), 2) { }
+        internal TOCElementExplorerObject(IExplorerObject parent, ITocElement element)
+            : base(parent, typeof(ITocElement), 2)
         {
             _parent = parent;
             _element = element;
@@ -520,7 +520,7 @@ namespace gView.Framework.UI
     public class TOCGroupElementExplorerObject : TOCElementExplorerObject, IExplorerParentObject
     {
         public TOCGroupElementExplorerObject() { }
-        internal TOCGroupElementExplorerObject(IExplorerObject parent, ITOCElement element)
+        internal TOCGroupElementExplorerObject(IExplorerObject parent, ITocElement element)
         {
             _parent = parent;
             _element = element;
@@ -539,21 +539,21 @@ namespace gView.Framework.UI
                 return false;
             }
 
-            if (_element.ElementType == TOCElementType.ClosedGroup)
+            if (_element.ElementType == TocElementType.ClosedGroup)
             {
                 _element.OpenCloseGroup(true);
             }
 
-            List<ITOCElement> elements = _element.TOC.GroupedElements(_element);
-            foreach (ITOCElement element in _element.TOC.GroupedElements(_element))
+            List<ITocElement> elements = _element.TOC.GroupedElements(_element);
+            foreach (ITocElement element in _element.TOC.GroupedElements(_element))
             {
                 if (element.ParentGroup != _element)
                 {
                     continue;
                 }
 
-                if (element.ElementType == TOCElementType.ClosedGroup ||
-                    element.ElementType == TOCElementType.OpenedGroup)
+                if (element.ElementType == TocElementType.ClosedGroup ||
+                    element.ElementType == TocElementType.OpenedGroup)
                 {
                     _childs.Add(new TOCGroupElementExplorerObject(this, element));
                 }

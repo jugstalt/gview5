@@ -1,0 +1,161 @@
+@inherits BaseHandler
+@implements IDisposable
+@inject PluginManagerService PluginManager
+@inject IconService Icons
+@inject IApplicationScope AppScope
+@inject ExplorerEventBusService EventBus
+ 
+@if (exTools != null)
+{
+    <div class="explorer-tool-box">
+        <div class="explorer-tool" @onclick="()=>DarkmodeClick()">
+            <div class=@Icons.FromString("basic:darkmode")></div>
+            <div class="title">Color Scheme</div>
+        </div>
+
+        @foreach (var exTool in exTools
+                                .Where(t=> t.Target == ExplorerToolTarget.General)
+                                .Where(t=> t.IsEnabled(AppScope))
+                                .OrderBy(t => t.SortOrder))
+        {
+            <div class="explorer-tool"
+                 alt="@exTool.ToolTip"
+                 @onclick="async () => await ToolClickAsync(exTool)">
+                <div class=@Icons.FromString(exTool.Icon) ></div>
+                <div class="title">@exTool.Name</div>
+            </div>
+        }
+        
+    </div>
+
+    <div class="explorer-tool-box current-selected">
+        @if(currentExplorerObject!=null)
+        {
+            @if(creatableExplorerTools?.Where(e=>e.CanCreate(currentExplorerObject)).Any() == true)
+            {
+                <div class="explorer-tool-sub-box">
+                    @foreach (var creatable in creatableExplorerTools?.Where(e => e.CanCreate(currentExplorerObject))!)
+                    {
+                        <div class="explorer-tool"
+                             alt="Create new..."
+                             @onclick="async () => await CreateClickAsync(creatable)">
+                            <div class=@Icons.FromString(creatable.Icon)></div>
+                            <div class="title">@creatable.Type</div>
+                        </div>
+                    }
+                    <div class="title">Create new</div>
+                </div>
+            }
+        }
+    </div>
+
+    <div class="explorer-tool-box context-selected">
+        @if (exTools.Where(t => t.Target == ExplorerToolTarget.SelectedContextExplorerObjects).Where(t => t.IsEnabled(AppScope)).Any())
+        {
+            <div class="explorer-tool-sub-box">
+                @foreach (var exTool in exTools
+                                                 .Where(t => t.Target == ExplorerToolTarget.SelectedContextExplorerObjects)
+                                                 .Where(t => t.IsEnabled(AppScope))
+                                                 .OrderBy(t => t.SortOrder))
+                {
+                    <div class="explorer-tool"
+                        alt="@exTool.ToolTip"
+                        @onclick="async () => await ToolClickAsync(exTool)">
+                        <div class=@Icons.FromString(exTool.Icon)></div>
+                        <div class="title">@exTool.Name</div>
+                    </div>
+                }
+                <div class="title">Selected</div>
+            </div>
+        }
+        @if (contextExplorerObject is IExplorerObjectContextTools)
+        {
+            <div class="explorer-tool-sub-box">
+                @foreach (var contextToolChunks in ((IExplorerObjectContextTools)contextExplorerObject).ContextTools.Chunk(2)) 
+                {
+                    <div style="display:inline-block;vertical-align:top;">
+                    @foreach(var contextTool in contextToolChunks)
+                    {
+                        <div class="explorer-context-tool"
+                             @onclick="async () => await ContextToolClickAsync(contextTool)">
+                            <div class=@Icons.FromString(contextTool.Icon)></div>
+                            <div class="title">@contextTool.Name</div>
+                        </div>
+                    }
+                    </div>
+                }
+                <div class="title">Context: @contextExplorerObject.Name</div>
+            </div>
+        }
+    </div>
+}
+
+@code {
+    private IExplorerTool[]? exTools;
+    private IExplorerObjectCreatable[]? creatableExplorerTools;
+    private IExplorerObject? currentExplorerObject;
+    private IExplorerObject? contextExplorerObject;
+
+    [Parameter] public EventCallback ToggleDarkmode { get; set; }
+
+    protected override void OnInitialized() => base.Handle(() =>
+    {
+        exTools = PluginManager.GetPlugins<IExplorerTool>(Framework.system.Plugins.Type.IExplorerTool).ToArray();
+        creatableExplorerTools = PluginManager.GetPlugins<IExplorerObject>(Framework.system.Plugins.Type.IExplorerObject)
+                                              .Where(e => e is IExplorerObjectCreatable)
+                                              .Select(e => (IExplorerObjectCreatable)e)
+                                              .ToArray();
+
+        EventBus.OnContextExplorerObjectsChanged += OnContextExplorerObjectsChanged;
+        EventBus.OnCurrentExplorerObjectChanged += OnCurrentExplorerObjectChanged;
+    });
+
+    private Task OnContextExplorerObjectsChanged(IEnumerable<IExplorerObject>? contextExplorerObjects)
+    {
+        contextExplorerObject = contextExplorerObjects != null && contextExplorerObjects.Count() == 1 ?
+                                            contextExplorerObjects.First() : null;
+        StateHasChanged();
+
+        return Task.CompletedTask;
+    }
+
+    private Task OnCurrentExplorerObjectChanged(IExplorerObject? explorerObject)
+    {
+        currentExplorerObject = explorerObject;
+        StateHasChanged();
+
+        return Task.CompletedTask;
+    }
+
+    private Task ToolClickAsync(IExplorerTool exTool)
+        => base.HandleAsync(() => exTool.OnEvent(AppScope));
+
+    private Task ContextToolClickAsync(IExplorerObjectContextTool contextTool)
+        => base.HandleAsync(() => contextTool.OnEvent(AppScope, contextExplorerObject!));
+
+    private Task CreateClickAsync(IExplorerObjectCreatable creatable)
+    {
+        return base.HandleAsync(async () =>
+        {
+            if (currentExplorerObject != null)
+            {
+                var newExObject = await creatable.CreateExplorerObjectAsync(AppScope, currentExplorerObject);
+                if (newExObject != null)
+                {
+                    await EventBus.FireSoftRefreshContentAsync();
+                }
+            }
+        });
+    }
+
+    async private Task DarkmodeClick()
+    {
+        await ToggleDarkmode.InvokeAsync();
+    }
+
+    public void Dispose()
+    {
+        EventBus.OnContextExplorerObjectsChanged -= OnContextExplorerObjectsChanged;
+        EventBus.OnCurrentExplorerObjectChanged -= OnCurrentExplorerObjectChanged;
+    }
+}

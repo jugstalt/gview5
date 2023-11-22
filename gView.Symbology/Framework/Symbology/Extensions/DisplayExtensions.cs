@@ -9,8 +9,8 @@ namespace gView.Symbology.Framework.Symbology.Extensions
 
         static public bool IsLegendItemSymbol(this IDisplay display)
         {
-            return display.iWidth == LegendItemSymbolWidth &&
-                   display.iHeight == LegendItemSymbolHeight;
+            return display.ImageWidth == LegendItemSymbolWidth &&
+                   display.ImageHeight == LegendItemSymbolHeight;
         }
 
         static public GraphicsEngine.CanvasRectangle ToLegendItemSymbolRect(this GraphicsEngine.CanvasRectangle rect)

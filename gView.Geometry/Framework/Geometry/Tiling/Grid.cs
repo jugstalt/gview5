@@ -10,6 +10,8 @@ namespace gView.Framework.Geometry.Tiling
         UpperLeft = 1
     }
 
+    public enum TileImageFormat { png, jpg };
+
     public class Grid
     {
         private List<GridLevel> _levels = new List<GridLevel>();

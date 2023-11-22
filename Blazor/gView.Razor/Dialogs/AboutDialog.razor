@@ -1,0 +1,65 @@
+@inherits ModalDialogFormBase<AboutDialogModel>
+
+<ModalDialogFormBase T="AboutDialogModel"
+                     OnDialogClose="base.OnDialogClose"
+                     Model="base.Model">
+    <FormContent>
+        <div class="gview-splashscreen">
+           
+            <div class="gview-splashscreen-content">
+                <div class="title">@Model.Title</div>
+                <div class="version">@Model.Version</div>
+                <pre class="license">
+                    @licText
+                </pre>
+                <pre class="credits">
+                    @creditsText
+                </pre>
+            </div>
+
+            <div class="gview-splashscreen-image"></div>
+
+        </div>
+    </FormContent>
+    <DialogButtons>
+        <div />
+    </DialogButtons>
+</ModalDialogFormBase>
+
+@code {
+    private string licText = "";
+    private System.Text.StringBuilder creditsText = new();
+
+    protected override void OnInitialized()
+    {
+        base.OnInitialized();
+
+        try
+        {
+            licText = gView.Razor.Properties.Resources.License.Replace("{YEAR}", DateTime.Now.Year.ToString());
+
+            creditsText.Append("Portions of this computer program are:");
+            creditsText.Append(Environment.NewLine);
+            creditsText.Append(Environment.NewLine);
+
+            var doc = new System.Xml.XmlDocument();
+            doc.LoadXml(gView.Razor.Properties.Resources.Credits);
+
+            foreach (System.Xml.XmlNode credit in doc.SelectNodes("credits/credit")!)
+            {
+                if (credit!.Attributes!["text"] != null)
+                {
+                    creditsText.Append(credit.Attributes["text"]!.Value.Replace(@"\n", Environment.NewLine));
+                    creditsText.Append(Environment.NewLine);
+                }
+                if (credit.Attributes["hyperlink"] != null)
+                {
+                    creditsText.Append(Environment.NewLine);
+                    creditsText.Append(credit.Attributes["hyperlink"]!.Value);
+                    creditsText.Append(Environment.NewLine);
+                }
+            }
+        }
+        catch { }
+    }
+}

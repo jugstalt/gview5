@@ -76,7 +76,7 @@ namespace gView.Plugins.MapTools
                 return Task.FromResult(true);
             }
 
-            ITOCElement tocElement = toc.GetTOCElement(((IDatasetElement)element).Class);
+            ITocElement tocElement = toc.GetTOCElement(((IDatasetElement)element).Class);
             if (tocElement == null)
             {
                 return Task.FromResult(true);
@@ -187,13 +187,13 @@ namespace gView.Plugins.MapTools
                 return Task.FromResult(true);
             }
 
-            ITOCElement tocElement = toc.GetTOCElement(((IDatasetElement)element).Class);
+            ITocElement tocElement = toc.GetTOCElement(((IDatasetElement)element).Class);
             if (tocElement == null)
             {
                 return Task.FromResult(true);
             }
 
-            ITOCElement parentTocElement = tocElement.ParentGroup;
+            ITocElement parentTocElement = tocElement.ParentGroup;
 
             //IDatasetElement e = ((IDataset)dataset)[((IDatasetElement)element).Title];
             //if (e == null) return;

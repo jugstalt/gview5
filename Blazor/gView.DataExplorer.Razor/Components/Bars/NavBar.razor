@@ -1,0 +1,69 @@
+@inherits BaseHandler
+@implements IDisposable
+@inject PluginManagerService PluginManager
+@inject IconService Icons
+@inject ExplorerEventBusService EventBus
+
+@if (Items != null)
+{
+    <MudBreadcrumbs Items="Items" MaxItems="8" Separator="">
+        <ItemTemplate>
+            <MudChip Icon=@Icons.FromString((context as ExplorerObjectBreadcrumbItem)!.ExObject.Icon)
+                     Color="Color.Dark"
+                     OnClick="()=>ChipClickAsync((context as ExplorerObjectBreadcrumbItem)!)">
+                @context.Text
+            </MudChip>
+        </ItemTemplate>
+    </MudBreadcrumbs>
+}
+
+@code {
+    private List<BreadcrumbItem>? Items;
+
+    protected override void OnInitialized()
+    {
+        EventBus.OnCurrentExplorerObjectChanged += OnTreeItemClickAsync;
+    }
+
+    private Task OnTreeItemClickAsync(IExplorerObject? exObject)
+    {
+        base.Handle(() =>
+        {
+            Items = exObject?
+                .GetAncestors(true)
+                .Select(e => (BreadcrumbItem)new ExplorerObjectBreadcrumbItem(e))
+                .ToList();
+
+            StateHasChanged();
+        });
+
+        return Task.CompletedTask;
+    }
+
+    private Task ChipClickAsync(ExplorerObjectBreadcrumbItem item)
+    {
+        return EventBus.SetCurrentExplorerObjectAsync(item.ExObject);
+    }
+
+    public void Dispose()
+    {
+        EventBus.OnCurrentExplorerObjectChanged -= OnTreeItemClickAsync;
+    }
+
+    #region Item Classes 
+
+    class ExplorerObjectBreadcrumbItem : BreadcrumbItem
+    {
+        private readonly IExplorerObject _exObject;
+
+        public ExplorerObjectBreadcrumbItem(IExplorerObject exObject) 
+          : base(exObject.Name, "")
+        {
+            _exObject = exObject;    
+        }
+
+        public IExplorerObject ExObject => _exObject;
+    }
+
+    #endregion
+}

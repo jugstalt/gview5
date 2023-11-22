@@ -1,0 +1,13 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netstandard2.0</TargetFramework>
+	  <nulNullable></Nullable>enable
+	  <langLangVersion></LangVersion>10
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\gView.Framework.Blazor\gView.Framework.Blazor.csproj" />
+  </ItemGroup>
+
+</Project>

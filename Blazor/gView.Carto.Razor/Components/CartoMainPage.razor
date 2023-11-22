@@ -1,0 +1,36 @@
+@rendermode InteractiveServer 
+
+<div class="carto-main @(_isDarkMode ? "dark": "light")">
+    <MudThemeProvider @bind-IsDarkMode="@_isDarkMode" Theme="_theme" />
+
+    <MudPaper Class="toolbar" Elevation="2">
+        <ToolRibbon ToggleDarkmode="ToggleDarkmode" />
+    </MudPaper>
+    
+    
+    <MudPaper Class="toc" Elevation="2">
+        <Toc />
+    </MudPaper>
+
+    <div class="toc-content-splitter"></div>
+
+    <MudPaper Class="content" Elevation="2">
+        <Content />
+    </MudPaper>
+
+    <MudPaper Class="status-bar" Elevation="2">
+        <StatusBar />
+    </MudPaper>
+</div>
+
+<script src="_content/gView.Carto.Razor/js/carto.js"></script>
+
+@code {
+    private MudTheme _theme = new();
+    private bool _isDarkMode = true;
+
+    private void ToggleDarkmode()
+    {
+        _isDarkMode = !_isDarkMode;
+    }
+}

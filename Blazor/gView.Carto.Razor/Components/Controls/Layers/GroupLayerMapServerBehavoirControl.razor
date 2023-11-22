@@ -1,0 +1,23 @@
+@if(Layer!=null)
+{
+    <GvCard Title="Group Layer Style">
+        <GvCardContent>
+            <MudSelect T="MapServerGrouplayerStyle" 
+                       @bind-Value="Layer.MapServerStyle">
+                @(GvUtilities.EnumToSelectItems<MapServerGrouplayerStyle>())
+            </MudSelect>
+
+            @GvUtilities.InfoText("This option can be used to determine how a group layer behaves in a map server service")
+
+            @GvUtilities.InfoTextHeader("Dropdownable")
+            @GvUtilities.InfoText("This is the default setting. The group layer behaves like a group that can contain multiple layers. Each layer of the group can be addressed individually by its ID")
+
+            @GvUtilities.InfoTextHeader("Checkbox")
+            @GvUtilities.InfoText("The group layer appears like a single layer. The included layers are not listed in the capabilites of the service. The group layers determine the visibility of all layers included. It is not possible to query the child layers.")
+        </GvCardContent>
+    </GvCard>
+}
+
+@code {
+    [Parameter] public IGroupLayer? Layer { get; set; }
+}

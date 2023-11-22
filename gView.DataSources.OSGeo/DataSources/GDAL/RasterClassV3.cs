@@ -4,6 +4,7 @@ using gView.Framework.Geometry;
 using gView.Framework.IO;
 using gView.Framework.LinAlg;
 using gView.Framework.system;
+using gView.Geometry.Framework.Geometry.Extesnsions;
 using gView.GraphicsEngine;
 using System;
 using System.Collections.Generic;
@@ -155,27 +156,7 @@ namespace gView.DataSources.GDAL
                         }
 
                     }
-                    FileInfo fiPrj = new FileInfo(fi.FullName.Substring(0, fi.FullName.Length - fi.Extension.Length) + ".prj");
-                    if (fiPrj.Exists)
-                    {
-                        StreamReader sr = new StreamReader(fiPrj.FullName);
-                        string wkt = sr.ReadToEnd();
-                        sr.Close();
-
-                        _sRef = gView.Framework.Geometry.SpatialReference.FromWKT(wkt);
-                    }
-                    else
-                    {
-                        fiPrj = new FileInfo(fi.FullName.Substring(0, fi.FullName.Length - fi.Extension.Length) + ".wkt");
-                        if (fiPrj.Exists)
-                        {
-                            StreamReader sr = new StreamReader(fiPrj.FullName);
-                            string wkt = sr.ReadToEnd();
-                            sr.Close();
-
-                            _sRef = gView.Framework.Geometry.SpatialReference.FromWKT(wkt);
-                        }
-                    }
+                    _sRef = fi.FileSpatialReference();
                     if (polygon != null)
                     {
                         _polygon = polygon;
@@ -306,7 +287,7 @@ namespace gView.DataSources.GDAL
                 var p2 = new gView.Framework.Geometry.Point(vecs[1].x, vecs[1].y);
                 var p3 = new gView.Framework.Geometry.Point(vecs[2].x, vecs[2].y);
 
-                double pix = display.mapScale / (display.dpi / 0.0254);  // [m]
+                double pix = display.MapScale / (display.Dpi / 0.0254);  // [m]
                 double c1 = Math.Sqrt(_tfw.dx_X * _tfw.dx_X + _tfw.dx_Y * _tfw.dx_Y);
                 double c2 = Math.Sqrt(_tfw.dy_Y * _tfw.dy_Y + _tfw.dy_X * _tfw.dy_X);
                 double mag = Math.Min(c1, c2) / pix;

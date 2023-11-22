@@ -42,7 +42,7 @@ namespace gView.Plugins.MapTools.Dialogs
             string title = _layer.Title;
             if (doc != null && doc.FocusMap != null && doc.FocusMap.TOC != null)
             {
-                ITOCElement tocElement = doc.FocusMap.TOC.GetTOCElement(_layer);
+                ITocElement tocElement = doc.FocusMap.TOC.GetTOCElement(_layer);
                 if (tocElement != null)
                 {
                     title = tocElement.Name;

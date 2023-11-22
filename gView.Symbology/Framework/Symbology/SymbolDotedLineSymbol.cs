@@ -130,13 +130,13 @@ namespace gView.Framework.Symbology
                     double stepWidthValue = this.StepWidth;
                     double stepStartPosValue = this.StepStartPos;
                     double step = 0, start = 0;
-                    double symbolMaxDistance = 0.5 * display.SpatialReference.MetersToDeg(this.SymbolMaxDistance * display.mapScale / (96 / 0.0254));
+                    double symbolMaxDistance = 0.5 * display.SpatialReference.MetersToDeg(this.SymbolMaxDistance * display.MapScale / (96 / 0.0254));
 
                     switch (this.StepWidthUnit)
                     {
                         case StepWidthUnit.Pixel:
-                            step = display.SpatialReference.MetersToDeg(stepWidthValue * (display.mapScale / (96 / 0.0254)) /* [m] */ );
-                            start = display.SpatialReference.MetersToDeg(stepStartPosValue * (display.mapScale / (96 / 0.0254))  /* [m] */);
+                            step = display.SpatialReference.MetersToDeg(stepWidthValue * (display.MapScale / (96 / 0.0254)) /* [m] */ );
+                            start = display.SpatialReference.MetersToDeg(stepStartPosValue * (display.MapScale / (96 / 0.0254))  /* [m] */);
                             break;
                     }
 
@@ -292,9 +292,9 @@ namespace gView.Framework.Symbology
             }
 
             float fac = 1;
-            if (options.ApplyRefScale && display.mapScale >= 1)
+            if (options.ApplyRefScale && display.MapScale >= 1)
             {
-                fac = (float)(display.refScale / display.mapScale);
+                fac = (float)(display.ReferenceScale / display.MapScale);
                 fac = options.RefScaleFactor(fac);
             }
             fac *= options.DpiFactor;

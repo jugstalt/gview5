@@ -17,9 +17,9 @@ namespace gView.Framework.system
             this.Display = display;
             this.ApplyRefScale = applyRefScale;
 
-            this.DpiFactor = display == null || display.dpi == 96D ?
+            this.DpiFactor = display == null || display.Dpi == 96D ?
                 1f :
-                (float)System.Math.Pow(display.dpi / 96.0, 1.0);
+                (float)System.Math.Pow(display.Dpi / 96.0, 1.0);
 
             this.MaxRefScaleFactor = maxRefScaleFactor <= float.Epsilon ? float.MaxValue : maxRefScaleFactor;
             this.MaxLabelRefScaleFactor = maxLabelRefscaleFactor <= float.Epsilon ? float.MaxValue : maxLabelRefscaleFactor;

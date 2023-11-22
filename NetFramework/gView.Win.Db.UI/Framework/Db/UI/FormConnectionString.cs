@@ -269,7 +269,7 @@ namespace gView.Framework.Db.UI
                     cmbConnections.Items.Add(new ConnectionItem(provider));
 
                     if (_initialConnString != null &&
-                        provider.Attributes["id"].Value == _initialConnString.ProviderID)
+                        provider.Attributes["id"].Value == _initialConnString.ProviderId)
                     {
                         cmbConnections.SelectedIndex = cmbConnections.Items.Count - 1;
                     }
@@ -333,7 +333,7 @@ namespace gView.Framework.Db.UI
 
                 DbConnectionString dbConnString = new DbConnectionString();
 
-                dbConnString.ProviderID = ((ConnectionItem)cmbConnections.SelectedItem).ID;
+                dbConnString.ProviderId = ((ConnectionItem)cmbConnections.SelectedItem).ID;
                 dbConnString.SchemaName = cmbTypes.SelectedItem.ToString();
                 dbConnString.UseProviderInConnectionString = _useProvider;
 

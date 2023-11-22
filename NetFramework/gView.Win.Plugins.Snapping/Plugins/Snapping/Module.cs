@@ -257,7 +257,7 @@ namespace gView.Plugins.Snapping
             IGUIApplication guiApp = (_doc != null) ? _doc.Application as IGUIApplication : null;
 
             if (map == null || schema == null || envelope == null ||
-                map.Display == null || map.Display.mapScale >= schema.MaxScale)
+                map.Display == null || map.Display.MapScale >= schema.MaxScale)
             {
                 return;
             }
@@ -271,12 +271,12 @@ namespace gView.Plugins.Snapping
                     continue;
                 }
 
-                if (sLayer.FeatureLayer.MinimumScale >= 1 && sLayer.FeatureLayer.MinimumScale > _doc.FocusMap.Display.mapScale)
+                if (sLayer.FeatureLayer.MinimumScale >= 1 && sLayer.FeatureLayer.MinimumScale > _doc.FocusMap.Display.MapScale)
                 {
                     continue;
                 }
 
-                if (sLayer.FeatureLayer.MaximumScale >= 1 && sLayer.FeatureLayer.MaximumScale < _doc.FocusMap.Display.mapScale)
+                if (sLayer.FeatureLayer.MaximumScale >= 1 && sLayer.FeatureLayer.MaximumScale < _doc.FocusMap.Display.MapScale)
                 {
                     continue;
                 }
@@ -405,7 +405,7 @@ namespace gView.Plugins.Snapping
                     return 0.0;
                 }
 
-                double tol = _pixTolerance * _doc.FocusMap.Display.mapScale / (96 / 0.0254);  // [m]
+                double tol = _pixTolerance * _doc.FocusMap.Display.MapScale / (96 / 0.0254);  // [m]
                 if (_doc.FocusMap.Display.SpatialReference != null &&
                     _doc.FocusMap.Display.SpatialReference.SpatialParameters.IsGeographic)
                 {

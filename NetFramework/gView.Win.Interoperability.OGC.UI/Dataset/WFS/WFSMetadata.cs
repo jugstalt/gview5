@@ -24,7 +24,7 @@ namespace gView.Interoperability.OGC.UI.Dataset.WFS
             set
             {
                 _metadata = value as WFS_Export_Metadata;
-                epsgSelector1.Metadata = value as IEPSGMetadata;
+                epsgSelector1.Metadata = value as IEpsgMetadata;
             }
         }
 

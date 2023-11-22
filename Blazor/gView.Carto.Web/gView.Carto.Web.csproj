@@ -1,0 +1,20 @@
+<Project Sdk="Microsoft.NET.Sdk.Web">
+
+  <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\gView.GraphicsEngine.GdiPlus\gView.GraphicsEngine.GdiPlus.csproj" />
+    <ProjectReference Include="..\..\gView.GraphicsEngine.Skia\gView.GraphicsEngine.Skia.csproj" />
+    <ProjectReference Include="..\..\gView.GraphicsEngine\gView.GraphicsEngine.csproj" />
+    <ProjectReference Include="..\gView.Blazor.Core\gView.Blazor.Core.csproj" />
+    <ProjectReference Include="..\gView.Carto.Plugins\gView.Carto.Plugins.csproj" />
+    <ProjectReference Include="..\gView.Carto.Razor\gView.Carto.Razor.csproj" />
+    <ProjectReference Include="..\gView.DataExplorer.Plugins\gView.DataExplorer.Plugins.csproj" />
+    <ProjectReference Include="..\gView.Razor.Leaflet\gView.Razor.Leaflet.csproj" />
+  </ItemGroup>
+
+</Project>

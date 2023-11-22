@@ -1,0 +1,34 @@
+@inherits ModalDialogFormBase<BaseDialogModel<BinaryTreeDef>>
+@inject IApplicationScope AppScope
+
+<ModalDialogFormBase T="BaseDialogModel<BinaryTreeDef>"
+                     OnDialogClose="base.OnDialogClose"
+                     Model="base.Model">
+    <FormContent>
+        <SpatialIndexDefControl BinaryTreeDef="Model.Value" @ref="spatialIndexDefControl" />
+    </FormContent>
+
+    <DialogButtons>
+        <MudButton Variant="Variant.Filled"
+                   Color="Color.Default"
+                   OnClick="Close">Cancel</MudButton>
+        <MudButton Variant="Variant.Filled"
+                   Color="Color.Primary"
+                   OnClick="SubmitDialog">Recalc index</MudButton>
+    </DialogButtons>
+
+</ModalDialogFormBase>
+
+@code {
+    private SpatialIndexDefControl? spatialIndexDefControl;
+
+    protected Task SubmitDialog()
+    {
+        if (spatialIndexDefControl != null)
+        {
+            Model.Value = spatialIndexDefControl.BinaryTreeDef;
+        }
+
+        return base.Submit();
+    }
+}

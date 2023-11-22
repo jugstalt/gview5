@@ -296,7 +296,7 @@ namespace gView.Framework.Symbology
             float fac = 1;
             if (options.ApplyRefScale)
             {
-                fac = (float)(display.refScale / display.mapScale);
+                fac = (float)(display.ReferenceScale / display.MapScale);
                 fac = options.RefScaleFactor(fac);
             }
             fac *= options.DpiFactor;

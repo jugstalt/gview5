@@ -1,0 +1,66 @@
+@using gView.Framework.Data.Filters
+@inherits BaseHandler
+@inject IApplicationScope AppScope
+
+@if(Layer is not null)
+{
+    <GvCard Title="Definition Query (Filter)">
+        <GvCardContent>
+            <MudTextField T="string" @ref="_input"
+                          Value="Layer.FilterQuery?.WhereClause"
+                          OnBlur="ApplyInputValue"
+                          Label="Filter Query" 
+                          Lines="12"/>
+        </GvCardContent>
+
+        <div style="text-align:right;padding:18px">
+            <MudButton Color="Color.Primary" Variant="Variant.Filled"
+                       OnClick="ShowQueryBuilder">Query Builder</MudButton>
+        </div>
+        
+    </GvCard>    
+}
+
+@code {
+    [Parameter] public IFeatureLayer? Layer { get; set; }
+    private MudTextField<string>? _input;
+
+    private void ApplyInputValue()
+        => SetQueryString(_input?.Value);
+
+    private void SetQueryString(string? queryString)
+    {
+        if (Layer is not null)
+        {
+            if (String.IsNullOrWhiteSpace(queryString))
+            {
+                Layer.FilterQuery = null;
+            }
+            else
+            {
+                Layer.FilterQuery = new QueryFilter()
+                {
+                    WhereClause = queryString
+                };
+            }
+        }
+    }
+
+    private Task ShowQueryBuilder() => HandleAsync(async () =>
+    {
+        var model = await AppScope.ShowModalDialog(
+            typeof(gView.Carto.Razor.Components.Dialogs.QueryBuilderDialog),
+            "Query Builder",
+            new QueryBuilderModel()
+            {
+                TableClass = Layer?.FeatureClass,
+                QueryString = Layer?.FilterQuery?.WhereClause ?? ""
+            }
+        );
+
+        if (model is not null)
+        {
+            SetQueryString(model.QueryString);
+        }
+    });
+}

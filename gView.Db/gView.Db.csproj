@@ -5,10 +5,14 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <None Remove="gview.db.ui.json" />
     <None Remove="gview.db.ui.xml" />
   </ItemGroup>
 
   <ItemGroup>
+    <Content Include="gview.db.ui.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
     <Content Include="gview.db.ui.xml">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
@@ -20,12 +24,12 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Npgsql" Version="6.0.7" />
+    <PackageReference Include="Npgsql" Version="7.0.6" />
     <PackageReference Include="Oracle.ManagedDataAccess.Core" Version="2.19.160" />
-    <PackageReference Include="Stub.System.Data.SQLite.Core.NetStandard" Version="1.0.117" />
+    <PackageReference Include="Stub.System.Data.SQLite.Core.NetStandard" Version="1.0.118" />
     <PackageReference Include="System.Data.SqlClient" Version="4.8.5" />
-    <PackageReference Include="System.Data.SQLite" Version="1.0.117" />
-    <PackageReference Include="System.Data.SQLite.Core" Version="1.0.117" />
+    <PackageReference Include="System.Data.SQLite" Version="1.0.118" />
+    <PackageReference Include="System.Data.SQLite.Core" Version="1.0.118" />
   </ItemGroup>
 
 </Project>

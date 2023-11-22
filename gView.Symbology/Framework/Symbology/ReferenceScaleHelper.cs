@@ -6,9 +6,9 @@ namespace gView.Framework.Symbology
     {
         static public float PenWidth(float penWidth, IPenWidth symbol, Carto.IDisplay display)
         {
-            float dpiFactor = display == null || display.dpi == 96.0f ?
+            float dpiFactor = display == null || display.Dpi == 96.0f ?
                 1f :
-                (float)(display.dpi / 96.0);
+                (float)(display.Dpi / 96.0);
 
             if (symbol.MinPenWidth > 0f && penWidth < symbol.MinPenWidth * dpiFactor)
             {
@@ -32,7 +32,7 @@ namespace gView.Framework.Symbology
             {
                 if (options.ApplyRefScale)
                 {
-                    fac = (float)(display.refScale / display.mapScale);
+                    fac = (float)(display.ReferenceScale / display.MapScale);
                     fac = options.RefScaleFactor(fac);
                 }
                 fac *= options.DpiFactor;

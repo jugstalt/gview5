@@ -1,0 +1,21 @@
+@inherits ModalDialogFormBase<ObjectInfoModel>
+@inject IconService Icons
+
+<ModalDialogFormBase T="ObjectInfoModel"
+                     OnDialogClose="base.OnDialogClose"
+                     Model="base.Model">
+    <FormContent>
+        <div style="display: flex; align-items: center;">
+            <MudIcon Icon="@Icons.FromString(Model.ExplorerObject.Icon)" Style="margin-right: 6px;" />
+            <MudText>@Model.ExplorerObject.Type: @Model.ExplorerObject.Name</MudText>
+        </div>
+
+        @foreach(var key in Model.Properties.Keys) {
+            <MudTextField Value="@Model.Properties[key]" ReadOnly="true"
+                          Label="@key" />
+        }
+    </FormContent>
+    <DialogButtons>
+        <div />
+    </DialogButtons>
+</ModalDialogFormBase>

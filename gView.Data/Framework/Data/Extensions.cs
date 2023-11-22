@@ -8,12 +8,12 @@ namespace gView.Framework.Data
     {
         static public bool RenderInScale(this ILayer layer, IDisplay display)
         {
-            if (layer.MinimumScale > 1 && layer.MinimumScale > display.mapScale)
+            if (layer.MinimumScale > 1 && layer.MinimumScale > display.MapScale)
             {
                 return false;
             }
 
-            if (layer.MaximumScale > 1 && layer.MaximumScale < display.mapScale)
+            if (layer.MaximumScale > 1 && layer.MaximumScale < display.MapScale)
             {
                 return false;
             }
@@ -28,12 +28,12 @@ namespace gView.Framework.Data
                 return layer.RenderInScale(display);
             }
 
-            if (layer.MinimumLabelScale > 1 && layer.MinimumLabelScale > display.mapScale)
+            if (layer.MinimumLabelScale > 1 && layer.MinimumLabelScale > display.MapScale)
             {
                 return false;
             }
 
-            if (layer.MaximumLabelScale > 1 && layer.MaximumLabelScale < display.mapScale)
+            if (layer.MaximumLabelScale > 1 && layer.MaximumLabelScale < display.MapScale)
             {
                 return false;
             }

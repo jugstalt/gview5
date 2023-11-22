@@ -1,0 +1,75 @@
+@inherits BaseHandler
+@implements IDisposable
+@inject IconService Icons
+@inject ExplorerEventBusService EventBus
+@inject IApplicationScope AppScope
+
+@if (table != null)
+{
+    
+    <MudTable Items="@table.Rows" Hover="true" Dense="true"
+              T="RowItem">
+        <HeaderContent>
+            @foreach(var column in table.Columns) 
+            {
+                <MudTh Class="table-column-icon">@column</MudTh>
+            }
+        </HeaderContent>
+        <RowTemplate>
+            @{
+                var first = true;
+                foreach (var column in table.Columns)
+                {
+                    <MudTd onclick="">
+                       <div style="vertical-align:top;display:inline-flex;width:100%;cursor:pointer">
+                            @if (first == true && !String.IsNullOrEmpty(context.Icon))
+                            {
+                                <MudIcon Icon="@Icons.FromString(context.Icon)" />
+                                { first = false; }
+                            }
+                            <span>&nbsp;@context[column]</span>
+                       </div>
+                    </MudTd>
+                }
+            }
+        </RowTemplate>
+    </MudTable>
+}
+
+@code{
+    [Parameter] public IExplorerTabPage? FrameworkElement { get; set; }
+    [Parameter] public IExplorerObject? CurrentExplorerObject { get; set; }
+
+    private TableItem? table;
+
+    protected override void OnInitialized()
+    {
+
+    }
+
+    async protected override Task OnParametersSetAsync()
+    {
+        await base.OnParametersSetAsync();
+
+        await base.HandleAsync(async () =>
+        {
+            if (FrameworkElement == null)
+            {
+                return;
+            }
+
+            await using (var busy = await AppScope.RegisterBusyTaskAsync($"Refresh FeatureClass Content"))
+            {
+                await FrameworkElement.SetExplorerObjectAsync(CurrentExplorerObject);
+                var result = await FrameworkElement.RefreshContents();
+
+                table = result.Item as TableItem;
+            }
+        });
+    }
+
+    public void Dispose()
+    {
+        
+    }
+}

@@ -1,0 +1,18 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netstandard2.0</TargetFramework>
+    <LangVersion>11</LangVersion>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\gView.Cmd.Core\gView.Cmd.Core.csproj" />
+    <ProjectReference Include="..\gView.DataSources.Fdb.PostgreSql\gView.DataSources.Fdb.PostgreSql.csproj" />
+    <ProjectReference Include="..\gView.DataSources.Fdb.SQLite\gView.DataSources.Fdb.SQLite.csproj" />
+    <ProjectReference Include="..\gView.DataSources.Fdb.SqlServer\gView.DataSources.Fdb.SqlServer.csproj" />
+    <ProjectReference Include="..\gView.DataSources.Fdb\gView.DataSources.Fdb.csproj" />
+    <ProjectReference Include="..\gView.System\gView.System.csproj" />
+  </ItemGroup>
+
+</Project>

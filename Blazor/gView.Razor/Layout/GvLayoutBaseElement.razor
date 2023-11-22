@@ -1,0 +1,34 @@
+@using System.Text;
+@code{
+    [Parameter] public string? Height { get; set; }
+    [Parameter] public string? MaxHeight { get; set; }
+
+    private StringBuilder _style = new StringBuilder();
+
+    protected override void OnInitialized()
+    {
+        base.OnInitialized();
+
+        _style.Append("margin-bottom:8px;");
+        if (!String.IsNullOrEmpty(Height))
+        {
+            _style.Append($"height:{Height};");
+        }
+
+
+        if (!String.IsNullOrEmpty(MaxHeight))
+        {
+            _style.Append("overflow:auto;");
+            _style.Append($"max-height:{MaxHeight};");
+        }
+    }
+
+    protected string Styles
+    {
+        get
+        {
+            return _style.ToString();
+        }
+    }
+    protected bool HasStyles { get => _style.Length > 0; }
+}

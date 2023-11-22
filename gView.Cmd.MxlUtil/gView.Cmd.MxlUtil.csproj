@@ -11,7 +11,7 @@
 
   <ItemGroup>
     <PackageReference Include="LuceneServerNET.Client" Version="1.22.1203" />
-    <PackageReference Include="System.Security.Permissions" Version="6.0.0" />
+    <PackageReference Include="System.Security.Permissions" Version="8.0.0" />
   </ItemGroup>
 
   <ItemGroup>

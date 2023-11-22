@@ -3,6 +3,7 @@ using gView.Framework.system;
 using System;
 using System.Data;
 using System.Data.Common;
+using System.IO;
 
 namespace gView.Framework.Proj
 {
@@ -30,7 +31,7 @@ namespace gView.Framework.Proj
             _table = table;
 
             _dbFactory = DataProvider.SQLiteProviderFactory;
-            _connectionString = "Data Source=" + SystemVariables.StartupDirectory + @"/proj.db";
+            _connectionString = $"Data Source={Path.Combine(SystemVariables.StartupDirectory, "proj.db")}";
         }
 
         /*
@@ -172,13 +173,13 @@ namespace gView.Framework.Proj
             return datum;
         }
 
-        public DataTable GetTable(string where)
+        public DataTable GetTable(string where = "")
         {
             DataTable tab = DbSelect("PROJ_ID,PROJ_DESCRIPTION", _table, where);
             return tab;
         }
 
-        public DataTable GetDatumTable(string where)
+        public DataTable GetDatumTable(string where = "")
         {
             DataTable tab = DbSelect("DATUM_NAME", _table, where);
             return tab;

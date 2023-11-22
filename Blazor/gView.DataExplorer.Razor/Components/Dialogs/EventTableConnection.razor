@@ -1,0 +1,191 @@
+@using gView.Framework.Db;
+@inherits ModalDialogFormBase<EventTableConnectionModel>
+@inject IApplicationScope AppScope
+
+<ModalDialogFormBase T="EventTableConnectionModel"
+                          OnDialogClose="base.OnDialogClose"
+                          Model="base.Model">
+    <DialogBody>
+        <GvGrid ColumnCount="2">
+            <GvGridItem>
+                <GvCard Title="Database Connection" Height="160">
+                    <GvCardContent>
+                        @if(!String.IsNullOrEmpty(Model.ConnectionString.ProviderId))
+                        {
+                            <MudText Typo="Typo.body2">@Model.ConnectionString.ProviderId</MudText>
+                        }
+                        
+                    </GvCardContent>
+                    <GvCardActions>
+                         <MudButton Variant="Variant.Text"
+                                     Color="Color.Primary"
+                                     OnClick="SelectConnectionString">
+                             Select
+                         </MudButton>
+                    </GvCardActions>
+                </GvCard>
+            </GvGridItem>
+
+            <GvGridItem>
+                <GvCard Title="Coordinate System/Projection" Height="160">
+                    <GvCardContent>
+                        @if (Model.SpatialReference != null)
+                        {
+                            <MudText Typo="Typo.body2">@Model.SpatialReference.Name</MudText>
+                            <MudText Typo="Typo.body2">@Model.SpatialReference.Description</MudText>
+                        }
+                    </GvCardContent>
+                    <GvCardActions>
+                        <MudButton Variant="Variant.Text"
+                                   Color="Color.Primary"
+                                   OnClick="SelectSpatialReference">
+                            Select
+                        </MudButton>
+                    </GvCardActions>
+                </GvCard>
+            </GvGridItem>
+
+        @if(_tableNames != null && _tableNames.Count()>0)
+        {
+            <GvGridItem Span="2">
+                <GvCard Title="Database Table">
+                    <GvCardContent>
+                        <MudSelect T="string"
+                                   Label="Name:"
+                                   ValueChanged="(val) => OnTableNameChanged(val)"
+                                   Value="Model.TableName"
+                                   Variant="Variant.Text">
+                            @foreach (var tableName in _tableNames)
+                            {
+                                <MudSelectItem Value="@tableName">@tableName</MudSelectItem>
+                            }
+                        </MudSelect>
+
+                        @if (_idTypeFields != null)
+                        {
+                            <MudSelect T="string"
+                                        Label = "ID Field"
+                                        @bind-Value="Model.IdFieldName"
+                                        Variant="Variant.Text">
+                                @foreach (var field in _idTypeFields)
+                                {
+                                    <MudSelectItem Value="@field.name">@field.name</MudSelectItem>
+                                }        
+                            </MudSelect>
+                        }
+
+                        @if (_coordinageTypeFields != null)
+                        {
+                            <MudSelect T="string"
+                                       Label="X Field"
+                                       @bind-Value="Model.XFieldName"
+                                       Variant="Variant.Text">
+                                @foreach (var field in _coordinageTypeFields)
+                                {
+                                    <MudSelectItem Value="@field.name">@field.name</MudSelectItem>
+                                }
+                            </MudSelect>
+
+                            <MudSelect T="string"
+                                       Label="Y Field"
+                                       @bind-Value="Model.YFieldName"
+                                       Variant="Variant.Text">
+                                @foreach (var field in _coordinageTypeFields)
+                                {
+                                    <MudSelectItem Value="@field.name">@field.name</MudSelectItem>
+                                }
+                            </MudSelect>
+                        }
+
+                    </GvCardContent>
+                </GvCard> 
+            </GvGridItem>
+        }
+
+            
+        </GvGrid>
+    </DialogBody>
+</ModalDialogFormBase>
+
+@code{
+    private IEnumerable<string>? _tableNames;
+    private IEnumerable<IField>? _idTypeFields;
+    private IEnumerable<IField>? _coordinageTypeFields;
+
+    protected override Task OnInitializedAsync() => HandleAsync(async () =>
+    {
+        await base.OnInitializedAsync();
+
+        OnConnectionStringChanged();
+
+        if (!String.IsNullOrWhiteSpace(Model.TableName))
+        {
+            OnTableNameChanged(Model.TableName);
+        }
+    });
+
+    private Task SelectConnectionString() => HandleAsync(async () =>
+    {
+        var DbConnectionModel = await AppScope.ShowKnownDialog(Framework.Blazor.KnownDialogs.ConnectionString,
+                                                               model: new ConnectionStringModel(Model.ConnectionString.Clone()));
+
+        if (DbConnectionModel != null)
+        {
+            Model.ConnectionString = DbConnectionModel.DbConnectionString;
+
+            OnConnectionStringChanged();
+        }
+    });
+
+    private void OnConnectionStringChanged() => Handle(() =>
+    {
+        if (Model.ConnectionString != null)
+        {
+            CommonDbConnection connection = new CommonDbConnection()
+                {
+                    ConnectionString2 = Model.ConnectionString.ConnectionString
+                };
+
+            _tableNames = connection.TableNames(appendViews: true);
+        }
+    });
+
+    private void OnTableNameChanged(string tableName) => Handle(() =>
+    {
+        Model.TableName = tableName;
+
+        CommonDbConnection connection = new CommonDbConnection()
+        {
+            ConnectionString2 = Model.ConnectionString.ConnectionString
+        };
+
+        if (!connection.GetSchema(tableName))
+        {
+            throw new Exception(connection.errorMessage);
+        }
+
+        FieldCollection fields = new FieldCollection(connection.schemaTable);
+
+        _idTypeFields = fields.ToArray()
+            .Where(f => f.type == Framework.Data.FieldType.integer || f.type == Framework.Data.FieldType.biginteger)
+            .ToArray();
+
+        _coordinageTypeFields = fields.ToArray()
+            .Where(f => f.type == Framework.Data.FieldType.Double || f.type == Framework.Data.FieldType.Float)
+            .ToArray();
+    });
+
+    private Task SelectSpatialReference() => HandleAsync(async () =>
+    {
+        var sRrefModel = await AppScope.ShowKnownDialog(Framework.Blazor.KnownDialogs.SpatialReferenceDialog,
+                                                        model: new BaseDialogModel<ISpatialReference>()
+                                                            {
+                                                                Value = Model.SpatialReference
+                                                            });
+
+        if (sRrefModel != null)
+        {
+            Model.SpatialReference = sRrefModel.Value;
+        }
+    });
+}

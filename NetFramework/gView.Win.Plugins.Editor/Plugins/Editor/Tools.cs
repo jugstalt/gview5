@@ -544,7 +544,7 @@ namespace gView.Plugins.Editor
                 // Besser layer als layer.Class verwendenden, weil Class von mehrerenen Layern
                 // verwendet werden kann zB bei gesplitteten Layern...
                 //ITOCElement tocElement = map.TOC.GetTOCElement(editLayer.FeatureLayer.FeatureClass);
-                ITOCElement tocElement = map.TOC.GetTOCElement(editLayer.FeatureLayer);
+                ITocElement tocElement = map.TOC.GetTOCElement(editLayer.FeatureLayer);
                 if (tocElement == null)
                 {
                     continue;
@@ -838,7 +838,7 @@ namespace gView.Plugins.Editor
                 IFeatureClass fc = _module.SelectedEditLayer.FeatureLayer.FeatureClass;
 
                 double tolerance = 5.0;
-                double tol = tolerance * _doc.FocusMap.Display.mapScale / (96 / 0.0254);  // [m]
+                double tol = tolerance * _doc.FocusMap.Display.MapScale / (96 / 0.0254);  // [m]
                 if (_doc.FocusMap.Display.SpatialReference != null &&
                      _doc.FocusMap.Display.SpatialReference.SpatialParameters.IsGeographic)
                 {

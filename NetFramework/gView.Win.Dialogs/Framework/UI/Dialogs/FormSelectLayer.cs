@@ -139,7 +139,7 @@ namespace gView.Framework.UI.Dialogs
 
             if (map != null && map.TOC != null)
             {
-                ITOCElement tocelement = map.TOC.GetTOCElement(layer);
+                ITocElement tocelement = map.TOC.GetTOCElement(layer);
                 if (tocelement != null)
                 {
                     _text = tocelement.Name;

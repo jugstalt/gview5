@@ -37,16 +37,16 @@ namespace gView.Framework.Carto
                 return;
             }
 
-            x -= display.iWidth / 2.0;
-            y -= display.iHeight / 2.0;
+            x -= display.ImageWidth / 2.0;
+            y -= display.ImageHeight / 2.0;
 
             double x_ = x, y_ = y;
 
             x = x_ * _cos + y_ * _sin;
             y = -x_ * _sin + y_ * _cos;
 
-            x += display.iWidth / 2.0;
-            y += display.iHeight / 2.0;
+            x += display.ImageWidth / 2.0;
+            y += display.ImageHeight / 2.0;
         }
 
         public void InvTransform(IDisplay display, ref double x, ref double y)
@@ -56,16 +56,16 @@ namespace gView.Framework.Carto
                 return;
             }
 
-            x -= display.iWidth / 2.0;
-            y -= display.iHeight / 2.0;
+            x -= display.ImageWidth / 2.0;
+            y -= display.ImageHeight / 2.0;
 
             double x_ = x, y_ = y;
 
             x = x_ * _cos - y_ * _sin;
             y = x_ * _sin + y_ * _cos;
 
-            x += display.iWidth / 2.0;
-            y += display.iHeight / 2.0;
+            x += display.ImageWidth / 2.0;
+            y += display.ImageHeight / 2.0;
         }
 
         public IEnvelope TransformedBounds(IDisplay display)

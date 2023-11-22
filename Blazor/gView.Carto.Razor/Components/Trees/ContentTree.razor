@@ -1,0 +1,171 @@
+@using Microsoft.AspNetCore.Components.Routing
+@inherits BaseHandler
+@implements IDisposable
+
+@inject IconService IconService
+@inject ICartoApplicationService CartoApplication
+@inject IApplicationScope AppScope
+@inject PluginManagerService PluginManager
+@inject CartoEventBusService EventBus
+
+<div style="padding:2px 10px">
+    <MudText Typo="Typo.h6">
+        @(((ICartoApplicationScopeService)AppScope).Document?.Map?.Name)
+    </MudText>
+</div>
+
+@if (_treeNodes.Any())
+{
+    <MudTreeView  Items="_treeNodes"
+    ExpandOnDoubleClick="true" 
+    MultiSelection="false" 
+    Hover="true" Dense="true" @key="@fullReloadKey">
+        <ItemTemplate>
+            <div style="white-space:nowrap; overflow-x:hidden;"
+                 class="treenode">
+            @if (context is TocLayerNode)
+            {
+                
+                <MudTreeViewItem Value="@context"
+                    Class="@(context.IsSelected ? "toctreenode-selected" :"")"
+                    Items="@context.Children"
+                    CanExpand="@context.HasChildren"
+                    Expanded="@context.IsExpanded"
+                    ExpandedChanged="@((expanded) => OnNodeExpandedChanged(context, expanded))"
+                    @onclick="@((e) => OnNodeClickAsync(context,e))">
+                        <Content>
+                            <MudTreeViewItemToggleButton @bind-Expanded="@context.IsExpanded" 
+                                                         Visible="@context.HasChildren" 
+                                                         ExpandedIcon="@Icons.Material.Rounded.ArrowRight" />
+                            <MudCheckBox T="bool" 
+                                         Checked="@context.IsChecked"
+                                         Color="Color.Surface"
+                                         CheckedChanged="@((e) => OnCheckboxClickedAsync(context,e))" />
+                            <MudText>@context.Text</MudText>
+                        </Content>
+                    </MudTreeViewItem>
+            }
+            else if (context is TocLegendNode)
+            {
+                <MudTreeViewItem Value="@context">
+                    <Content>
+                        <div style="white-space:nowrap; overflow-x:hidden;">
+                            <LegendTreeItem ParentElement="context.TocElement" />
+                        </div>
+                    </Content>
+                </MudTreeViewItem>
+            }
+            else
+            {
+                <MudTreeViewItem Value="@context"
+                    Class="@(context.IsSelected ? "toctreenode-selected" :"")"
+                    Items="@context.Children"
+                    CanExpand="true"
+                    Expanded="@context.IsExpanded"
+                    ExpandedChanged="@((expanded) => OnNodeExpandedChanged(context, expanded))"
+                    @onclick="@((e) => OnNodeClickAsync(context,e))">
+                        <Content>
+                            <MudTreeViewItemToggleButton @bind-Expanded="@context.IsExpanded" 
+                                                         Visible="true" 
+                                                         ExpandedIconColor="Color.Primary" />
+                            <MudCheckBox T="bool"
+                                         Checked="@context.IsChecked"
+                                         Color="Color.Primary"
+                                         CheckedChanged="@((e) => OnCheckboxClickedAsync(context,e ))" />
+                            <MudText Class="grouplayer-text">@context.Text</MudText>
+                        </Content>
+                    </MudTreeViewItem>
+            }
+            </div>
+        </ItemTemplate>
+    </MudTreeView>
+}
+else if(_cartoInitialTools != null)
+{
+    <div style="padding:10px">
+        @GvUtilities.InfoText("This is an empty map now. To start use one of the this tools:")
+            
+        @foreach(var cartoTool in _cartoInitialTools)
+        {
+            <div class="carto-initial-tool"
+                 alt="@cartoTool.ToolTip"
+                 @onclick="async () => await cartoTool.OnEvent(AppScope)">
+                <div class="@(IconService.FromString(cartoTool.Icon)) icon"></div>
+                <div class="title">@cartoTool.Name</div>
+            </div>
+        }
+    </div>
+    
+}
+
+@code {
+    private HashSet<TocTreeNode> _treeNodes = new HashSet<TocTreeNode>();
+    private ICartoTool[]? _cartoInitialTools;
+
+    private ICartoApplicationScopeService? _cartoAppService;
+
+    // force a full reload after rebuild
+    // otherwise some items (legends) will be cached!
+    private object fullReloadKey = Guid.NewGuid();
+
+    protected override Task OnInitializedAsync() => base.HandleAsync(async () =>
+    {
+        await base.OnInitializedAsync();
+
+        _cartoInitialTools = PluginManager.GetPlugins<ICartoTool>(gView.Framework.system.Plugins.Type.ICartoTool)
+            .Where(t => t is ICartoInitialTool)
+            .OrderBy(t => t.SortOrder)
+            .ToArray();
+
+        _cartoAppService = (ICartoApplicationScopeService)AppScope;
+        await SetAppScope(_cartoAppService);
+    });
+
+    private void OnNodeExpandedChanged(TocTreeNode node, bool expanded) => base.Handle(() =>
+    {
+        node.IsExpanded = expanded;
+    });
+
+    private Task OnCheckboxClickedAsync(TocTreeNode node, bool isChecked) => base.HandleAsync(async () =>
+    {
+        node.IsChecked = isChecked;
+
+        await EventBus.FireRefreshMapAsync(500);
+    });
+
+    private Task OnNodeClickAsync(TocTreeNode node, MouseEventArgs e) => base.HandleAsync(async () =>
+    {
+        var isSelected = node.IsSelected;
+
+        foreach (var node in _treeNodes)
+        {
+            node.IsSelected = false;
+            UnselectChildNodes(node);
+        }
+
+        node.IsSelected = !isSelected;
+
+        if(_cartoAppService!=null)
+        {
+            await _cartoAppService.SetSelectedTocTreeNode(node.IsSelected ? node : null);
+        }
+    });
+
+    #region Helper
+
+    private void UnselectChildNodes(TocTreeNode tocTreeNode)
+    {
+        if(tocTreeNode.Children == null)
+        {
+            return;
+        }
+
+        foreach(var child in tocTreeNode.Children)
+        {
+            UnselectChildNodes(child);
+            child.IsSelected = false;
+        }
+    }
+
+    #endregion
+}

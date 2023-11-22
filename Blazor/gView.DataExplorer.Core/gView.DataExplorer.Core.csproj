@@ -1,0 +1,22 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netstandard2.1</TargetFramework>
+    <Nullable>enable</Nullable>
+	  <LangVersion>11</LangVersion>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\gView.Core\gView.Core.csproj" />
+    <ProjectReference Include="..\..\gView.Data\gView.Data.csproj" />
+    <ProjectReference Include="..\..\gView.System\gView.System.csproj" />
+    <ProjectReference Include="..\gView.Blazor.Core\gView.Blazor.Core.csproj" />
+    <ProjectReference Include="..\gView.Blazor.Models\gView.Blazor.Models.csproj" />
+    <ProjectReference Include="..\gView.Framework.DataExplorer\gView.Framework.DataExplorer.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Models\Nav\" />
+  </ItemGroup>
+
+</Project>

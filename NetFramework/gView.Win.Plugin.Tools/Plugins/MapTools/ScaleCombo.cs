@@ -89,7 +89,7 @@ namespace gView.Plugins.MapTools
                 try
                 {
                     _dropDown.Enabled = true;
-                    _dropDown.Text = "1:" + (int)(display.mapScale + 0.5);
+                    _dropDown.Text = "1:" + (int)(display.MapScale + 0.5);
                 }
                 catch { }
             }
@@ -107,12 +107,12 @@ namespace gView.Plugins.MapTools
                 return;
             }
 
-            if (scale <= 0 || scale == (int)((IDisplay)_doc.FocusMap).mapScale)
+            if (scale <= 0 || scale == (int)((IDisplay)_doc.FocusMap).MapScale)
             {
                 return;
             }
 
-            _doc.FocusMap.Display.mapScale = scale;
+            _doc.FocusMap.Display.MapScale = scale;
             if (_doc.Application is IMapApplication)
             {
                 ((IMapApplication)_doc.Application).RefreshActiveMap(DrawPhase.All);

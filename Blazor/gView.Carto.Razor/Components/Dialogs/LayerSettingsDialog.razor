@@ -1,0 +1,208 @@
+@inherits ModalDialogFormBase<LayerSettingsModel>
+@inject IconService IconService
+
+@if (Model.Map is not null && Model.Layer is not null)
+{
+    <ModalDialogFormBase T="LayerSettingsModel"
+                         OnDialogClose="base.OnDialogClose"
+                         ContentStyle="DialogContentStyle.Wide"
+                         Model="base.Model">
+        <DialogBody>
+            <MudDrawerContainer Class="mud-height-full">
+                <MudDrawer Variant="@DrawerVariant.Mini" Anchor="Anchor.Left"
+                           Elevation="1"
+                           @bind-Open="@_drawerIsOpen"
+                           OpenMiniOnHover="true"
+                           Fixed="false">
+                    <MudList Clickable="true" @bind-SelectedValue="@_currentTab">
+                        <MudListItem Icon="@IconService.FromString("basic:settings")" Style="white-space:nowrap"
+                                     Value="Page.General" Text="Map / Display"
+                                     OnClick="() => _drawerIsOpen = false" />
+
+
+                        @if(Model.Layer.CanFeatureRender())
+                        {
+                            <MudListItem Icon="@IconService.FromString("webgis:polygon-highlighted")" Style="white-space:nowrap"
+                                         Value="Page.FeatureRenderer" Text="Feature Renderer"
+                                         OnClick="() => _drawerIsOpen = false" />
+
+
+                            <MudListItem Icon="@IconService.FromString("webgis:polygon-selected")" Style="white-space:nowrap"
+                                         Value="Page.FeatureSelectionRenderer" Text="Feature Selection"
+                                         OnClick="() => _drawerIsOpen = false" />
+                        }
+
+                        @if (Model.Layer.CanLabelRenderer())
+                        {
+                            <MudListItem Icon="@IconService.FromString("basic:text")" Style="white-space:nowrap"
+                                         Value="Page.LabelRenderer" Text="Label Rendrerer"
+                                         OnClick="() => _drawerIsOpen = false" />
+                        }
+
+                        
+
+                        @if(Model.Layer.ImplementsSpatialReference())
+                        {
+                            <MudListItem Icon="@IconService.FromString("basic:globe")" Style="white-space:nowrap"
+                                         Value="Page.SpatialReference" Text="Spatial Reference"
+                                         OnClick="() => _drawerIsOpen = false" />
+                        }
+
+                        @if (Model.Layer.ImplementsLayerDefinitionFilter())
+                        {
+                            <MudListItem Icon="@IconService.FromString("basic:filter")" Style="white-space:nowrap"
+                                         Value="Page.Filter" Text="Filter"
+                                         OnClick="() => _drawerIsOpen = false" />
+                        }
+
+                        @if(Model.Layer.IsGroupLayer()) {
+                            <MudListItem Icon="@IconService.FromString("basic:cloud-connect")" Style="white-space:nowrap"
+                                         Value="Page.MapServiceBehavoir" Text="Map Service Behavoir"
+                                         OnClick="() => _drawerIsOpen = false" />
+                        }
+
+                        @if (Model.Layer.ImplementsLayerComposition())
+                        {
+                            <MudListItem Icon="@IconService.FromString("webgis:layer-middle")" Style="white-space:nowrap"
+                                         Value="Page.CompositionMode" Text="Composition Mode"
+                                         OnClick="() => _drawerIsOpen = false" />
+                        }
+
+                        @if(Model.Layer.IsRasterLayer())
+                        {
+                            <MudListItem Icon="@IconService.FromString("basic:drop-50")" Style="white-space:nowrap"
+                                         Value="Page.Raster" Text="Raster Settings"
+                                         OnClick="() => _drawerIsOpen = false" />
+                        }
+
+                        @if (Model.Layer.IsWebServiceLayer())
+                        {
+                            <MudListItem Icon="@IconService.FromString("basic:cloud")" Style="white-space:nowrap"
+                                         Value="Page.WebService" Text="Web Service"
+                                         OnClick="() => _drawerIsOpen = false" />
+                        }
+
+                        @if (Model.Layer.Class is gView.Interoperability.OGC.Dataset.WMS.WMSClass)
+                        {
+                            <MudListItem Icon="@IconService.FromString("basic:cloud")" Style="white-space:nowrap"
+                                         Value="Page.WMS" Text="WMS"
+                                         OnClick="() => _drawerIsOpen = false" />
+                        }
+
+                        @if (Model.Layer.HasDataSource())
+                        {
+                            <MudListItem Icon="@IconService.FromString("basic:database")" Style="white-space:nowrap"
+                                         Value="Page.Source" Text="Source"
+                                         OnClick="() => _drawerIsOpen = false" />
+                        }
+
+                        <MudListItem Icon="@IconService.FromString("basic:copyright")" Style="white-space:nowrap"
+                                     Value="Page.Description" Text="Description & (c)"
+                                     OnClick="() => _drawerIsOpen = false" />
+
+                    </MudList>
+                </MudDrawer>
+            </MudDrawerContainer>
+
+            <MudContainer Style="padding-left:50px;padding-right:10px">
+                @if (Page.General.Equals(_currentTab))
+                {
+                    <LayerGeneralSettingsControl Layer="Model.Layer" />
+                }
+                else if (Page.FeatureRenderer.Equals(_currentTab))
+                {
+                    <FeatureLayerRendererSettingsControl Map="Model.Map" Layer="Model.Layer as IFeatureLayer" />
+                }
+                else if (Page.Description.Equals(_currentTab))
+                {
+                    <LayerDescriptionControl Map="Model.Map" Layer="Model.Layer" />
+                }
+                else if (Page.MapServiceBehavoir.Equals(_currentTab))
+                {
+                    <GroupLayerMapServerBehavoirControl Layer="Model.Layer as IGroupLayer" />
+                }
+                else if(Page.Source.Equals(_currentTab))
+                {
+                    <LayerSourceControl Map="Model.Map" Layer="Model.Layer" />
+                }
+                else if(Page.CompositionMode.Equals(_currentTab))
+                {
+                    <LayerCompositionModeControl Layer="Model.Layer as IFeatureLayerComposition" />
+                }
+                else if(Page.SpatialReference.Equals(_currentTab))
+                {
+                    if(_sRef is not null)
+                    {
+                        <SpatialReferenceControl SpatialReference="_sRef" ReadOnly="true"/>
+                    } 
+                    else
+                    {
+                        @GvUtilities.InfoText("Spatial Reference System is not defined in this layer!")
+                    }
+                }
+                else if(Page.Filter.Equals(_currentTab))
+                {
+                    <LayerFilterSettingsControl Layer="Model.Layer as IFeatureLayer" />
+                }
+                else if (Page.Raster.Equals(_currentTab))
+                {
+                    <RasterLayerSettingsControl Layer="Model.Layer as IRasterLayer" />
+                }
+                else if(Page.WebService.Equals(_currentTab))
+                {
+                    <WebServiceLayerSettings Layer="Model.Layer as IWebServiceLayer" />
+                }
+                else if(Page.WMS.Equals(_currentTab))
+                {
+                    <WmsClassSettingsControl Class="Model.Layer.Class as gView.Interoperability.OGC.Dataset.WMS.WMSClass" />
+                }
+            </MudContainer>
+        </DialogBody>
+
+        <DialogButtons>
+            <MudButton Variant="Variant.Filled"
+                       Color="Color.Default"
+                       OnClick="() => base.Close()">Cancel</MudButton>
+            <MudButton Variant="Variant.Filled"
+                       Color="Color.Primary"
+                       OnClick="Apply">Apply</MudButton>
+        </DialogButtons>
+
+    </ModalDialogFormBase>
+}
+
+@code
+{
+    private enum Page
+    {
+        General,
+        FeatureRenderer,
+        FeatureSelectionRenderer,
+        LabelRenderer,
+        Description,
+        SpatialReference,
+        Filter,
+        MapServiceBehavoir,
+        Source,
+        CompositionMode,
+        Raster,
+        WebService,
+        WMS
+    }
+    private bool _drawerIsOpen = false;
+    private object _currentTab = Page.General;
+
+    private ISpatialReference? _sRef;
+
+    protected override void OnInitialized()
+    {
+        base.OnInitialized();
+
+        _sRef = Model.Layer?.GetSpatialReference();
+    }
+
+    protected Task Apply()
+    {
+        return base.Submit();
+    }
+}

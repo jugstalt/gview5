@@ -1,0 +1,67 @@
+@using gView.Interoperability.OGC.Dataset.WMS
+
+@if(Class is not null)
+{
+    @if (Class.SRSCodes != null)
+    {
+        <GvCard Title="WMS Spatial Reference System">
+            <GvCardContent>
+                <MudSelect T="string" @bind-Value="Class.SRSCode">
+                    @foreach(var srsCode in Class.SRSCodes)
+                    {
+                        string text = srsCode;
+                        if (Class.SRSCodes.Length < 100) // try get description as text
+                        {
+                            ISpatialReference sRef = SpatialReference.FromID(srsCode);
+                            if (sRef != null)
+                            {
+                                text = $"{sRef.Description} ({srsCode})";
+                            }
+                        }
+                        <MudSelectItem Value="srsCode">@text</MudSelectItem>    
+                    }
+                </MudSelect>
+            </GvCardContent>
+        </GvCard>
+    }
+
+    @if(Class.GetMapFormats is not null || Class.FeatureInfoFormats is not null)
+    {
+        <GvCard Title="Map / Info Format">
+            <GvCardContent>
+                @if (Class.GetMapFormats is not null)
+                {
+                    <MudSelect T="string" 
+                               @bind-Value="Class.GetMapFormat">
+                        @GvUtilities.StringsToSelectItems(Class.GetMapFormats)
+                    </MudSelect>
+                }
+
+                @if(Class.FeatureInfoFormats is not null)
+                {
+                    <MudSelect T="string"
+                               @bind-Value="Class.FeatureInfoFormat">
+                        @GvUtilities.StringsToSelectItems(Class.FeatureInfoFormats)
+                    </MudSelect>
+                }
+            </GvCardContent>
+        </GvCard>
+    }
+
+    @*
+    @if (Class.SupportSLD)
+    {
+        <GvCard Title="SLD">
+            <GvCardContent>
+                <MudCheckBox T="bool"
+                             Label="Use SLD_BODY attribute"
+                             @bind-Checked="Class.UseSLD_BODY" />
+            </GvCardContent>
+        </GvCard>
+    }
+    *@
+}
+
+@code {
+    [Parameter] public WMSClass? Class { get; set; }
+}

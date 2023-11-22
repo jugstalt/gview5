@@ -1403,9 +1403,11 @@ namespace gView.DataSources.Fdb.SQLite
         {
             get
             {
-                if (String.IsNullOrEmpty(base.ConnectionString))
+                if (String.IsNullOrEmpty(base.ConnectionString) && !String.IsNullOrEmpty(_filename))
                 {
-                    return "Data Source=" + _filename;
+                    return _filename.ToLower().Contains("Data Source=") ?
+                        _filename :
+                        $"Data Source={_filename}";
                 }
 
                 return base.ConnectionString;

@@ -1,0 +1,17 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netstandard2.0</TargetFramework>
+    <LangVersion>10</LangVersion>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\gView.Carto\gView.Carto.csproj" />
+    <ProjectReference Include="..\gView.Cmd.Core\gView.Cmd.Core.csproj" />
+    <ProjectReference Include="..\gView.Metadata\gView.Metadata.csproj" />
+    <ProjectReference Include="..\gView.Server.Clients\gView.Server.Clients.csproj" />
+    <ProjectReference Include="..\gView.Server.Connector\gView.Server.Connector.csproj" />
+  </ItemGroup>
+
+</Project>

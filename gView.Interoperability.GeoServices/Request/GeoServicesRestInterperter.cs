@@ -46,9 +46,10 @@ namespace gView.Interoperability.GeoServices.Request
         public int Priority => 100;
 
         public InterpreterCapabilities Capabilities =>
-            new InterpreterCapabilities(new InterpreterCapabilities.Capability[]{
-                    new InterpreterCapabilities.SimpleCapability("Catalog (REST)",InterpreterCapabilities.Method.Post,"{server}/geoservices/rest/services/{folder}","1.0"),
-                    new InterpreterCapabilities.SimpleCapability("Service (REST)",InterpreterCapabilities.Method.Post,"{server}/geoservices/rest/services/{folder/service}/MapServer","1.0")
+            new InterpreterCapabilities(new InterpreterCapabilities.Capability[]
+            {
+                new InterpreterCapabilities.SimpleCapability("Catalog (REST)",InterpreterCapabilities.Method.Post,"{server}/geoservices/rest/services/{folder}","1.0"),
+                new InterpreterCapabilities.SimpleCapability("Service (REST)",InterpreterCapabilities.Method.Post,"{server}/geoservices/rest/services/{folder/service}/MapServer","1.0")
             });
 
         public void OnCreate(IMapServer mapServer)
@@ -142,12 +143,12 @@ namespace gView.Interoperability.GeoServices.Request
 
                     #region Display
 
-                    serviceMap.Display.dpi = _exportMap.Dpi;
+                    serviceMap.Display.Dpi = _exportMap.Dpi;
                     //serviceMap.ScaleSymbolFactor = (float)_exportMap.Dpi / 96f;
 
                     var size = _exportMap.Size.ToSize();
-                    serviceMap.Display.iWidth = size[0];
-                    serviceMap.Display.iHeight = size[1];
+                    serviceMap.Display.ImageWidth = size[0];
+                    serviceMap.Display.ImageHeight = size[1];
 
                     if (_exportMap.Rotation != 0.0)
                     {
@@ -225,10 +226,10 @@ namespace gView.Interoperability.GeoServices.Request
                             context.ServiceRequest.Response = new JsonExportResponse()
                             {
                                 Href = $"{context.ServiceRequest.OutputUrl}/{fileName}",
-                                Width = serviceMap.Display.iWidth,
-                                Height = serviceMap.Display.iHeight,
+                                Width = serviceMap.Display.ImageWidth,
+                                Height = serviceMap.Display.ImageHeight,
                                 ContentType = $"image/{iFormat.ToString().ToLower()}",
-                                Scale = serviceMap.Display.mapScale,
+                                Scale = serviceMap.Display.MapScale,
                                 Extent = new JsonExtent()
                                 {
                                     Xmin = serviceMap.Display.Envelope.minx,
@@ -293,7 +294,7 @@ namespace gView.Interoperability.GeoServices.Request
 
                 foreach (var layer in layers)
                 {
-                    var tocElement = sender.TOC?.GetTOCElementByLayerId(layer.ID);
+                    var tocElement = sender.TOC?.GetTocElementByLayerId(layer.ID);
                     bool layerIdContains = tocElement != null ?
                         LayerOrParentIsInArray(sender, tocElement, layerIds) :    // this is how AGS works: if group is shown -> all layers in group are shown...
                         layerIds.Contains(layer.ID);
@@ -411,7 +412,7 @@ namespace gView.Interoperability.GeoServices.Request
             }
         }
 
-        private bool LayerAndParentIsInArray(IServiceMap map, ITOCElement tocElement, int[] layerIds)
+        private bool LayerAndParentIsInArray(IServiceMap map, ITocElement tocElement, int[] layerIds)
         {
             if (tocElement == null)
             {
@@ -436,7 +437,7 @@ namespace gView.Interoperability.GeoServices.Request
             return true;
         }
 
-        private bool LayerOrParentIsInArray(IServiceMap map, ITOCElement tocElement, int[] layerIds)
+        private bool LayerOrParentIsInArray(IServiceMap map, ITocElement tocElement, int[] layerIds)
         {
             while (tocElement != null)
             {
@@ -907,9 +908,9 @@ namespace gView.Interoperability.GeoServices.Request
                     #region Initialize Display
 
                     serviceMap.Display.SpatialReference = sRef;
-                    serviceMap.Display.iWidth = (int)imageDisplay[0];
-                    serviceMap.Display.iHeight = (int)imageDisplay[1];
-                    serviceMap.Display.dpi = imageDisplay[2];
+                    serviceMap.Display.ImageWidth = (int)imageDisplay[0];
+                    serviceMap.Display.ImageHeight = (int)imageDisplay[1];
+                    serviceMap.Display.Dpi = imageDisplay[2];
 
                     serviceMap.Display.Limit = mapExtent;
                     serviceMap.Display.ZoomTo(mapExtent);
@@ -918,7 +919,7 @@ namespace gView.Interoperability.GeoServices.Request
 
                     if (geometry is IPoint && mapExtent.Width > 0 && mapExtent.Height > 0)
                     {
-                        double tol = identify.PixelTolerance * serviceMap.Display.mapScale / (96 / 0.0254);  // [m]
+                        double tol = identify.PixelTolerance * serviceMap.Display.MapScale / (96 / 0.0254);  // [m]
                         if (sRef != null &&
                             sRef.SpatialParameters.IsGeographic)
                         {
@@ -948,7 +949,7 @@ namespace gView.Interoperability.GeoServices.Request
 
                         foreach (var layer in layers)
                         {
-                            var tocElement = serviceMap.TOC.GetTOCElementByLayerId(layer.ID);
+                            var tocElement = serviceMap.TOC.GetTocElementByLayerId(layer.ID);
                             bool layerIdContains = tocElement != null ?
                                 LayerOrParentIsInArray(serviceMap, tocElement, layerIds) :    // this is how AGS works: if group is shown -> all layers in group are shown...
                                 layerIds.Contains(layer.ID);

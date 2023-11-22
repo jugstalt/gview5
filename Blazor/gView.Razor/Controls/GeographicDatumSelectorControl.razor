@@ -1,0 +1,107 @@
+@inherits BaseHandler
+@inject SpatialReferenceService SRefService
+
+<style>
+    .mud-input {
+        display: flex;
+        flex-direction: column;
+        width: 100%;
+        text-align: left;
+    }
+
+    .mud-input-field {
+        padding: 6px 12px;
+        border: 1px solid rgba(0, 0, 0, 0.23);
+        border-radius: 4px;
+        font-size: 1rem;
+        transition: border-color 0.3s;
+        width: 100%;
+    }
+
+        .mud-input-field:focus {
+            border-color: rgb(0, 0, 255);
+        }
+
+    .mud-table-root {
+        cursor: pointer;
+    }
+
+        .mud-table-root tr.mud-table-row:hover {
+            background-color: lightblue !important;
+        }
+</style>
+
+<div class="mud-input">
+    <input type="text" placeholder="Search..." @oninput="FilterTable" @bind-value="searchTerm" class="mud-input-field" />
+</div>
+
+@if (filteredItems != null)
+{
+    <MudTable Items="@filteredItems" T="KeyValuePair<string, string>"
+              Hover="true"
+              Bordered="true"
+              Striped="true"
+              MultiSelection="false"
+              SelectedItemChanged="(item) => OnSelect(item)">
+        <HeaderContent>
+            <MudTh>Id</MudTh>
+        </HeaderContent>
+        <RowTemplate Context="item">
+            <MudTd>@item.Key</MudTd>
+        </RowTemplate>
+        <PagerContent>
+            <MudTablePager PageSize="10" />
+        </PagerContent>
+    </MudTable>
+}
+
+@code {
+    private string searchTerm = string.Empty;
+    List<KeyValuePair<string, string>>? items;
+    IEnumerable<KeyValuePair<string, string>>? filteredItems;
+
+    [Parameter] public IGeodeticDatum? GeodeticDatum { get; set; }
+    [Parameter] public EventCallback<IGeodeticDatum> GeodeticDatumChanged { get; set; }
+
+    protected override Task OnInitializedAsync()
+       => HandleAsync(async () =>
+       {
+           items = (await GetDatums()).ToList();
+           filteredItems = items.ToArray();
+       });
+
+    async private Task<IEnumerable<KeyValuePair<string, string>>> GetDatums()
+    {
+        return await SRefService.GetDatums();
+    }
+
+    private void FilterTable(ChangeEventArgs e)
+        => Handle(() =>
+            {
+                if (items != null)
+                {
+                    string? searchTerm = e.Value?.ToString();
+
+                    if (String.IsNullOrEmpty(searchTerm))
+                    {
+                        filteredItems = items.ToArray();
+                    }
+                    else
+                    {
+                        filteredItems = items
+                            .Where(item => item.Key.Contains(searchTerm, StringComparison.OrdinalIgnoreCase) ||
+                                   item.Value.Contains(searchTerm, StringComparison.OrdinalIgnoreCase)).ToArray();
+                    }
+
+                    StateHasChanged();
+                }
+            });
+
+
+    private Task OnSelect(KeyValuePair<string, string> item)
+        => HandleAsync(async () =>
+        {
+            GeodeticDatum = await SRefService.GetGeodeticDatum(item.Key);
+            await GeodeticDatumChanged.InvokeAsync();
+        });
+}

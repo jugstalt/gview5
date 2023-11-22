@@ -83,7 +83,7 @@ namespace gView.Interoperability.GeoServices.Dataset
             {
                 jsonExportMap.BBoxSRef = sRef.Name.ToLower().Replace("epsg:", "");
             }
-            jsonExportMap.Size = $"{display.iWidth},{display.iHeight}";
+            jsonExportMap.Size = $"{display.ImageWidth},{display.ImageHeight}";
 
             var layerIds = this.Themes
                 .Where(l => l.Visible && (l.Class is IWebFeatureClass || l.Class is IWebRasterClass))
@@ -110,7 +110,7 @@ namespace gView.Interoperability.GeoServices.Dataset
                 serviceUrl
                     .UrlAppendPath("export")
                     .UrlAppendParameters("f=json")
-                    .UrlAppendParameters(urlParameters));
+                    , postData: urlParameters);
 
             bool hasImage = false;
             if (!String.IsNullOrWhiteSpace(response.Href))
@@ -287,7 +287,7 @@ namespace gView.Interoperability.GeoServices.Dataset
                             sb.Append("&");
                         }
 
-                        sb.Append(jsonPropertyAttribute.PropertyName + "=" + HttpUtility.UrlEncode(val));
+                        sb.Append($"{jsonPropertyAttribute.PropertyName}={HttpUtility.UrlEncode(val)}");
                     }
                 }
             }

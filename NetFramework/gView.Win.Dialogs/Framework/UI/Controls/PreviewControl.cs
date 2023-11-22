@@ -38,7 +38,7 @@ namespace gView.Framework.UI.Controls
             {
                 _mapDocument = new MapDocument(new ExplorerMapApplication((IGUIApplication)hook, this, mapView1));
                 _map = new Map();
-                _map.Display.refScale = 0;
+                _map.Display.ReferenceScale = 0;
                 _map.DrawingLayer += new DrawingLayerEvent(DrawingLayer);
 
                 _mapDocument.AddMap(_map);

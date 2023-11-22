@@ -1,0 +1,558 @@
+@using gView.Framework.Network.Algorthm;
+@using gView.Framework.Network;
+@using gView.Razor.Dialogs.Models;
+@inherits ModalDialogFormBase<CreateNetworkFeatureClassModel>
+@inject IApplicationScope AppScope
+
+<ModalDialogFormBase T="CreateNetworkFeatureClassModel"
+                     OnDialogClose="base.OnDialogClose"
+                     Model="base.Model">
+    <FormContent>
+            @if (pageIndex == Page.Name)
+            {
+                if (showLoadExistingCombo) {
+                    
+                    <MudSelect Label="Choose Existing" T="string" ValueChanged="async (value) => await LoadExisting(value)">
+                        @foreach (var name in Model.GetExistingModelNames())
+                        {
+                            <MudSelectItem Value="name">@name</MudSelectItem>
+                        }
+                    </MudSelect>
+                    @if (Model.HasExistingModelNames())
+                    {
+                        <br />
+                        <MudButton Variant="Variant.Outlined"
+                                   OnClick="() => { showLoadExistingCombo=false; }">
+                            Create new Schema
+                        </MudButton>
+                    }
+                }
+                else
+                {
+                    <MudTextField Label="Name"
+                                   @bind-Value="Model.Result.Name" />
+                    <MudCheckBox Label="Delete network featureclass, if already exists"
+                                 @bind-Checked="Model.Result.DeleteExisting" />
+                    <br />
+                    <MudButton Variant="Variant.Outlined"
+                               OnClick="() => { showLoadExistingCombo=true; }">
+                        Load Existing Schema
+                    </MudButton>
+                }
+            }
+            @if (pageIndex == Page.Edges)
+            {
+                <strong>Edge Feature Classes</strong>
+                @if (polylineFeatureClasses != null)
+                {
+                    <SelectableItemsControl ItemProperties="@(new[]{"Name"})" 
+                                              SelectableItems="polylineFeatureClasses" 
+                                              SelectionChanged="PolylineSelectionChanged" />
+                }
+            }
+            @if (pageIndex == Page.Nodes)
+            {
+                <strong>Node Feature Classes</strong>
+                @if (pointFeatureClasses != null)
+                {
+                    <SelectableItemsControl ItemProperties="@(new[]{"Name"})"
+                                              SelectableItems="pointFeatureClasses"
+                                              SelectionChanged="PointSelectionChanged" />
+                }
+            }
+            @if (pageIndex == Page.Snapping)
+            {
+                <strong>Snapping</strong>
+                <MudCheckBox Label="Use Snap Tolerance"
+                              @bind-Checked="Model.Result.UseSnapTolerance" />
+
+                @if (Model.Result.UseSnapTolerance == true)
+                {
+                    <MudTextField Label="Snap Tolerance"
+                                   @bind-Value="Model.Result.SnapTolerance"
+                                   Format="#.00000" Culture="@_en" T="double" Immediate="false"
+                                   InputType="InputType.Number" Step="0.1"
+                                   Variant="Variant.Text" />
+                }
+        }
+            @if (pageIndex == Page.ComplexEdges)
+            {
+                <strong>Complex Edges</strong>
+                <MudCheckBox Label="Use Complex Edges"
+                              @bind-Checked="Model.Result.UseComplexEdges" />
+
+                @if (Model.Result.UseComplexEdges && complexEdgesClasses != null)
+                {
+                    <SelectableItemsControl ItemProperties="@(new[]{"Name"})"
+                                              SelectableItems="complexEdgesClasses"/>
+                }
+            }
+            @if (pageIndex == Page.Switches)
+            {
+                <strong>Switches</strong>
+                   
+                <table>
+                    <tr>
+                        <th>Is Switch</th>
+                        <th>Name</th>
+                        <th>Field</th>
+                        <th>Type</th>
+                    </tr>
+                    @foreach(var node in Model.Result.Nodes)
+                    {
+                        <tr>
+                            <td>
+                                <MudCheckBox @bind-Checked="node.IsSwitch" />
+                            </td>
+                            <td>
+                                @node.FeatureClass.Name
+                            </td>
+                            <td>
+                                <MudSelect T="string"
+                                            Label=""
+                                            @bind-Value="node.Fieldname">
+                                    @foreach(var field in node.FeatureClass.Fields.ToEnumerable())
+                                    {
+                                        @if(field.type == Framework.Data.FieldType.integer ||
+                                            field.type == Framework.Data.FieldType.smallinteger ||
+                                            field.type == Framework.Data.FieldType.biginteger ||
+                                            field.type == Framework.Data.FieldType.boolean) 
+                                        {
+                                            <MudSelectItem Value="field.name">
+                                                @field.name
+                                            </MudSelectItem>
+                                        }
+                                    }
+                                </MudSelect>
+                            </td>
+                            <td>
+                                <MudSelect T="gView.Framework.Network.NetworkNodeType" 
+                                            Label=""
+                                            @bind-Value="node.NodeType">
+                                    @foreach (gView.Framework.Network.NetworkNodeType type in Enum.GetValues(typeof(gView.Framework.Network.NetworkNodeType)))
+                                    {
+                                        <MudSelectItem Value="type">
+                                            @type.ToString()
+                                        </MudSelectItem>
+                                    }
+                                </MudSelect>
+                            </td>
+                        </tr>
+                        
+
+                    }
+                </table>
+                
+            }
+            @if (pageIndex == Page.Weights)
+            {
+                <strong>Weights</strong>
+
+                <table>
+                    @if(Model.Result.Weights.Count()>0) {
+                        <tr>
+                            <th>Name</th>
+                            <th></th>
+                            <th></th>
+                        </tr>
+                    }
+                    @foreach (var weight in Model.Result.Weights)
+                    {
+                        <tr>
+                            <td>
+                                <MudTextField Label="Name" T="string"
+                                              @bind-Value="weight.Name" />
+                            </td>
+                            <td>
+                                <MudFab Color="Color.Secondary" StartIcon="@Icons.Material.Filled.Remove" 
+                                         Size="MudBlazor.Size.Small"
+                                         OnClick="() => RemoveWeightClicked(weight)" />
+                            </td>
+                        </tr>   
+                        @if (weight.FeatureClasses.Count > 0)
+                        {
+                            @foreach (var weightFc in weight.FeatureClasses)
+                            {
+                                var fc = GetFeatureClass(weightFc.FcId).Result;
+                                
+                                @if (fc != null)
+                                {
+                                    <tr>
+                                        <td>
+                                            @if (weight.FeatureClasses.IndexOf(weightFc) == 0)
+                                            {
+                                                <MudFab Color="Color.Surface" StartIcon="@Icons.Material.Filled.Refresh"
+                                                               Size="MudBlazor.Size.Small"
+                                                               OnClick="() => RefreshWeightClicked(weight)" />
+                                            }
+                                        </td>
+                                        <td>
+                                            @fc.Name
+                                        </td>
+                                        <td>
+                                            <MudSelect T="string"
+                                                       Label=""
+                                                       @bind-Value="weightFc.FieldName">
+
+                                                <MudSelectItem Value="@String.Empty">
+                                                    none
+                                                </MudSelectItem>
+                                                @foreach (var field in fc.Fields.ToEnumerable())
+                                                {
+                                                    @if (field.type == Framework.Data.FieldType.integer ||
+                                                         field.type == Framework.Data.FieldType.smallinteger ||
+                                                         field.type == Framework.Data.FieldType.biginteger ||
+                                                         field.type == Framework.Data.FieldType.boolean)
+                                                    {
+                                                        <MudSelectItem Value="field.name">
+                                                            @field.name
+                                                        </MudSelectItem>
+                                                    }
+                                                }
+                                            </MudSelect>
+                                        </td>
+                                        <td>
+                                            <MudSelect T="ISimpleNumberCalculation"
+                                                       @bind-Value="weightFc.SimpleNumberCalculation" >
+                                                     
+                                                @*<MudSelectItem Value="@null">
+                                                    none
+                                                </MudSelectItem>*@
+                                                @foreach(var calculator in _calculators)
+                                                {
+                                                    @* var calcuatorInstance = 
+                                                        calculator.GetType().Equals(weightFc.SimpleNumberCalculation?.GetType()) ?
+                                                        calculator :
+                                                        Activator.CreateInstance(calculator.GetType()); *@
+
+                                                  var calculatorInstance =
+                                                    calculator.GetType().Equals(weightFc.SimpleNumberCalculation?.GetType()) ?
+                                                    weightFc.SimpleNumberCalculation :
+                                                    Activator.CreateInstance(calculator.GetType()) as ISimpleNumberCalculation;
+
+                                                    <MudSelectItem Value="calculatorInstance">
+                                                        @calculator.Name
+                                                    </MudSelectItem>
+                                                }
+                                            </MudSelect>
+                                        </td>
+                                        <td>
+                                            @if (weightFc.SimpleNumberCalculation != null)
+                                            {
+                                                <MudFab Color="Color.Surface" 
+                                                StartIcon="@Icons.Material.Filled.More"
+                                                Size="MudBlazor.Size.Small" 
+                                                OnClick="() => EditCalculatorProperties(weightFc.SimpleNumberCalculation)"/>
+                                            }
+                                        </td>
+                                </tr>
+                                }
+                            }
+                            
+                        }
+                    }
+                    <tr>
+                        <td>
+                            <MudFab Color="Color.Primary" StartIcon="@Icons.Material.Filled.Add" 
+                                     Size="MudBlazor.Size.Small"
+                                     OnClick="AddWeightClicked" />
+                        </td>
+                    </tr>
+                </table>
+            }
+    </FormContent>
+
+    <DialogButtons>
+        <MudButton Variant="Variant.Filled"
+                   Color="Color.Secondary"
+                   OnClick="Close">Cancel</MudButton>
+        @if(pageIndex > 0)
+        {
+            <MudButton Variant="Variant.Filled"
+                       Color="Color.Surface"
+                        OnClick="GoBack">Back</MudButton>
+        }
+        @if(pageIndex == Page.Weights) 
+        {
+            <MudButton Variant="Variant.Filled"
+                       Color="Color.Primary"
+                       OnClick="OnSubmit">Create Scheme</MudButton>
+        } 
+        else if(CanGoNext())
+        {
+            <MudButton Variant="Variant.Filled" 
+                       Color="Color.Primary"
+                       OnClick="GoNext">Next</MudButton>
+        }
+    </DialogButtons>
+
+</ModalDialogFormBase>
+
+@code{
+    private enum Page
+    {
+        Name = 0,
+        Edges = 1,
+        Nodes = 2,
+        Snapping = 3,
+        ComplexEdges = 4,
+        Switches = 5,
+        Weights = 6
+    };
+
+    private Page pageIndex = Page.Name;
+    private bool showLoadExistingCombo = false;
+    private System.Globalization.CultureInfo _en = System.Globalization.CultureInfo.GetCultureInfo("en-US");
+
+    private SelectableEnumerable<IFeatureClass>? polylineFeatureClasses;
+    private SelectableEnumerable<IFeatureClass>? pointFeatureClasses;
+    private SelectableEnumerable<IFeatureClass>? complexEdgesClasses;
+    private List<ISimpleNumberCalculation> _calculators = new List<ISimpleNumberCalculation>();
+
+    protected override Task OnInitializedAsync() => HandleAsync(async () =>
+    {
+        await base.OnInitializedAsync();
+
+        if (Model.FeatureDataset != null)
+        {
+            var elements = await Model.FeatureDataset.Elements();
+
+            polylineFeatureClasses = elements
+                                        .Where(e => e.Class is IFeatureClass fc && fc.GeometryType == GeometryType.Polyline)
+                                        .Select(e => (IFeatureClass)e.Class)
+                                        .ToSelectable();
+            pointFeatureClasses = elements
+                                        .Where(e => e.Class is IFeatureClass fc && fc.GeometryType == GeometryType.Point)
+                                        .Select(e => (IFeatureClass)e.Class)
+                                        .ToSelectable();
+
+            PlugInManager pluginMan = new PlugInManager();
+
+            // (Weight)Calculators
+            foreach (var calcType in pluginMan.GetPlugins(Plugins.Type.ISimpleNumberCalculation))
+            {
+                ISimpleNumberCalculation calc = pluginMan.CreateInstance<ISimpleNumberCalculation>(calcType);
+                if (calc == null)
+                {
+                    continue;
+                }
+
+                _calculators.Add(calc);
+            }
+        }
+    });
+
+    private void PolylineSelectionChanged() => Handle(() =>
+    {
+        complexEdgesClasses = polylineFeatureClasses?.SelectedElements.ToSelectable();
+    });
+
+    private void PointSelectionChanged() => Handle(() =>
+    {
+        if (pointFeatureClasses != null)
+        {
+            Model.Result.Nodes.Clear();
+
+            foreach (var nodeClass in pointFeatureClasses.SelectedElements)
+            {
+                Model.Result.Nodes.Add(new CreateNetworkFeatureClassModel.ResultClass.Node(nodeClass));
+            }
+        }
+    });
+
+    private Task AddWeightClicked() => HandleAsync(async () =>
+    {
+        GraphWeight weight = new GraphWeight(
+            $"Weight {Model.Result.Weights.Count()}",
+            GraphWeightDataType.Double);
+        await RefreshWeight(weight);
+        Model.Result.Weights.Add(weight);
+
+        StateHasChanged();
+    });
+
+    private Task RefreshWeightClicked(IGraphWeight weight) => HandleAsync(async () =>
+    {
+        await RefreshWeight(weight);
+
+        StateHasChanged();
+    });
+
+    private void RemoveWeightClicked(IGraphWeight weight) => Handle(() =>
+    {
+        Model.Result.Weights.Remove(weight);
+
+        StateHasChanged();
+    });
+
+    private Task EditCalculatorProperties(ISimpleNumberCalculation calculator) => HandleAsync(async () =>
+    {
+        var model = await AppScope.ShowKnownDialog(Framework.Blazor.KnownDialogs.PropertyGridDialog,
+                                 calculator.Name,
+                                 new PropertyGridDialogModel()
+                                 {
+                                     Instance = calculator
+                                 });
+    });
+
+    private Task LoadExisting(string name) => HandleAsync(async () =>
+    {
+        await Model.LoadFromExisting(name);
+
+        if (polylineFeatureClasses != null)
+        {
+            foreach (var polyline in polylineFeatureClasses)
+            {
+                polyline.Selected = Model.Result.EdgeFeatureClasses.Any(fc => fc.Name == polyline.Item.Name);
+            }
+        }
+
+        complexEdgesClasses = polylineFeatureClasses?.SelectedElements.ToSelectable();
+        if (complexEdgesClasses != null)
+        {
+            foreach (var complexEdge in complexEdgesClasses)
+            {
+                complexEdge.Selected = Model.Result.ComplexEdges.Any(fc => fc.Name == complexEdge.Item.Name);
+            }
+        }
+
+        if (pointFeatureClasses != null)
+        {
+            foreach (var point in pointFeatureClasses)
+            {
+                point.Selected = Model.Result.NodeFeatureClasses.Any(fc => fc.Name == point.Item.Name);
+            }
+        }
+
+        showLoadExistingCombo = false;
+
+        // foreach (var weight in Model.Result.Weights)
+        // {
+        //     foreach (var weightFc in weight.FeatureClasses)
+        //     {
+        //         foreach (var calculator in _calculators)
+        //         {
+        //             var calcuatorInstance =
+        //                 calculator.GetType().Equals(weightFc.SimpleNumberCalculation?.GetType()) ?
+        //                 calculator :
+        //                 Activator.CreateInstance(calculator.GetType());
+        //         }
+        //     }
+        // }
+    });
+
+    private void GoNext() => Handle(() =>
+    {
+        pageIndex = pageIndex switch
+        {
+            Page.Name when !String.IsNullOrWhiteSpace(Model.Result.Name) => Page.Edges,
+            Page.Edges when pointFeatureClasses != null && pointFeatureClasses.Any() => Page.Nodes,
+            Page.Edges => Page.Snapping,
+            Page.Nodes => Page.Snapping,
+            Page.Snapping => Page.ComplexEdges,
+            Page.ComplexEdges when pointFeatureClasses !=null && pointFeatureClasses.HasSelected => Page.Switches,
+            Page.ComplexEdges => Page.Weights,
+            Page.Switches => Page.Weights,
+            _ => Page.Name
+        };
+
+        StateHasChanged();
+    });
+
+    private bool CanGoNext() =>
+        pageIndex switch
+        {
+            Page.Name when String.IsNullOrWhiteSpace(Model.Result.Name) => false,
+            Page.Edges when polylineFeatureClasses == null || polylineFeatureClasses.HasSelected == false => false,
+            Page.Weights => false,
+            _ => true
+        };
+
+    private void GoBack() => Handle(() =>
+    {
+        pageIndex = pageIndex switch
+        {
+            Page.Edges => Page.Name,
+            Page.Nodes => Page.Edges,
+            Page.Snapping when pointFeatureClasses == null || pointFeatureClasses.Any() == false => Page.Edges,
+            Page.Snapping => Page.Nodes,
+            Page.ComplexEdges => Page.Snapping,
+            Page.Switches => Page.ComplexEdges,
+            Page.Weights when pointFeatureClasses == null || pointFeatureClasses.HasSelected == false => Page.ComplexEdges,
+            Page.Weights => Page.ComplexEdges,
+            _ => Page.Name
+        };
+
+        StateHasChanged();
+    });
+
+    private Task OnSubmit() => HandleAsync(() =>
+    {
+        #region Edges
+
+         Model.Result.EdgeFeatureClasses.Clear();
+        if (polylineFeatureClasses != null)
+        {
+            foreach (var polylineFeatureClass in polylineFeatureClasses.SelectedElements)
+            {
+                Model.Result.EdgeFeatureClasses.Add(polylineFeatureClass);
+            }
+        }
+
+        #endregion
+
+        #region ComplexEdges
+
+        Model.Result.ComplexEdges.Clear();
+        if (Model.Result.UseComplexEdges && complexEdgesClasses != null)
+        {   
+            foreach(var complexEdgeFeatureClass in complexEdgesClasses.SelectedElements)
+            {
+                Model.Result.ComplexEdges.Add(complexEdgeFeatureClass);
+            }
+        }
+
+        #endregion
+
+        return base.Submit();
+    });
+
+    #region Helper
+
+    async private Task RefreshWeight(IGraphWeight weight)
+    {
+        var fdb = Model.FeatureDataset?.Database as DataSources.Fdb.MSAccess.AccessFDB;
+        if (fdb == null)
+        {
+            return;
+        }
+        var datasetId = await fdb.DatasetID(Model.FeatureDataset!.DatasetName);
+
+        if (polylineFeatureClasses != null)
+        {
+            foreach (var fc in polylineFeatureClasses.SelectedElements)
+            {
+                var fcId = await fdb.FeatureClassID(datasetId, fc.Name);
+
+                if (weight.FeatureClasses.Where(c => c.FcId == fcId).Any() == false)
+                {
+                    weight.FeatureClasses.Add(new GraphWeightFeatureClass(fcId));
+                }
+            }
+        }
+    }
+
+    async private Task<IFeatureClass?> GetFeatureClass(int fcId)
+    {
+        var fdb = Model.FeatureDataset?.Database as DataSources.Fdb.MSAccess.AccessFDB;
+        if (fdb == null)
+        {
+            return null;
+        }
+
+        var fc = await fdb.GetFeatureclass(fcId);
+        return fc;
+    }
+
+    #endregion
+}

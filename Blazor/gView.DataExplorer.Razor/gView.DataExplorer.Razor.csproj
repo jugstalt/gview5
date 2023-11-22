@@ -1,0 +1,39 @@
+﻿<Project Sdk="Microsoft.NET.Sdk.Razor">
+
+  <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <None Include="Components\Dialogs\Controls\ExtentControl.razor" />
+    <None Include="Components\Dialogs\MapNetworkFolderDialog.razor" />
+  </ItemGroup>
+
+
+  <ItemGroup>
+    <SupportedPlatform Include="browser" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.AspNetCore.Components.Web" Version="8.0.0" />
+    <PackageReference Include="MudBlazor" Version="6.11.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\gView.Cmd.Core\gView.Cmd.Core.csproj" />
+    <ProjectReference Include="..\..\gView.Cmd.Fdb.Lib\gView.Cmd.Fdb.Lib.csproj" />
+    <ProjectReference Include="..\..\gView.Data.Fields\gView.Data.Fields.csproj" />
+    <ProjectReference Include="..\..\gView.DataSources.OSGeo\gView.DataSources.OSGeo.csproj" />
+    <ProjectReference Include="..\..\gView.DataSources.TileCache\gView.DataSources.TileCache.csproj" />
+    <ProjectReference Include="..\..\gView.Server.Clients\gView.Server.Clients.csproj" />
+    <ProjectReference Include="..\gView.Blazor.Core\gView.Blazor.Core.csproj" />
+    <ProjectReference Include="..\gView.Blazor.Models\gView.Blazor.Models.csproj" />
+    <ProjectReference Include="..\gView.DataExplorer.Core\gView.DataExplorer.Core.csproj" />
+    <ProjectReference Include="..\gView.Framework.DataExplorer\gView.Framework.DataExplorer.csproj" />
+    <ProjectReference Include="..\gView.Razor.Leaflet\gView.Razor.Leaflet.csproj" />
+    <ProjectReference Include="..\gView.Razor\gView.Razor.csproj" />
+  </ItemGroup>
+
+</Project>

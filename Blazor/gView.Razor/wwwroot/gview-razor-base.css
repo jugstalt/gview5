@@ -1,0 +1,93 @@
+.gview-razor-wait-cursor * {
+    cursor: wait !important;
+}
+
+.gview-razor-dialog-content {
+    max-width: 100%;
+}
+    .gview-razor-dialog-content.normal {
+        width: 800px;
+        min-height: 480px;
+    }
+
+    .gview-razor-dialog-content.narrow {
+        width: 400px;
+        min-height: 400px;
+    }
+
+    .gview-razor-dialog-content.wide {
+        width: 1200px;
+        min-height: 400px;
+    }
+
+    .gview-razor-dialog-content.full {
+        width: 1920px;
+        min-height: 400px;
+    }
+
+.gview-splashscreen {
+    position: absolute;
+    left: 8px;
+    top: 4px;
+    bottom: 4px;
+    right: 8px;
+    background: #333;
+    color: #f0f0f0;
+    text-align: right;
+    background-image: url(img/gview-splashscreen.jpg);
+    background-repeat: no-repeat;
+    background-size: contain;
+}
+
+    .gview-splashscreen .gview-splashscreen-content {
+        width: 100%;
+        min-width:360px;
+        height: 100%;
+        display: inline-block;
+        box-sizing: border-box;
+    }
+
+        .gview-splashscreen .gview-splashscreen-content div {
+            padding: 10px;
+        }
+
+            .gview-splashscreen .gview-splashscreen-content div.title {
+                font-size: 26px;
+            }
+
+            .gview-splashscreen .gview-splashscreen-content div.version {
+                font-size: 16px;
+            }
+
+
+        .gview-splashscreen .gview-splashscreen-content pre {
+            padding: 10px;
+            border: 3px solid #999;
+            border-radius: 7px;
+            display: inline-block;
+            width: 508px;
+            max-width: 100%;
+            overflow: auto;
+            background: #333;
+            text-align: left;
+            box-sizing: border-box;
+        }
+
+        .gview-splashscreen .gview-splashscreen-content pre.license {
+            font-size: 10.5px;
+            height: 200px;
+        }
+
+        .gview-splashscreen .gview-splashscreen-content pre.credits {
+            font-size: 10px;
+            height: 155px;
+        }
+
+.gview-property-grid {
+    width:100%;
+}
+
+    .gview-property-grid .mud-input-control,
+    .gview-property-grid .mud-input {
+        margin-top: 0px !important;
+    }

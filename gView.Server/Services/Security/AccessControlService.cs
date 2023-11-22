@@ -28,7 +28,7 @@ namespace gView.Server.Services.Security
 
             if (authToken == null)
             {
-                throw new MapServerException("Unknown user or password");
+                throw new NotAuthorizedException();
             }
 
             return new Identity(user);

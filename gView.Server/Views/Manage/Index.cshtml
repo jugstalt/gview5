@@ -39,7 +39,7 @@
     </tr>
 </table>
 <br/>
-<div class="gview5-manage-body">
+<div class="gview-manage-body">
 
 </div>
 
@@ -53,10 +53,17 @@
     </environment>
 
     <script type="text/javascript">
+
+        window.require = { paths: { vs: '@(UrlHelperService.AppRootUrl(this.Context.Request))/lib/monaco-editor/min/vs' } };
+
         (function () {
             window.gview.manage.setRootUrl('@(UrlHelperService.AppRootUrl(this.Context.Request))')
             window.gview.manage.pageServices();
         })();
     </script>
+
+    <script src="~/lib/monaco-editor/min/vs/loader.js"></script>
+    <script src="~/lib/monaco-editor/min/vs/editor/editor.main.nls.js"></script>
+    <script src="~/lib/monaco-editor/min/vs/editor/editor.main.js"></script>
 }
 

@@ -1,0 +1,34 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework>
+    <Nullable>enable</Nullable>
+	  <LangVersion>11</LangVersion>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\gView.Cmd.Fdb.Lib\gView.Cmd.Fdb.Lib.csproj" />
+    <ProjectReference Include="..\..\gView.Cmd.TileCache.Lib\gView.Cmd.TileCache.Lib.csproj" />
+    <ProjectReference Include="..\..\gView.CopyFeatureclass.Lib\gView.CopyFeatureclass.Lib.csproj" />
+    <ProjectReference Include="..\..\gView.DataSources.EventTable\gView.DataSources.EventTable.csproj" />
+    <ProjectReference Include="..\..\gView.DataSources.Fdb.PostgreSql\gView.DataSources.Fdb.PostgreSql.csproj" />
+    <ProjectReference Include="..\..\gView.DataSources.Fdb.SQLite\gView.DataSources.Fdb.SQLite.csproj" />
+    <ProjectReference Include="..\..\gView.DataSources.Fdb.SqlServer\gView.DataSources.Fdb.SqlServer.csproj" />
+    <ProjectReference Include="..\..\gView.DataSources.GeoJson\gView.DataSources.GeoJson.csproj" />
+    <ProjectReference Include="..\..\gView.DataSources.MSSqlSpatial\gView.DataSources.MSSqlSpatial.csproj" />
+    <ProjectReference Include="..\..\gView.DataSources.OSGeo\gView.DataSources.OSGeo.csproj" />
+    <ProjectReference Include="..\..\gView.DataSources.PostGIS\gView.DataSources.PostGIS.csproj" />
+    <ProjectReference Include="..\..\gView.DataSources.Shape\gView.DataSources.Shape.csproj" />
+    <ProjectReference Include="..\..\gView.DataSources.TileCache\gView.DataSources.TileCache.csproj" />
+    <ProjectReference Include="..\..\gView.DataSources.VectorTileCache\gView.DataSources.VectorTileCache.csproj" />
+    <ProjectReference Include="..\..\gView.Interoperability.ArcXML\gView.Interoperability.ArcXML.csproj" />
+    <ProjectReference Include="..\..\gView.Interoperability.GeoServices\gView.Interoperability.GeoServices.csproj" />
+    <ProjectReference Include="..\..\gView.Interoperability.OGC\gView.Interoperability.OGC.csproj" />
+    <ProjectReference Include="..\gView.Blazor.Core\gView.Blazor.Core.csproj" />
+    <ProjectReference Include="..\gView.Blazor.Models\gView.Blazor.Models.csproj" />
+    <ProjectReference Include="..\gView.DataExplorer.Core\gView.DataExplorer.Core.csproj" />
+    <ProjectReference Include="..\gView.DataExplorer.Razor\gView.DataExplorer.Razor.csproj" />
+    <ProjectReference Include="..\gView.Framework.DataExplorer\gView.Framework.DataExplorer.csproj" />
+  </ItemGroup>
+
+</Project>

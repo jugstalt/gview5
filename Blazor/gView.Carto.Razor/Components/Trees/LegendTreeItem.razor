@@ -1,0 +1,30 @@
+@using gView.Framework.Carto.UI
+@using gView.Framework.Symbology
+
+@if (_legendItems is not null)
+{
+    <table style="margin-left: 34px">
+        @foreach(var item in _legendItems)
+        {
+            <tr>
+                <td>
+                    <img src="@item.ToBase64ImageSource()" />
+                </td>
+                <td>@item.LegendLabel</td>
+            </tr>
+        }
+    </table>
+}
+
+@code {
+    [Parameter] public ITocElement? ParentElement { get; set; }
+
+    private IEnumerable<ISymbol>? _legendItems;
+
+    protected override void OnInitialized()
+    {
+        base.OnInitialized();
+
+        _legendItems = ParentElement?.GetLegendItems();
+    }
+}

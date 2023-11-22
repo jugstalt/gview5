@@ -745,9 +745,9 @@ namespace gView.Plugins.MapTools.Controls
                     return;
                 }
 
-                List<ITOCElement> tocElements = map.TOC.Elements;
+                List<ITocElement> tocElements = map.TOC.Elements;
 
-                foreach (ITOCElement tocElement in tocElements)
+                foreach (ITocElement tocElement in tocElements)
                 {
                     if (tocElement.ParentGroup != null)
                     {
@@ -764,12 +764,12 @@ namespace gView.Plugins.MapTools.Controls
                 List<IDatasetElement> layers = map.MapElements;
                 layers.Sort(new DatasetElementComparer());
 
-                List<ITOCElement> tocElements = map.TOC.Elements;
+                List<ITocElement> tocElements = map.TOC.Elements;
                 tocElements.Sort(new TOCElementComparer());
 
-                foreach (ITOCElement tocElement in tocElements)
+                foreach (ITocElement tocElement in tocElements)
                 {
-                    if (tocElement.ElementType != TOCElementType.Layer)
+                    if (tocElement.ElementType != TocElementType.Layer)
                     {
                         continue;
                     }
@@ -780,9 +780,9 @@ namespace gView.Plugins.MapTools.Controls
             tree.AfterCheck += new TreeViewEventHandler(tree_AfterCheck);
         }
 
-        private void insertTreeNode(List<ITOCElement> elements, ITOCElement tocElement, TreeNode parent, List<IDatasetElement> selLayers)
+        private void insertTreeNode(List<ITocElement> elements, ITocElement tocElement, TreeNode parent, List<IDatasetElement> selLayers)
         {
-            if (tocElement.ElementType == TOCElementType.Layer)
+            if (tocElement.ElementType == TocElementType.Layer)
             {
                 bool check = false, found = false;
                 foreach (IDatasetElement elem in tocElement.Layers)
@@ -820,8 +820,8 @@ namespace gView.Plugins.MapTools.Controls
                 }
             }
 
-            if (tocElement.ElementType == TOCElementType.OpenedGroup ||
-                tocElement.ElementType == TOCElementType.ClosedGroup)
+            if (tocElement.ElementType == TocElementType.OpenedGroup ||
+                tocElement.ElementType == TocElementType.ClosedGroup)
             {
                 TreeNode p = new TreeNode(tocElement.Name);
                 if (parent == null)
@@ -833,7 +833,7 @@ namespace gView.Plugins.MapTools.Controls
                     parent.Nodes.Add(p);
                 }
 
-                foreach (ITOCElement elem in elements)
+                foreach (ITocElement elem in elements)
                 {
                     if (elem.ParentGroup == tocElement)
                     {
@@ -851,7 +851,7 @@ namespace gView.Plugins.MapTools.Controls
                             break;
                         }
                     }
-                    if (tocElement.ElementType == TOCElementType.OpenedGroup)
+                    if (tocElement.ElementType == TocElementType.OpenedGroup)
                     {
                         p.Expand();
                     }
@@ -908,7 +908,7 @@ namespace gView.Plugins.MapTools.Controls
                     }
                 }
 
-                ITOCElement element = ((SelectionTOCLayerNode)node).Element;
+                ITocElement element = ((SelectionTOCLayerNode)node).Element;
                 if (element == null || element.Layers == null)
                 {
                     continue;
@@ -1112,7 +1112,7 @@ namespace gView.Plugins.MapTools.Controls
                 return;
             }
 
-            ITOCElement element = ((SelectionTOCLayerNode)_contextNode).Element;
+            ITocElement element = ((SelectionTOCLayerNode)_contextNode).Element;
             if (element == null || element.Layers == null)
             {
                 return;
@@ -1145,7 +1145,7 @@ namespace gView.Plugins.MapTools.Controls
                 return;
             }
 
-            ITOCElement element = ((SelectionTOCLayerNode)_contextNode).Element;
+            ITocElement element = ((SelectionTOCLayerNode)_contextNode).Element;
             if (element == null || element.Layers == null)
             {
                 return;
@@ -1353,7 +1353,7 @@ namespace gView.Plugins.MapTools.Controls
 
             foreach (IDatasetElement element in _doc.FocusMap.MapElements)
             {
-                ITOCElement tocElement = null;
+                ITocElement tocElement = null;
                 if (element is IFeatureLayer && ((IFeatureLayer)element).FeatureClass != null)
                 {
                     tocElement = _doc.FocusMap.TOC.GetTOCElement(element as ILayer);
@@ -1681,12 +1681,12 @@ namespace gView.Plugins.MapTools.Controls
         #endregion
     }
 
-    internal class TOCElementComparer : IComparer<ITOCElement>
+    internal class TOCElementComparer : IComparer<ITocElement>
     {
 
         #region IComparer<ITOCElement> Members
 
-        public int Compare(ITOCElement x, ITOCElement y)
+        public int Compare(ITocElement x, ITocElement y)
         {
             return x.Name.CompareTo(y.Name);
         }

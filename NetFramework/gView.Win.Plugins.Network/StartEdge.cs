@@ -73,7 +73,7 @@ namespace gView.Plugins.Network
 
             MapEventClick ev = (MapEventClick)MapEvent;
             Point p = new Point(ev.x, ev.y);
-            double tol = 5 * ((IDisplay)ev.Map).mapScale / (96 / 0.0254);  // [m]
+            double tol = 5 * ((IDisplay)ev.Map).MapScale / (96 / 0.0254);  // [m]
 
             _module.RemoveNetworkStartGraphicElement((IDisplay)ev.Map);
 
